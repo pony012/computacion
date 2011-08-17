@@ -1,0 +1,19 @@
+== Tareas para el administrador ==
+Agregar, modificar o eliminar alumnos
+Asignar alumnos a un grupo especifico
+Agregar, modificar o eliminar materias
+Agregar, modificar o eliminar maestros
+Asignar aplicadores.
+
+== Para los alumnos ==
+Ver mis calificaciones
+Ver mi salón
+
+== Para los maestros ==
+Asignar puntos por grupos
+Ver calificaciones por grupos
+
+== Para las secretarias ==
+Subir calificaciones por grupo
+Subir calificaciones por aplicador
+
