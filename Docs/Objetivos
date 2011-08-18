@@ -4,6 +4,7 @@ Asignar alumnos a un grupo especifico
 Agregar, modificar o eliminar materias
 Agregar, modificar o eliminar maestros
 Asignar aplicadores.
+Agregar, eliminar o desactivar usuarios.
 
 == Para los alumnos ==
 Ver mis calificaciones
@@ -16,4 +17,12 @@ Ver calificaciones por grupos
 == Para las secretarias ==
 Subir calificaciones por grupo
 Subir calificaciones por aplicador
+
+== Permisos ==
+Estadisticas Globales
+Subir calificaciones globales
+Corrección de calificaciones
+Gestionar usuarios
+Desactivar usuarios
+Mover alumnos entre grupos
 
