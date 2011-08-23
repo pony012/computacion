@@ -51,12 +51,15 @@ CREATE TABLE IF NOT EXISTS `Aplicadores` (
   `Salon` char(6) NOT NULL,
   `FechaHora` datetime NOT NULL,
   `Tipo` enum('1','2','Extra') NOT NULL
+  `Maestro` int(7) NOT NULL,
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- RELACIONES PARA LA TABLA `Aplicadores`:
 --   `Alumno`
 --       `Alumnos` -> `Codigo`
+--   `Maestro`
+--       `Maestros` -> `Codigo`
 --
 
 -- --------------------------------------------------------
