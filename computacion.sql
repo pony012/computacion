@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 17-08-2011 a las 03:51:50
+-- Tiempo de generación: 23-08-2011 a las 02:45:34
 -- Versión del servidor: 5.1.49
 -- Versión de PHP: 5.3.3-7+squeeze3
 
@@ -50,8 +50,8 @@ CREATE TABLE IF NOT EXISTS `Aplicadores` (
   `Alumno` int(9) NOT NULL,
   `Salon` char(6) NOT NULL,
   `FechaHora` datetime NOT NULL,
-  `Tipo` enum('1','2','Extra') NOT NULL
-  `Maestro` int(7) NOT NULL,
+  `Tipo` enum('1','2','Extra') NOT NULL,
+  `Maestro` int(7) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `Grupos` (
 --   `Alumno`
 --       `Alumnos` -> `Codigo`
 --   `Nrc`
---       `Secciones` -> `NRC`
+--       `Secciones` -> `Nrc`
 --
 
 -- --------------------------------------------------------
@@ -123,6 +123,21 @@ CREATE TABLE IF NOT EXISTS `Materias` (
   `Descripcion` varchar(100) NOT NULL,
   PRIMARY KEY (`Clave`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `Permisos`
+--
+
+CREATE TABLE IF NOT EXISTS `Permisos` (
+  `id` int(11) NOT NULL,
+  `aed_usuarios` tinyint(1) NOT NULL,
+  `aed_maestros` tinyint(1) NOT NULL,
+  `crear_grupos` tinyint(1) NOT NULL,
+  `asignar_aplicadores` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -191,4 +206,6 @@ CREATE TABLE IF NOT EXISTS `Sesiones_Maestros` (
 -- RELACIONES PARA LA TABLA `Sesiones_Maestros`:
 --   `Codigo`
 --       `Maestros` -> `Codigo`
+--   `Permisos`
+--       `Permisos` -> `id`
 --
