@@ -25,7 +25,7 @@
 		
 		/* Si tiene el permiso de gestionar usuarios, mostrar el enlace */
 		if ($_SESSION['permisos']['aed_usuarios'] == 1) {
-			echo "<li><a href=\"gestionar_usuarios.php\">Gestionar usuarios</a></li>\n";
+			echo "<li><a href=\"users.php\">Gestionar usuarios</a></li>\n";
 		}
 		
 		echo "</ul>";
