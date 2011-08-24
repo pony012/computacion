@@ -13,20 +13,27 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) > 0) {
-		$object = mysql_fetch_object ($result);
+		$user = mysql_fetch_object ($result);
 		
 		/* Empezar a rellenar datos de la sesion */
 		$_SESSION['auth'] = 1;
-		$_SESSION['nombre'] = $object->nombre;
-		$_SESSION['codigo'] = $object->codigo;
+		$_SESSION['nombre'] = $user->nombre;
+		$_SESSION['codigo'] = $user->codigo;
 		
 		mysql_free_result ($result);
 		
-		/* TODO: Consultar la tabla de permisos y subirla a $Session */
+		/* Ahora recuperar la tabla de permisos */
+		$query = sprintf ("SELECT p.* FROM Permisos AS p INNER JOIN Sesiones_Maestros AS s ON p.id = s.permisos WHERE s.permisos='%s' LIMIT 1", $user->permisos);
+		$result = mysql_query ($query, $mysql_con);
+		$object = (array)mysql_fetch_object ($result);
+		
+		$_SESSION['permisos'] = array ();
+		foreach($object as $key => $valor) $_SESSION['permisos'][$key] = $valor;
+		mysql_free_result ($result);
 		
 		mysql_close ($mysql_con);
 		
-		header ("Location: Correcto.php");
+		header ("Location: vistas.php");
 		exit;
 	}
 	

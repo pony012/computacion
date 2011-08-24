@@ -1,0 +1,3 @@
+Para el login:
+Utilizar $SESSION para contar los intentos fallidos, y al alcanzar 5
+pedir utilizar Re-Captcha para ingresar.
