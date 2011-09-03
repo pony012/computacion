@@ -26,17 +26,23 @@
 	?></title>
 </head>
 <body>
-	<h1>Manejar usuarios</h1>
+	<h1>Maestros:</h1>
 	<?php
+		require_once "../mysql-con.php";
+		
+		$offset = $_GET['off'];
+		settype ($offset, "integer");
+		$cant = 10;
+		
+		echo "<p>Mostrando registros del ". $offset ." al ". ($offset + $cant) . "</p>";
+		
 		echo "<table border=\"1\">";
 		
 		/* Mostrar la cabecera */
 		echo "<thead><tr><th>Código</th><th>Nombre</th><th>Activo</th><th>Editar</th><tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
-		require_once "../mysql-con.php";
-		
-		$query = "SELECT m.codigo, m.nombre, s.activo FROM Maestros AS m INNER JOIN Sesiones_Maestros AS s ON m.Codigo = s.Codigo";
+		$query = "SELECT m.codigo, m.nombre, s.activo FROM Maestros AS m INNER JOIN Sesiones_Maestros AS s ON m.Codigo = s.Codigo LIMIT ". $offset . ",". $cant;
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -52,6 +58,22 @@
 		
 		echo "</tbody>";
 		echo "</table>\n";
+		
+		echo "<p>";
+		/* Mostrar las flechas de dezplamiento */
+		echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=0\"><img src=\"../img/first.png\" /></a>\n";
+		
+		if ($offset > 1) {
+			$prev = $offset - $cant;
+			if ($prev < 0) $prev = 0;
+			echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$prev."\"><img src=\"../img/prev.png\" /></a>\n";
+		}
+		
+		/* FIXME: No mostrar si sobrepasa la cantidad de filas */
+		$next = $offset + $cant;
+		echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$next."\"><img src=\"../img/next.png\" /></a>\n";
+		/* FIXME: Mostrar el botón de último */
+		echo "</p>\n";
 	?>
 	<ul>
 	<li>Agregar un nuevo usuario</li>
