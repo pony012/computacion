@@ -108,6 +108,7 @@ CREATE TABLE IF NOT EXISTS `Grupos` (
 CREATE TABLE IF NOT EXISTS `Maestros` (
   `Codigo` int(7) NOT NULL,
   `Nombre` varchar(100) NOT NULL,
+  `Correo` varchar(100) NOT NULL,
   `Flag` tinyint(1) NOT NULL,
   PRIMARY KEY (`Codigo`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -137,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `Permisos` (
   `crear_grupos` tinyint(1) NOT NULL,
   `asignar_aplicadores` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
