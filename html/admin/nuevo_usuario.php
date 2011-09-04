@@ -24,6 +24,37 @@
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
 	?></title>
+	<script language="javascript" src="../scripts/md5.js" type="text/javascript"></script>
+	<script language="javascript" type="text/javascript">
+		function valida_form () {
+			var cod = document.getElementById("codigo").value;
+			var pass1 = document.getElementById("pass1").value;
+			var pass2 = document.getElementById("pass2").value;
+			var nombre = document.getElementById("nombre").value;
+			
+			/* TODO: Verificar el código no sea repetido
+			 * Posiblemente con jquery */
+			if (cod == null || cod == "") return false;
+			
+			/* TODO: Informar que las contraseñas no coinciden */
+			if (pass1 != pass2) return false;
+			
+			/* TODO: Informar que el usuario no puede estar vacio */
+			if (nombre == null || nombre == "") return false;
+			
+			/* TODO: Mandar un mensaje al usuario que indique que
+			 * hace falta una contraseña */
+			if (pass1 == null || pass1 == "") return false;
+			
+			// En caso contrario, encriptar la contraseña
+			var md5 = MD5 (y);
+			document.getElementById("md5").value = md5;
+			document.getElementById("pass1").value = null;
+			document.getElementById("pass2").value = null;
+			
+			return true;
+		}
+	</script>
 </head>
 <body>
 	<?php
@@ -39,7 +70,7 @@
 			exit ();
 		}
 	?>
-	<form action="" method="post">
+	<form action="" method="post" onsubmit="return valida_form()">
 		<table border="0">
 		<?php
 			echo "<input name=\"tipo\" id=\"tipo\" type=\"hidden\" value=\"" . $tipo . "\" />";
@@ -48,9 +79,15 @@
 		<td><input name="codigo" id="codigo" type="text" /></td></tr>
 		<tr><td>Nombre:</td>
 		<td><input name="nombre" id="nombre" type="text" /></td></tr>
-		<tr><td>Correo: (opcional)</td>
+		<tr><td>Correo (opcional):</td>
 		<td><input name="correo" id="correo" type="text" /></td></tr>
+		<tr><td>Nip:</td>
+		<td><input name="pass1" id="pass1" type="password" /></td></tr>
+		<tr><td>Repite nip:</td>
+		<td><input name="pass2" id="pass2" type="password" /></td></tr>
+		<input name="md5" id="md5" type="hidden" />
 		</table>
+		<input type="submit" value="Agregar" />
 	</form>
 </body>
 </html>
