@@ -8,6 +8,9 @@
 	
 	require_once "../mysql-con.php";
 	
+	/* Sanitizado de variables */
+	filter_input (INPUT_POST, 'user', FILTER_SANITIZE_NUMBER_INT);
+	
 	$query = sprintf ("SELECT s.codigo, s.permisos, m.nombre FROM Sesiones_Maestros AS s INNER JOIN Maestros AS m ON s.codigo = m.codigo WHERE s.codigo='%s' AND s.pass='%s' AND s.activo=1 LIMIT 1", mysql_real_escape_string ($_POST['user']), mysql_real_escape_string ($_POST['md5']));
 	
 	$result = mysql_query ($query, $mysql_con);
