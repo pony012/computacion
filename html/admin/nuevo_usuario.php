@@ -70,7 +70,7 @@
 			exit ();
 		}
 	?>
-	<form action="" method="post" onsubmit="return valida_form()">
+	<form action="post_nuevo_usuario.php" method="post" onsubmit="return valida_form()">
 		<table border="0">
 		<?php
 			echo "<input name=\"tipo\" id=\"tipo\" type=\"hidden\" value=\"" . $tipo . "\" />";
