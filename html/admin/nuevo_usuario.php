@@ -14,6 +14,11 @@
 		header ("Location: vistas.php");
 		exit;
 	}
+	
+	$tipo = $_GET['t'];
+	if ($tipo != 'u' && $tipo != 'm') {
+		header ("Location: vistas.php");
+	}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -47,10 +52,10 @@
 			if (pass1 == null || pass1 == "") return false;
 			
 			// En caso contrario, encriptar la contraseña
-			var md5 = MD5 (y);
+			var md5 = MD5 (pass1);
 			document.getElementById("md5").value = md5;
-			document.getElementById("pass1").value = null;
-			document.getElementById("pass2").value = null;
+			document.getElementById("pass1").value = "";
+			document.getElementById("pass2").value = "";
 			
 			return true;
 		}
@@ -58,16 +63,10 @@
 </head>
 <body>
 	<?php
-		$tipo = $_GET['t'];
-		
 		if ($tipo == 'm') {
 			echo "<h1>Nuevo maestro</h1>";
 		} else if ($tipo == 'u') {
 			echo "<h1>Nuevo usuario</h1>";
-		} else {
-			echo "<h1>Tipo de usuario desconocido</h1>";
-			echo "<p>No debería estar viendo este error.....</ br>Regresar al <a href=\"vistas.php\">menú</a></p>";
-			exit ();
 		}
 	?>
 	<form action="post_nuevo_usuario.php" method="post" onsubmit="return valida_form()">
