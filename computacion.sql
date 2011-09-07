@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 23-08-2011 a las 02:45:34
+-- Tiempo de generación: 07-09-2011 a las 03:04:01
 -- Versión del servidor: 5.1.49
 -- Versión de PHP: 5.3.3-7+squeeze3
 
@@ -132,12 +132,12 @@ CREATE TABLE IF NOT EXISTS `Materias` (
 --
 
 CREATE TABLE IF NOT EXISTS `Permisos` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `aed_usuarios` tinyint(1) NOT NULL,
   `crear_grupos` tinyint(1) NOT NULL,
   `asignar_aplicadores` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
