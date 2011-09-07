@@ -2,9 +2,8 @@
 Agregar, modificar o eliminar alumnos
 Asignar alumnos a un grupo especifico
 Agregar, modificar o eliminar materias
-Agregar, modificar o eliminar maestros
 Asignar aplicadores.
-Agregar, eliminar o desactivar usuarios.
+Agregar, eliminar o desactivar usuarios || maestros.
 
 == Para los alumnos ==
 Ver mis calificaciones

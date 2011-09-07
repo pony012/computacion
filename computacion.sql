@@ -134,7 +134,6 @@ CREATE TABLE IF NOT EXISTS `Materias` (
 CREATE TABLE IF NOT EXISTS `Permisos` (
   `id` int(11) NOT NULL,
   `aed_usuarios` tinyint(1) NOT NULL,
-  `aed_maestros` tinyint(1) NOT NULL,
   `crear_grupos` tinyint(1) NOT NULL,
   `asignar_aplicadores` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
