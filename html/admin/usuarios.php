@@ -76,7 +76,8 @@
 		echo "</p>\n";
 	?>
 	<ul>
-	<li>Agregar un nuevo usuario</li>
+	<li><a href="nuevo_usuario.php?t=u">Agregar un nuevo usuario</a></li>
+	<li><a href="nuevo_usuario.php?t=m">Agregar nuevo maestro</a></li>
 	</ul>
 </body>
 </html>
