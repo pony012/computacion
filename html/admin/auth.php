@@ -6,6 +6,12 @@
 	 # md5 -> la contraseña
 	 */
 	
+	/* Verificar que haya datos POST */
+	if (!isset ($_POST['user']) || !isset ($_POST['md5'])) {
+		header ("Location: login.php");
+		exit;
+	}
+	
 	require_once "../mysql-con.php";
 	
 	/* Sanitizado de variables */

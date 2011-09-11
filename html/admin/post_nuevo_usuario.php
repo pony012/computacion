@@ -23,6 +23,14 @@
 	 * md5: La contraseña cifrada
 	 */
 	
+	/* Verificar que haya datos POST */
+	if (!isset ($_POST['codigo']) ||
+	    !isset ($_POST['nombre']) ||
+	    !isset ($_POST['md5'])) {
+		header ("Location: usuarios.php");
+		exit;
+	}
+	
 	/* Sanitizado de variables */
 	filter_input (INPUT_POST, 'user', FILTER_SANITIZE_NUMBER_INT);
 	filter_input (INPUT_POST, 'correo', FILTER_SANITIZE_EMAIL);
