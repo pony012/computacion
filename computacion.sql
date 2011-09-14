@@ -136,6 +136,7 @@ CREATE TABLE IF NOT EXISTS `Permisos` (
   `aed_usuarios` tinyint(1) NOT NULL,
   `crear_grupos` tinyint(1) NOT NULL,
   `asignar_aplicadores` tinyint(1) NOT NULL,
+  `grupos_globales` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
