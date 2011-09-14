@@ -107,7 +107,8 @@ CREATE TABLE IF NOT EXISTS `Grupos` (
 
 CREATE TABLE IF NOT EXISTS `Maestros` (
   `Codigo` int(7) NOT NULL,
-  `Nombre` varchar(100) NOT NULL,
+  `Nombre` varchar(30) NOT NULL,
+  `Apellido` varchar(70) NOT NULL,
   `Correo` varchar(100) NOT NULL,
   `Flag` tinyint(1) NOT NULL,
   PRIMARY KEY (`Codigo`)

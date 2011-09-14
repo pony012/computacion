@@ -19,6 +19,7 @@
 	 * Campos recibidos por POST:
 	 * codigo: El código del maestro/usuario
 	 * nombre: El nombre
+	 * apellido: El apellido
 	 * correo: Correo electronico
 	 * md5: La contraseña cifrada
 	 */
@@ -57,7 +58,7 @@
 	
 	mysql_free_result ($result);
 	
-	$query = sprintf ("INSERT INTO Maestros (Codigo, Nombre, Correo, Flag) VALUES ('%s', '%s', '%s', 0)", $_POST['codigo'], mysql_real_escape_string ($_POST['nombre']), mysql_real_escape_string ($_POST['correo']));
+	$query = sprintf ("INSERT INTO Maestros (Codigo, Nombre, Apellido, Correo, Flag) VALUES ('%s', '%s', '%s', '%s', 0)", $_POST['codigo'], mysql_real_escape_string ($_POST['nombre']), mysql_real_escape_string ($_POST['apellido']), mysql_real_escape_string ($_POST['correo']));
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (!$result) {

@@ -78,6 +78,8 @@
 		<td><input name="codigo" id="codigo" type="text" /></td></tr>
 		<tr><td>Nombre:</td>
 		<td><input name="nombre" id="nombre" type="text" /></td></tr>
+		<tr><td>Apellido:</td>
+		<td><input name="apellido" id="apellido" type="text" /></td></tr>
 		<tr><td>Correo (opcional):</td>
 		<td><input name="correo" id="correo" type="text" /></td></tr>
 		<tr><td>Nip:</td>
