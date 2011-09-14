@@ -7,13 +7,6 @@
 		header ("Location: login.php");
 		exit;
 	}
-	
-	/* Luego verificar si tiene el permiso de gestionar usuarios */
-	if (!isset ($_SESSION['permisos']['aed_usuarios']) || $_SESSION['permisos']['aed_usuarios'] != 1) {
-		/* Privilegios insuficientes */
-		header ("Location: vistas.php");
-		exit;
-	}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -26,34 +19,35 @@
 	?></title>
 </head>
 <body>
-	<h1>Maestros:</h1>
+	<h1>Grupos</h1>
 	<?php
 		require_once "../mysql-con.php";
 		
 		$offset = $_GET['off'];
 		settype ($offset, "integer");
-		$cant = 10;
+		$cant = 20;
 		
-		echo "<p>Mostrando registros del ". $offset ." al ". ($offset + $cant) . "</p>";
+		echo "<p>Mostrando los grupos del ". $offset ." al ". ($offset + $cant) . "</p>";
 		
 		echo "<table border=\"1\">";
 		
 		/* Mostrar la cabecera */
-		echo "<thead><tr><th>Código</th><th>Nombre</th><th>Activo</th><th>Editar</th></tr></thead>\n";
+		echo "<thead><tr><th>NRC</th><th>Materia</th><th>Maestro</th></tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
-		$query = "SELECT m.codigo, m.nombre, s.activo FROM Maestros AS m INNER JOIN Sesiones_Maestros AS s ON m.Codigo = s.Codigo LIMIT ". $offset . ",". $cant;
+		$query = "SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo LIMIT ". $offset . ",". $cant;
 		
 		$result = mysql_query ($query, $mysql_con);
 		
 		echo "<tbody>";
 		while (($object = mysql_fetch_object ($result))) {
-			echo "<tr><td>" . $object->codigo . "</td><td>" . $object->nombre;
-			if ($object->activo == 1) {
-				echo "</td><td><img src=\"../img/day.png\" /></td></tr>\n";
-			} else {
-				echo "</td><td><img src=\"../img/night.png\" /></td></tr>\n";
-			}
+			echo "<tr>";
+			/* El nrc */
+			echo "<td>".$object->Nrc."</td>";
+			
+			echo "<td>".$object->Materia." ".$object->Descripcion."</td>";
+			echo "<td>".$object->Maestro." ".$object->Nombre."</td>";
+			echo "</tr>\n";
 		}
 		
 		echo "</tbody>";
@@ -76,8 +70,11 @@
 		echo "</p>\n";
 	?>
 	<ul>
-	<li><a href="nuevo_usuario.php?t=u">Agregar un nuevo usuario</a></li>
-	<li><a href="nuevo_usuario.php?t=m">Agregar nuevo maestro</a></li>
+	<?php
+		if ($_SESSION['permisos']['crear_grupos'] == 1) {
+			echo "<li><a href=\"nuevo_grupo.php\">Agregar una nueva seccion</a></li>\n";
+		}
+	?>
 	</ul>
 </body>
 </html>

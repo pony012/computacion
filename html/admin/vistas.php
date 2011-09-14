@@ -28,6 +28,9 @@
 			echo "<li><a href=\"usuarios.php\">Gestionar usuarios</a></li>\n";
 		}
 		
+		/* Los grupos se pueden visualizar de todas formas */
+		echo "<li><a href=\"grupos.php\">Ver Grupos</a></li>\n";
+		
 		echo "</ul>";
 	?>
 </body>
