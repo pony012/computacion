@@ -10,8 +10,8 @@
 	<script language="javascript" src="../scripts/md5.js" type="text/javascript"></script>
 	<script language="javascript" type="text/javascript">
 	function validar () {
-		var x = document.getElementById("user").value
-		var y = document.getElementById("pass").value
+		var x = document.getElementById("user").value;
+		var y = document.getElementById("pass").value;
 		
 		if (x == null || x == "" || y == null || y == "") return false;
 

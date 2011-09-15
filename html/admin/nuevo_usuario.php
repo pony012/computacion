@@ -86,8 +86,8 @@
 		<td><input name="pass1" id="pass1" type="password" /></td></tr>
 		<tr><td>Repite nip:</td>
 		<td><input name="pass2" id="pass2" type="password" /></td></tr>
-		<input name="md5" id="md5" type="hidden" />
 		</table>
+		<input name="md5" id="md5" type="hidden" />
 		<input type="submit" value="Agregar" />
 	</form>
 </body>
