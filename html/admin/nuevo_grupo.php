@@ -89,7 +89,7 @@
 </head>
 <body>
 	<h1>Agregar una nueva sección</h1>
-	<form action="" method="get" onsubmit="return validar()">
+	<form action="post_nuevo_grupo.php" method="POST" onsubmit="return validar()">
 	<p>Nrc:<input name="nrc" id="nrc" type="text" /></p>
 	<?php
 		require_once "../mysql-con.php";
@@ -125,9 +125,9 @@
 		mysql_close ($mysql_con);
 	?>
 	<!-- TODO: Meter en una tabla, por favor -->
-	<p>Porcentaje de los punto asignados por el maestro: <input name="n_puntos" id="n_puntos" value="50" type="text" /><input name="tiene_puntos" id="tiene_puntos" type="checkbox" onchange="desactivar_puntos ()" />El maestro no asigna puntos en esta materia</p>
-	<p>Porcentaje del primer departamental:<input name="puntos_depa1" id="puntos_depa1" value="25" type="text" /><input name="tiene_depa1" id="tiene_depa1" type="checkbox" onchange="desactivar_depa1 ()" />La materia no tiene departamental</p>
-	<p>Porcentaje del segundo departamental:<input name="puntos_depa2" id="puntos_depa2" value="25" type="text" /><input name="tiene_depa2" id="tiene_depa2" type="checkbox" onchange="desactivar_depa2 ()" />La materia no tiene segundo departamental</p>
+	<p>Porcentaje de los punto asignados por el maestro: <input name="n_puntos" id="n_puntos" value="50" type="text" /><input name="tiene_puntos" id="tiene_puntos" type="checkbox" value="off" onchange="desactivar_puntos ()" />El maestro no asigna puntos en esta materia</p>
+	<p>Porcentaje del primer departamental:<input name="puntos_depa1" id="puntos_depa1" value="25" type="text" /><input name="tiene_depa1" id="tiene_depa1" type="checkbox" value="off" onchange="desactivar_depa1 ()" />La materia no tiene departamental</p>
+	<p>Porcentaje del segundo departamental:<input name="puntos_depa2" id="puntos_depa2" value="25" type="text" /><input name="tiene_depa2" id="tiene_depa2" type="checkbox" value="off" onchange="desactivar_depa2 ()" />La materia no tiene segundo departamental</p>
 	
 	<input type="submit" value="Enviar" />
 	</form>
