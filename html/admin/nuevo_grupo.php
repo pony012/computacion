@@ -8,7 +8,7 @@
 		exit;
 	}
 	
-	/* Luego verificar si tiene el permiso de gestionar usuarios */
+	/* Luego verificar si tiene el permiso de crear grupos */
 	if (!isset ($_SESSION['permisos']['crear_grupos']) || $_SESSION['permisos']['crear_grupos'] != 1) {
 		/* Privilegios insuficientes */
 		header ("Location: vistas.php");
@@ -29,42 +29,67 @@
 		display:none;
 	}
 	</style>
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 	<script language="javascript" type="text/javascript">
-		function ocultar_depas () {
-			var j_depa = document.getElementsByName("depas");
-			
-			for (g = 0; g < j_depa.length; g++) {
-				if (j_depa[g].checked) {
-					if (g == 0) {
-						/* La primera casilla de verificación, sin depas */
-						$("#j_depa_1").slideUp("fast");
-						$("#j_depa_2").slideUp("fast");
-					} else if (g == 1) {
-						$("#j_depa_1").slideDown("fast");
-						$("#j_depa_2").slideUp("fast");
-					} else if (g == 2) {
-						$("#j_depa_1").slideDown("fast");
-						$("#j_depa_2").slideDown("fast");
-					}
-				}
+		function desactivar_puntos () {
+			if (document.getElementById ("tiene_puntos").checked) {
+				document.getElementById ("n_puntos").value = 0;
+				document.getElementById ("n_puntos").disabled = true;
+			} else {
+				document.getElementById ("n_puntos").disabled = false;
 			}
 		}
 		
-		function ocultar_puntos () {
-			if (document.getElementById ("puntos").checked) {
-				$("#j_puntos").stop (false, true);
-				$("#j_puntos").slideDown("fast");
+		function desactivar_depa1 () {
+			if (document.getElementById ("tiene_depa1").checked) {
+				document.getElementById ("puntos_depa1").value = 0;
+				document.getElementById ("puntos_depa1").disabled = true;
 			} else {
-				$("#j_puntos").stop (false, true);
-				$("#j_puntos").slideUp("fast");
+				document.getElementById ("puntos_depa1").disabled = false;
 			}
+		}
+		
+		function desactivar_depa2 () {
+			if (document.getElementById ("tiene_depa2").checked) {
+				document.getElementById ("puntos_depa2").value = 0;
+				document.getElementById ("puntos_depa2").disabled = true;
+			} else {
+				document.getElementById ("puntos_depa2").disabled = false;
+			}
+		}
+		
+		function validar () {
+			/* Hay que validar varias cosas
+			 * Primero, que el nrc sean sólo numeros y de longitud 5 */
+			var j_nrc = document.getElementById ("nrc").value;
+			
+			if (!/^([0-9])+$/.test(j_nrc) || j_nrc.length > 5) {
+				alert ("Nrc no es un número");
+				return false;
+			}
+			
+			/* Validar la seccion */
+			var j_sec = document.getElementById ("seccion").value;
+			
+			if (!/^([Dd])([0-9]){2}$/.test(j_sec)) {
+				alert ("Sección no válida");
+				return false;
+			}
+			
+			/* Convertir la sección a mayúculas */
+			document.getElementById ("seccion").value = j_sec.toUpperCase();
+			
+			var j_n_puntos = document.getElementById("n_puntos").value;
+			var j_puntos_depa1 = document.getElementById("puntos_depa1").value;
+			var j_puntos_depa2 = document.getElementById("puntos_depa2").value;
+			
+			/* TODO: verificar la suma de puntos */
+			return true;
 		}
 	</script>
 </head>
 <body>
 	<h1>Agregar una nueva sección</h1>
-	<form action="" method="post">
+	<form action="" method="get" onsubmit="return validar()">
 	<p>Nrc:<input name="nrc" id="nrc" type="text" /></p>
 	<?php
 		require_once "../mysql-con.php";
@@ -99,22 +124,12 @@
 		
 		mysql_close ($mysql_con);
 	?>
-	<p><input type="radio" name="depas" checked="checked" value="0" onchange="ocultar_depas ()" />La materia no tiene departamentales<br />
-	<input type="radio" name="depas" value="1" onchange="ocultar_depas ()" />La materia tiene un departamental<br />
-	<input type="radio" name="depas" value="2" onchange="ocultar_depas ()" />La materia tiene dos departamentales</p>
+	<!-- TODO: Meter en una tabla, por favor -->
+	<p>Porcentaje de los punto asignados por el maestro: <input name="n_puntos" id="n_puntos" value="50" type="text" /><input name="tiene_puntos" id="tiene_puntos" type="checkbox" onchange="desactivar_puntos ()" />El maestro no asigna puntos en esta materia</p>
+	<p>Porcentaje del primer departamental:<input name="puntos_depa1" id="puntos_depa1" value="25" type="text" /><input name="tiene_depa1" id="tiene_depa1" type="checkbox" onchange="desactivar_depa1 ()" />La materia no tiene departamental</p>
+	<p>Porcentaje del segundo departamental:<input name="puntos_depa2" id="puntos_depa2" value="25" type="text" /><input name="tiene_depa2" id="tiene_depa2" type="checkbox" onchange="desactivar_depa2 ()" />La materia no tiene segundo departamental</p>
 	
-	<div class="oculto" id="j_depa_1">Porcentaje del primer departamental:
-	<input name="puntos_depa1" id="puntos_depa1" type="text" />
-	</div>
-	<div class="oculto" id="j_depa_2">Porcentaje del segundo departamental: 
-	<input name="puntos_depa2" id="puntos_depa2" type="text" />
-	</div>
-	
-	<p><input name="puntos" id="puntos" type="checkbox" value="1" onchange="ocultar_puntos ()" />El maestro asigna puntos en esta materia</p>
-	<div class="oculto" id="j_puntos">Porcentaje de los punto asignados por el maestro:
-	<input name="n_puntos" id="n_puntos" type="text" />
-	</div>
-	
+	<input type="submit" value="Enviar" />
 	</form>
 </body>
 </html>
