@@ -123,6 +123,12 @@ CREATE TABLE IF NOT EXISTS `Maestros` (
 CREATE TABLE IF NOT EXISTS `Materias` (
   `Clave` char(5) NOT NULL,
   `Descripcion` varchar(100) NOT NULL,
+  `Depa1` tinyint(1) NOT NULL DEFAULT '1',
+  `Depa2` tinyint(1) NOT NULL DEFAULT '1',
+  `Puntos` tinyint(1) NOT NULL DEFAULT '1',
+  `Porcentaje_Depa1` int(11) DEFAULT NULL,
+  `Porcentaje_Depa2` int(11) DEFAULT NULL,
+  `Porcentaje_Puntos` int(11) DEFAULT NULL,
   PRIMARY KEY (`Clave`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -152,12 +158,6 @@ CREATE TABLE IF NOT EXISTS `Secciones` (
   `Materia` char(5) NOT NULL,
   `Maestro` int(7) NOT NULL,
   `Seccion` char(3) NOT NULL,
-  `Depa1` tinyint(1) NOT NULL DEFAULT '1',
-  `Depa2` tinyint(1) NOT NULL DEFAULT '1',
-  `Puntos` tinyint(1) NOT NULL DEFAULT '1',
-  `Porcentaje_Depa1` int(11) DEFAULT NULL,
-  `Porcentaje_Depa2` int(11) DEFAULT NULL,
-  `Porcentaje_Puntos` int(11) DEFAULT NULL,
   PRIMARY KEY (`Nrc`),
   UNIQUE KEY `Materia` (`Materia`,`Seccion`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
