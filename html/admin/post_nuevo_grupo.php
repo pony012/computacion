@@ -41,7 +41,7 @@
 	}
 	
 	/* Validar primero el NRC */
-	if (!preg_match ("/^([0-9])+$/", $_POST['nrc']) || strlen ($_POST['nrc'])) {
+	if (!preg_match ("/^([0-9]){5}$/", $_POST['nrc'])) {
 		header ("Location: nuevo_grupo.php?e=nrc");
 		exit;
 	}
@@ -49,12 +49,6 @@
 	/* Validar la seccion */
 	if (!preg_match ("/^([Dd])([0-9]){2}$/", $_POST['seccion'])) {
 		header ("Location: nuevo_grupo.php?e=seccion");
-		exit;
-	}
-	
-	if ($_POST['tiene_puntos'] == "off" && $_POST['tiene_depa1'] == "off" && $_POST['tiene_depa2'] == "off") {
-		/* Error, debe haber alguna forma de evaluar en la materia */
-		header ("Location: nuevo_grupo.php?e=eval");
 		exit;
 	}
 	
@@ -77,5 +71,6 @@
 		exit_and_close ("?e=maestro");
 	}
 	
-	
+	/* Ahora sí, hacer la inserción en la tabla */
+	$query = sprintf ("INSERT INTO 'Secciones' ('Nrc', 'Materia', 'Maestro', 'Seccion', 'Depa1', 'Depa2', 'Puntos', 'Porcentaje_Depa1', 'Porcentaje_Depa2', 'Porcentaje_Puntos') VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s',
 ?>
