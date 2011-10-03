@@ -24,39 +24,7 @@
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
 	?></title>
-	<style type="text/css">
-	.oculto {	
-		display:none;
-	}
-	</style>
 	<script language="javascript" type="text/javascript">
-		function desactivar_puntos () {
-			if (document.getElementById ("tiene_puntos").checked) {
-				document.getElementById ("n_puntos").value = 0;
-				document.getElementById ("n_puntos").disabled = true;
-			} else {
-				document.getElementById ("n_puntos").disabled = false;
-			}
-		}
-		
-		function desactivar_depa1 () {
-			if (document.getElementById ("tiene_depa1").checked) {
-				document.getElementById ("puntos_depa1").value = 0;
-				document.getElementById ("puntos_depa1").disabled = true;
-			} else {
-				document.getElementById ("puntos_depa1").disabled = false;
-			}
-		}
-		
-		function desactivar_depa2 () {
-			if (document.getElementById ("tiene_depa2").checked) {
-				document.getElementById ("puntos_depa2").value = 0;
-				document.getElementById ("puntos_depa2").disabled = true;
-			} else {
-				document.getElementById ("puntos_depa2").disabled = false;
-			}
-		}
-		
 		function validar () {
 			/* Hay que validar varias cosas
 			 * Primero, que el nrc sean sólo numeros y de longitud 5 */
@@ -78,11 +46,6 @@
 			/* Convertir la sección a mayúculas */
 			document.getElementById ("seccion").value = j_sec.toUpperCase();
 			
-			var j_n_puntos = document.getElementById("n_puntos").value;
-			var j_puntos_depa1 = document.getElementById("puntos_depa1").value;
-			var j_puntos_depa2 = document.getElementById("puntos_depa2").value;
-			
-			/* TODO: verificar la suma de puntos */
 			return true;
 		}
 	</script>
@@ -124,11 +87,6 @@
 		
 		mysql_close ($mysql_con);
 	?>
-	<!-- TODO: Meter en una tabla, por favor -->
-	<p>Porcentaje de los punto asignados por el maestro: <input name="n_puntos" id="n_puntos" value="50" type="text" /><input name="tiene_puntos" id="tiene_puntos" type="checkbox" value="off" onchange="desactivar_puntos ()" />El maestro no asigna puntos en esta materia</p>
-	<p>Porcentaje del primer departamental:<input name="puntos_depa1" id="puntos_depa1" value="25" type="text" /><input name="tiene_depa1" id="tiene_depa1" type="checkbox" value="off" onchange="desactivar_depa1 ()" />La materia no tiene departamental</p>
-	<p>Porcentaje del segundo departamental:<input name="puntos_depa2" id="puntos_depa2" value="25" type="text" /><input name="tiene_depa2" id="tiene_depa2" type="checkbox" value="off" onchange="desactivar_depa2 ()" />La materia no tiene segundo departamental</p>
-	
 	<input type="submit" value="Enviar" />
 	</form>
 </body>

@@ -23,14 +23,8 @@
 	/* Campos que recibo por POST
 	 * nrc: El nrc de la materia, no debe estar duplicado.
 	 * materia: La clave de la materia
-	 * seccion:
-	 * maestro:
-	 * n_puntos:
-	 * puntos_depa1:
-	 * puntos_depa2:
-	 * tiene_puntos:
-	 * tiene_depa1:
-	 * tiene_depa2:
+	 * seccion: La sección de este grupo
+	 * maestro: El maestro
 	 */
 	
 	require_once "../mysql-con.php";
@@ -45,6 +39,9 @@
 		header ("Location: nuevo_grupo.php?e=nrc");
 		exit;
 	}
+	
+	/* La seccion debe ser introducida en mayúsculas */
+	$_POST['seccion'] = strtoupper ($_POST['seccion']);
 	
 	/* Validar la seccion */
 	if (!preg_match ("/^([Dd])([0-9]){2}$/", $_POST['seccion'])) {
@@ -72,5 +69,5 @@
 	}
 	
 	/* Ahora sí, hacer la inserción en la tabla */
-	$query = sprintf ("INSERT INTO 'Secciones' ('Nrc', 'Materia', 'Maestro', 'Seccion', 'Depa1', 'Depa2', 'Puntos', 'Porcentaje_Depa1', 'Porcentaje_Depa2', 'Porcentaje_Puntos') VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s',
+	$query = sprintf ("INSERT INTO 'Secciones' ('Nrc', 'Materia', 'Maestro', 'Seccion') VALUES ('%s', '%s', '%s', '%s')", $_POST['nrc'], $_POST['materia'], $_POST['maestro'], $_POST['seccion']);
 ?>
