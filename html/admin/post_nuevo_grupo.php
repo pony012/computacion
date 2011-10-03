@@ -69,5 +69,21 @@
 	}
 	
 	/* Ahora sí, hacer la inserción en la tabla */
-	$query = sprintf ("INSERT INTO 'Secciones' ('Nrc', 'Materia', 'Maestro', 'Seccion') VALUES ('%s', '%s', '%s', '%s')", $_POST['nrc'], $_POST['materia'], $_POST['maestro'], $_POST['seccion']);
+	$query = sprintf ("INSERT INTO Secciones (Nrc, Materia, Maestro, Seccion) VALUES ('%s', '%s', '%s', '%s')", $_POST['nrc'], $_POST['materia'], $_POST['maestro'], $_POST['seccion']);
+	
+	$result = mysql_query ($query, $mysql_con);
+	
+	$res = mysql_affected_rows();
+	if ($res == 0) {
+		/* Error al insertar la materia */
+		header ("Location: grupos.php?e=repetido");
+	} else if ($res < 0) {
+		header ("Location: nuevo_grupo.php?e=unknown");
+	} else {
+		header ("Location: grupos.php?m=ok");
+	}
+	
+	mysql_close ($mysql_con);
+	exit;
+	
 ?>

@@ -30,7 +30,7 @@
 	<?php
 		require_once "../mysql-con.php";
 		
-		$offset = $_GET['off'];
+		$offset = (isset ($_GET['off'])) ? $_GET['off'] : 0;
 		settype ($offset, "integer");
 		$cant = 10;
 		
