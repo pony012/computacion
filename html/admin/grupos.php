@@ -32,11 +32,11 @@
 		echo "<table border=\"1\">";
 		
 		/* Mostrar la cabecera */
-		echo "<thead><tr><th>NRC</th><th>Materia</th><th>Maestro</th></tr></thead>\n";
+		echo "<thead><tr><th>NRC</th><th>Clave</th><th>Materia</th><th>Seccion</th><th>Maestro</th></tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
 		if ($_SESSION['permisos']['grupos_globales'] == 1) {
-			$query = "SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo LIMIT ". $offset . ",". $cant;
+			$query = "SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo LIMIT ". $offset . ",". $cant;
 		} else {
 			$query = sprintf ("SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo WHERE sec.Maestro='%s' LIMIT %s,%s", $_SESSION['codigo'], $offset, $cant);
 		}
@@ -48,9 +48,10 @@
 			echo "<tr>";
 			/* El nrc */
 			echo "<td>".$object->Nrc."</td>";
-			
-			echo "<td>".$object->Materia." ".$object->Descripcion."</td>";
-			echo "<td>".$object->Maestro." ".$object->Nombre."</td>";
+			echo "<td>".$object->Materia."</td>";
+			echo "<td>".$object->Descripcion."</td>";
+			echo "<td>".$object->Seccion."</td>";
+			echo "<td>".$object->Apellido." ".$object->Nombre."</td>";
 			echo "</tr>\n";
 		}
 		

@@ -42,18 +42,21 @@
 		echo "<thead><tr><th>Código</th><th>Nombre</th><th>Activo</th><th>Editar</th></tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
-		$query = "SELECT m.codigo, m.nombre, s.activo FROM Maestros AS m INNER JOIN Sesiones_Maestros AS s ON m.Codigo = s.Codigo LIMIT ". $offset . ",". $cant;
+		$query = "SELECT m.codigo, m.Apellido, m.nombre, s.activo FROM Maestros AS m INNER JOIN Sesiones_Maestros AS s ON m.Codigo = s.Codigo LIMIT ". $offset . ",". $cant;
 		
 		$result = mysql_query ($query, $mysql_con);
 		
 		echo "<tbody>";
 		while (($object = mysql_fetch_object ($result))) {
-			echo "<tr><td>" . $object->codigo . "</td><td>" . $object->nombre;
+			echo "<tr>";
+			echo "<td>".$object->codigo."</td>";
+			echo "<td>".$object->Apellido." ".$object->nombre."</td>";
 			if ($object->activo == 1) {
-				echo "</td><td><img src=\"../img/day.png\" /></td></tr>\n";
+				echo "<td><img src=\"../img/day.png\" /></td>";
 			} else {
-				echo "</td><td><img src=\"../img/night.png\" /></td></tr>\n";
+				echo "<td><img src=\"../img/night.png\" /></td>";
 			}
+			echo "</tr>\n";
 		}
 		
 		echo "</tbody>";
