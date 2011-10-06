@@ -1,0 +1,60 @@
+<?php
+	session_start ();
+	
+	/* Primero verificar una sesión válida */
+	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
+		/* Tenemos un intento de acceso inválido */
+		header ("Location: login.php");
+		exit;
+	}
+	
+	if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
+		/* Privilegios insuficientes */
+		header ("Location: vistas.php");
+		exit;
+	}
+	
+	$tiene_depa1 = $_POST['depa1'];
+	$tiene_depa2 = $_POST['depa2'];
+	$tiene_puntos = $_POST['puntos'];
+	
+	$n_1 = $_POST['porcentaje_depa1'];
+	$n_2 = $_POST['porcentaje_depa2'];
+	$n_p = $_POST['porcentaje_puntos'];
+	
+	settype ($n_1, "integer");
+	settype ($n_2, "integer");
+	settype ($n_p, "integer");
+	
+	/* TODO: Validar la clave */
+	
+	if ($tiene_depa1 != "1" && $tiene_depa2 != "1" && $tiene_puntos != "1") {
+		/* Si no hay marcada ninguna forma de evaluación,
+		 * regresar un error */
+		header ("Location: materias.php?e=eval");
+		exit;
+	}
+	
+	if ($n_1 < 0 || $n_2 < 0 || $n_p < 0) {
+		/* No números negativos */
+		header ("Location: materias.php?e=neg");
+		exit;
+	}
+	
+	$suma = $n_1 + $n_2 + $n_p;
+	
+	if ($suma != 100) {
+		/* Suma incorrecta */
+		header ("Location: materias.php?e=suma");
+		exit;
+	}
+	
+	require '../mysql-con.php';
+	/*INSERT INTO `computacion`.`Materias` (`Clave`, `Descripcion`, `Depa1`, `Depa2`, `Puntos`, `Porcentaje_Depa1`, `Porcentaje_Depa2`, `Porcentaje_Puntos`) VALUES ('cc123', 'dgfhjk', '1', '0', '1', '23', NULL, '77');*/
+	$query = "INSERT INTO Materias (Clave, Descripcion, Depa1, Depa2, Puntos, Porcentaje_Depa1, Porcentaje_Depa2, Porcentaje_Puntos) ";
+	$query = sprintf ("%s VALUES ('%s', '%s', '%s', '%s', '%s'", $query, mysql_real_escape_string ($_POST['clave']), mysql_real_escape_string ($_POST['descripcion']), (($tiene_depa1 == "1") ? "1" : "0"), (($tiene_depa2 == "1") ? "1" : "0"), (($tiene_puntos == "1") ? "1" : "0"));
+	
+	$query = sprintf ("%s, %s, %s, %s);", $query, ($n_1 == 0) ? "NULL" : "'".$n_1."'", ($n_2 == 0) ? "NULL" : "'".$n_2."'", ($n_p == 0) ? "NULL" : "'".$n_p."'");
+	
+	echo $query;
+?>
