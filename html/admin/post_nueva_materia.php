@@ -26,8 +26,6 @@
 	settype ($n_2, "integer");
 	settype ($n_p, "integer");
 	
-	/* TODO: Validar la clave */
-	
 	if ($tiene_depa1 != "1" && $tiene_depa2 != "1" && $tiene_puntos != "1") {
 		/* Si no hay marcada ninguna forma de evaluación,
 		 * regresar un error */
@@ -49,6 +47,14 @@
 		exit;
 	}
 	
+	/* Validar la clave la materia */
+	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_POST['clave'])) {
+		header ("Location: materias.php?e=clave");
+		exit;
+	}
+	
+	/* TODO: Convertir la materia a mayúsculas */
+	
 	require '../mysql-con.php';
 	/*INSERT INTO `computacion`.`Materias` (`Clave`, `Descripcion`, `Depa1`, `Depa2`, `Puntos`, `Porcentaje_Depa1`, `Porcentaje_Depa2`, `Porcentaje_Puntos`) VALUES ('cc123', 'dgfhjk', '1', '0', '1', '23', NULL, '77');*/
 	$query = "INSERT INTO Materias (Clave, Descripcion, Depa1, Depa2, Puntos, Porcentaje_Depa1, Porcentaje_Depa2, Porcentaje_Puntos) ";
@@ -56,5 +62,14 @@
 	
 	$query = sprintf ("%s, %s, %s, %s);", $query, ($n_1 == 0) ? "NULL" : "'".$n_1."'", ($n_2 == 0) ? "NULL" : "'".$n_2."'", ($n_p == 0) ? "NULL" : "'".$n_p."'");
 	
-	echo $query;
+	$result = mysql_query ($query, $mysql_con);
+	
+	if (mysql_affected_rows() <= 0) {
+		header ("Location: materias.php?e=desconocido");
+	} else {
+		header ("Location: materias.php?m=ok");
+	}
+	
+	mysql_close ($mysql_con);
+	exit;
 ?>

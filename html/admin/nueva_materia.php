@@ -56,8 +56,15 @@
 			var n_1 = parseInt (document.getElementById ("porcentaje_depa1").value);
 			var n_2 = parseInt (document.getElementById ("porcentaje_depa2").value);
 			var n_p = parseInt (document.getElementById ("porcentaje_puntos").value);
+			var clave = document.getElementById ("clave").value;
 			
-			/* Falta hacer validaciones sobre la clave */
+			/* Validaciones sobre la clave */
+			if (!/^([A-Za-z]){2}([0-9]){3}$/.test(clave)) {
+				/* Clave incorrecta */
+				alert ("Clave incorrecta");
+				return false;
+			}
+			
 			if (n_1 <= 0 || isNaN (n_1)) {
 				document.getElementById ("porcentaje_depa1").value = 0;
 				document.getElementById ("porcentaje_depa1").disabled = true;
