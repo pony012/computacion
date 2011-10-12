@@ -46,7 +46,7 @@
 			echo "<td>".$object->Descripcion."</td>";
 			echo "<td>".$object->Porcentaje_Depa1."</td>";
 			echo "<td>".$object->Porcentaje_Depa2."</td>";
-			echo "<td>".$object->Porcentaje_Puntos." ".$object->Nombre."</td>";
+			echo "<td>".$object->Porcentaje_Puntos."</td>";
 			echo "</tr>\n";
 		}
 		
