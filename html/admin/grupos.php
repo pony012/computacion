@@ -13,6 +13,7 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
+	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
@@ -60,17 +61,17 @@
 		
 		echo "<p>";
 		/* Mostrar las flechas de dezplamiento */
-		echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=0\"><img src=\"../img/first.png\" /></a>\n";
+		echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=0\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n";
 		
 		if ($offset > 1) {
 			$prev = $offset - $cant;
 			if ($prev < 0) $prev = 0;
-			echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$prev."\"><img src=\"../img/prev.png\" /></a>\n";
+			echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$prev."\"><img class=\"icon\" src=\"../img/prev.png\" /></a>\n";
 		}
 		
 		/* FIXME: No mostrar si sobrepasa la cantidad de filas */
 		$next = $offset + $cant;
-		echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$next."\"><img src=\"../img/next.png\" /></a>\n";
+		echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$next."\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n";
 		/* FIXME: Mostrar el botón de último */
 		echo "</p>\n";
 	?>

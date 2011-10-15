@@ -1,0 +1,28 @@
+/* Última actualización por Félix
+ * Formatos reobados desde phpmyadmin
+ * ¡Te amo phpMyAdmin!
+ */
+
+a img {
+    border:             0;
+}
+
+/* Un espacio entre las imágenes y el texto */
+.icon {
+    vertical-align:     middle;
+    margin-right:       0.3em;
+    margin-left:        0.3em;
+}
+
+img,
+input,
+select,
+button {
+    vertical-align:     middle;
+}
+
+/* Sin espacio adicional en las tablas */
+td .icon {
+    margin: 0;
+}
+
