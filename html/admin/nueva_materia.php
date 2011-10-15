@@ -104,11 +104,14 @@
 	<p>Descripción: <input type="text" name="descripcion" id="descripcion" length="100" /></p>
 	<!-- Este también podría ser un frame o una cajita que adorna a los formularios -->
 	<h2>Forma de evaluación de la materia</h2>
-	<p><input type="checkbox" value="1" checked="checked" name="depa1" id="depa1" onchange="habilita_depa1 ()" />Tiene Departamental 1<br />
+	<p><input type="checkbox" value="1" checked="checked" name="depa1" id="depa1" onchange="habilita_depa1 ()" />
+	<label for="depa1">Tiene Departamental 1</label><br />
 	&nbsp;&nbsp;&nbsp;Porcentaje: <input type="text" value="30" name="porcentaje_depa1" id="porcentaje_depa1" /></p>
-	<p><input type="checkbox" value="1" checked="checked" name="depa2" id="depa2" onchange="habilita_depa2 ()" />Tiene Departamental 2<br />
+	<p><input type="checkbox" value="1" checked="checked" name="depa2" id="depa2" onchange="habilita_depa2 ()" />
+	<label for="depa2">Tiene Departamental 2</label><br />
 	&nbsp;&nbsp;&nbsp;Porcentaje: <input type="text" value="30" name="porcentaje_depa2" id="porcentaje_depa2" /></p>
-	<p><input type="checkbox" value="1" checked="checked" name="puntos" id="puntos" onchange="habilita_puntos ()" />Otras Ponderaciones<br />
+	<p><input type="checkbox" value="1" checked="checked" name="puntos" id="puntos" onchange="habilita_puntos ()" />
+	<label for="puntos">Otras Ponderaciones<label><br />
 	&nbsp;&nbsp;&nbsp;Porcentaje: <input type="text" value="40" name="porcentaje_puntos" id="porcentaje_puntos" /></p>
 	<p><input type="submit" value="Nueva materia" />
 	</form>
