@@ -14,13 +14,13 @@
 		exit;
 	}
 	
-	$tiene_depa1 = $_POST['depa1'];
-	$tiene_depa2 = $_POST['depa2'];
-	$tiene_puntos = $_POST['puntos'];
+	$tiene_depa1 = isset ($_POST['depa1']) ? $_POST['depa1'] : "0";
+	$tiene_depa2 = isset ($_POST['depa2']) ? $_POST['depa2'] : "0";
+	$tiene_puntos = isset ($_POST['puntos']) ? $_POST['puntos'] : "0";
 	
-	$n_1 = $_POST['porcentaje_depa1'];
-	$n_2 = $_POST['porcentaje_depa2'];
-	$n_p = $_POST['porcentaje_puntos'];
+	$n_1 = isset ($_POST['porcentaje_depa1']) ? $_POST['porcentaje_depa1'] : 0;
+	$n_2 = isset ($_POST['porcentaje_depa2']) ? $_POST['porcentaje_depa2'] : 0;
+	$n_p = isset ($_POST['porcentaje_puntos']) ? $_POST['porcentaje_puntos'] : 0;
 	
 	settype ($n_1, "integer");
 	settype ($n_2, "integer");
