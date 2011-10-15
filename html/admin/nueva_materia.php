@@ -99,7 +99,8 @@
 </head>
 <body>
 	<h1>Nueva materia</h1>
-	<form action="post_nueva_materia.php" method="POST" onsubmit="return validar ()" >
+	<form action="post_materia.php" method="POST" onsubmit="return validar ()" >
+	<input type="hidden" name="modo" value="nuevo" />
 	<p>Clave de la materia: <input type="text" name="clave" id="clave" length="5" /></p>
 	<p>Descripción: <input type="text" name="descripcion" id="descripcion" length="100" /></p>
 	<!-- Este también podría ser un frame o una cajita que adorna a los formularios -->
