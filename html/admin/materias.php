@@ -14,12 +14,14 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
+	<script language="javascript" src="../scripts/comun.js" type="text/javascript"></script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
 	?></title>
 </head>
 <body>
+	<h1>Materias</h1>
 	<?php
 		require_once "../mysql-con.php";
 		
@@ -27,12 +29,17 @@
 		settype ($offset, "integer");
 		$cant = 20;
 		
-		echo "<p>Materias: (mostrando registros del ". $offset ." al ". ($offset + $cant) . ")</p>";
+		echo "<p>Mostrando registros del ". $offset ." al ". ($offset + $cant) . "</p>";
 		
 		echo "<table border=\"1\">";
 		
 		/* Mostrar la cabecera */
 		echo "<thead><tr><th>Clave</th><th>Descripción</th><th>Departamental 1</th><th>Departamental 2</th><th>Puntos del maestro</th>";
+		
+		/* Si tiene permisos de edición, mostrar la columna de edición */
+		if ($_SESSION['permisos']['crear_materias'] == 1) {
+			echo "<th colspan=\"2\">Acción</th>";
+		}
 		
 		echo "</tr></thead>\n";
 		
@@ -50,6 +57,13 @@
 			echo "<td>".$object->Porcentaje_Depa1."</td>";
 			echo "<td>".$object->Porcentaje_Depa2."</td>";
 			echo "<td>".$object->Porcentaje_Puntos."</td>";
+			
+			if ($_SESSION['permisos']['crear_materias'] == 1) {
+				echo "<td><a href=\"editar_materia.php?clave=" . $object->Clave . "\"><img class=\"icon\" src=\"../img/properties.png\" /></a></td>";
+				echo "<td><a href=\"eliminar_materia.php?clave=" . $object->Clave . "\"\n";
+				echo " onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la materia ".$object->Clave."?')\">";
+				echo "<img class=\"icon\" src=\"../img/remove.png\" /></a></td>";
+			}
 			echo "</tr>\n";
 		}
 		
