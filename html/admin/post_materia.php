@@ -31,6 +31,10 @@
 	settype ($n_2, "integer");
 	settype ($n_p, "integer");
 	
+	if ($n_1 == 0) $tiene_depa1 = "0";
+	if ($n_2 == 0) $tiene_depa2 = "0";
+	if ($n_p == 0) $tiene_puntos = "0";
+	
 	if ($tiene_depa1 != "1" && $tiene_depa2 != "1" && $tiene_puntos != "1") {
 		/* Si no hay marcada ninguna forma de evaluación,
 		 * regresar un error */
