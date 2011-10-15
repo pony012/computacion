@@ -29,7 +29,7 @@
 		}
 		
 		/* Los grupos se pueden visualizar de todas formas */
-		echo "<li><a href=\"grupos.php\">Ver Grupos</a></li>\n";
+		echo "<li><a href=\"secciones.php\">Ver Grupos</a></li>\n";
 		echo "<li><a href=\"materias.php\">Ver Materias</a></li>\n";
 		echo "</ul>";
 	?>

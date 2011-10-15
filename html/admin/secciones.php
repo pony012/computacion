@@ -78,7 +78,7 @@
 	<?php
 		echo "<ul>";
 		if ($_SESSION['permisos']['crear_grupos'] == 1) {
-			echo "<li><a href=\"nuevo_grupo.php\">Agregar una nueva seccion</a></li>\n";
+			echo "<li><a href=\"nueva_seccion.php\">Agregar una nueva seccion</a></li>\n";
 		}
 		echo "</ul>";
 	?>

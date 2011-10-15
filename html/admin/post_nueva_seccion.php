@@ -1,7 +1,7 @@
 <?php
 	function exit_and_close ($get) {
 		mysql_free_result ($result);
-		header ("Location: nuevo_grupo.php". $get);
+		header ("Location: secciones.php". $get);
 		exit;
 	}
 	session_start ();
@@ -36,7 +36,7 @@
 	
 	/* Validar primero el NRC */
 	if (!preg_match ("/^([0-9]){5}$/", $_POST['nrc'])) {
-		header ("Location: nuevo_grupo.php?e=nrc");
+		header ("Location: secciones.php?e=nrc");
 		exit;
 	}
 	
@@ -45,7 +45,7 @@
 	
 	/* Validar la seccion */
 	if (!preg_match ("/^([Dd])([0-9]){2}$/", $_POST['seccion'])) {
-		header ("Location: nuevo_grupo.php?e=seccion");
+		header ("Location: secciones.php?e=seccion");
 		exit;
 	}
 	
@@ -76,11 +76,11 @@
 	$res = mysql_affected_rows();
 	if ($res == 0) {
 		/* Error al insertar la materia */
-		header ("Location: grupos.php?e=repetido");
+		header ("Location: secciones.php?e=repetido");
 	} else if ($res < 0) {
-		header ("Location: nuevo_grupo.php?e=unknown");
+		header ("Location: secciones.php?e=unknown");
 	} else {
-		header ("Location: grupos.php?m=ok");
+		header ("Location: secciones.php?m=ok");
 	}
 	
 	mysql_close ($mysql_con);
