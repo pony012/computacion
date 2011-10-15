@@ -126,9 +126,9 @@ CREATE TABLE IF NOT EXISTS `Materias` (
   `Depa1` tinyint(1) NOT NULL DEFAULT '1',
   `Depa2` tinyint(1) NOT NULL DEFAULT '1',
   `Puntos` tinyint(1) NOT NULL DEFAULT '1',
-  `Porcentaje_Depa1` int(11) DEFAULT NULL,
-  `Porcentaje_Depa2` int(11) DEFAULT NULL,
-  `Porcentaje_Puntos` int(11) DEFAULT NULL,
+  `Porcentaje_Depa1` int(11) NOT NULL DEFAULT '0',
+  `Porcentaje_Depa2` int(11) NOT NULL DEFAULT '0',
+  `Porcentaje_Puntos` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`Clave`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
