@@ -33,7 +33,13 @@
 		echo "<table border=\"1\">";
 		
 		/* Mostrar la cabecera */
-		echo "<thead><tr><th>NRC</th><th>Clave</th><th>Materia</th><th>Seccion</th><th>Maestro</th></tr></thead>\n";
+		echo "<thead><tr><th>NRC</th><th>Clave</th><th>Materia</th><th>Seccion</th><th>Maestro</th>";
+		
+		if ($_SESSION['permisos']['crear_grupos'] == 1) {
+			echo "<th colspan=\"2\">Acción</th>";
+		}
+		
+		echo "</tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
 		if ($_SESSION['permisos']['grupos_globales'] == 1) {
@@ -53,6 +59,9 @@
 			echo "<td>".$object->Descripcion."</td>";
 			echo "<td>".$object->Seccion."</td>";
 			echo "<td>".$object->Apellido." ".$object->Nombre."</td>";
+			if ($_SESSION['permisos']['crear_grupos'] == 1) {
+				echo "<td><a href=\"editar_seccion.php?nrc=" . $object->Nrc . "\"><img class=\"icon\" src=\"../img/properties.png\" /></a></td>";
+			}
 			echo "</tr>\n";
 		}
 		
