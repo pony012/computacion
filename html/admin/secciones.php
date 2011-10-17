@@ -61,7 +61,7 @@
 			echo "<td>".$object->Apellido." ".$object->Nombre."</td>";
 			if ($_SESSION['permisos']['crear_grupos'] == 1) {
 				echo "<td><a href=\"editar_seccion.php?nrc=" . $object->Nrc . "\"><img class=\"icon\" src=\"../img/properties.png\" /></a></td>\n";
-				echo "<td><a href=\"post_eliminar_seccion.php?nrc=" . $object->Nrc . "\"";
+				echo "<td><a href=\"eliminar_seccion.php?nrc=" . $object->Nrc . "\"";
 				echo " onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar el NRC ".$object->Nrc."?'\">";
 				echo "<img class=\"icon\" src=\"../img/remove.png\" /></a></td>\n";
 			}
