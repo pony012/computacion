@@ -114,7 +114,7 @@
 	<p><input type="checkbox" value="1" checked="checked" name="puntos" id="puntos" onchange="habilita_puntos ()" />
 	<label for="puntos">Otras Ponderaciones<label><br />
 	&nbsp;&nbsp;&nbsp;Porcentaje: <input type="text" value="40" name="porcentaje_puntos" id="porcentaje_puntos" /></p>
-	<p><input type="submit" value="Nueva materia" />
+	<p><input type="submit" value="Nueva materia" /></p>
 	</form>
 </body>
 </html>

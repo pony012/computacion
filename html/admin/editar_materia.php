@@ -154,7 +154,7 @@
 			Porcentaje: <input type=\"text\" value=\"".$object->Porcentaje_Puntos."\" name=\"porcentaje_puntos\" id=\"porcentaje_puntos\" /></p>";
 		}
 	?>
-	<p><input type="submit" value="Modificar materia" />
+	<p><input type="submit" value="Modificar materia" /></p>
 	</form>
 </body>
 </html>
