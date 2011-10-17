@@ -26,12 +26,13 @@
 		/* Si tiene el permiso de gestionar usuarios, mostrar el enlace */
 		if ($_SESSION['permisos']['aed_usuarios'] == 1) {
 			echo "<li><a href=\"usuarios.php\">Gestionar usuarios</a></li>\n";
+		} else {
+			echo "<li><a href=\"usuarios.php\">Maestros del departamente</a></li>\n";
 		}
-		
-		/* Los grupos se pueden visualizar de todas formas */
-		echo "<li><a href=\"secciones.php\">Ver Grupos</a></li>\n";
-		echo "<li><a href=\"materias.php\">Ver Materias</a></li>\n";
-		echo "</ul>";
 	?>
+	<li><a href="secciones.php?g=my">Mis grupos</a></li>
+	<li><a href="secciones.php">Grupos del departamento</a></li>
+	<li><a href="materias.php">Materias del departamento</a></li>
+	</ul>
 </body>
 </html>

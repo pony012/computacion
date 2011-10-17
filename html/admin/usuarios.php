@@ -7,13 +7,6 @@
 		header ("Location: login.php");
 		exit;
 	}
-	
-	/* Luego verificar si tiene el permiso de gestionar usuarios */
-	if (!isset ($_SESSION['permisos']['aed_usuarios']) || $_SESSION['permisos']['aed_usuarios'] != 1) {
-		/* Privilegios insuficientes */
-		header ("Location: vistas.php");
-		exit;
-	}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -40,7 +33,11 @@
 		echo "<table border=\"1\">";
 		
 		/* Mostrar la cabecera */
-		echo "<thead><tr><th>Código</th><th>Nombre</th><th>Activo</th><th>Editar</th></tr></thead>\n";
+		echo "<thead><tr><th>Código</th><th>Nombre</th>";
+		if ($_SESSION['permisos']['aed_usuarios'] == 1) {
+			echo "<th>Activo</th><th>Editar</th>";
+		}
+		echo "</tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
 		$query = "SELECT m.codigo, m.Apellido, m.nombre, s.activo FROM Maestros AS m INNER JOIN Sesiones_Maestros AS s ON m.Codigo = s.Codigo LIMIT ". $offset . ",". $cant;
@@ -52,10 +49,12 @@
 			echo "<tr>";
 			echo "<td>".$object->codigo."</td>";
 			echo "<td>".$object->Apellido." ".$object->nombre."</td>";
-			if ($object->activo == 1) {
-				echo "<td><img src=\"../img/day.png\" /></td>";
-			} else {
-				echo "<td><img src=\"../img/night.png\" /></td>";
+			if ($_SESSION['permisos']['aed_usuarios'] == 1) {
+				if ($object->activo == 1) {
+					echo "<td><img src=\"../img/day.png\" /></td>";
+				} else {
+					echo "<td><img src=\"../img/night.png\" /></td>";
+				}
 			}
 			echo "</tr>\n";
 		}
@@ -78,10 +77,11 @@
 		echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$next."\"><img src=\"../img/next.png\" /></a>\n";
 		/* FIXME: Mostrar el botón de último */
 		echo "</p>\n";
-	?>
+		
+		if ($_SESSION['permisos']['aed_usuarios'] == 1) { ?>
 	<ul>
 	<li><a href="nuevo_usuario.php?t=u">Agregar un nuevo usuario</a></li>
 	<li><a href="nuevo_usuario.php?t=m">Agregar nuevo maestro</a></li>
-	</ul>
+	</ul><?php } ?>
 </body>
 </html>

@@ -42,10 +42,10 @@
 		echo "</tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
-		if ($_SESSION['permisos']['grupos_globales'] == 1) {
-			$query = "SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo LIMIT ". $offset . ",". $cant;
-		} else {
+		if ($_GET['g'] == 'my') {
 			$query = sprintf ("SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo WHERE sec.Maestro='%s' LIMIT %s,%s", $_SESSION['codigo'], $offset, $cant);
+		} else {
+			$query = "SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo LIMIT ". $offset . ",". $cant;
 		}
 		
 		$result = mysql_query ($query, $mysql_con);
