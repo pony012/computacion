@@ -35,7 +35,7 @@
 	}
 	
 	/* Validar primero el NRC */
-	if (!preg_match ("/^([0-9]){5}$/", $_POST['nrc'])) {
+	if (!preg_match ("/^([0-9]){1,5}$/", $_POST['nrc'])) {
 		header ("Location: secciones.php?e=nrc");
 		exit;
 	}

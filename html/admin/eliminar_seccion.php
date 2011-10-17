@@ -26,7 +26,7 @@
 	}
 	
 	/* Validar primero el NRC */
-	if (!preg_match ("/^([0-9]){5}$/", $_GET['nrc'])) {
+	if (!preg_match ("/^([0-9]){1,5}$/", $_GET['nrc'])) {
 		header ("Location: secciones.php?e=nrc");
 		exit;
 	}

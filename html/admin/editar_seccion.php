@@ -15,7 +15,7 @@
 		exit;
 	}
 	
-	if (!isset ($_GET['nrc']) || !preg_match ("/^([0-9]){5}$/", $_GET['nrc'])) {
+	if (!isset ($_GET['nrc']) || !preg_match ("/^([0-9]){1,5}$/", $_GET['nrc'])) {
 		header ("Location: secciones.php");
 		exit;
 	}
