@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 07-09-2011 a las 03:04:01
+-- Tiempo de generación: 17-10-2011 a las 09:52:02
 -- Versión del servidor: 5.1.49
 -- Versión de PHP: 5.3.3-7+squeeze3
 
@@ -26,7 +26,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 --
 
 CREATE TABLE IF NOT EXISTS `Alumnos` (
-  `Codigo` int(9) NOT NULL,
+  `Codigo` char(9) NOT NULL,
   `Carrera` char(3) NOT NULL,
   `Nombre` varchar(100) NOT NULL,
   `Apellido` varchar(100) NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `Alumnos` (
 --
 
 CREATE TABLE IF NOT EXISTS `Aplicadores` (
-  `Alumno` int(9) NOT NULL,
+  `Alumno` char(9) NOT NULL,
   `Salon` char(6) NOT NULL,
   `FechaHora` datetime NOT NULL,
   `Tipo` enum('1','2','Extra') NOT NULL,
@@ -81,12 +81,12 @@ CREATE TABLE IF NOT EXISTS `Carreras` (
 --
 
 CREATE TABLE IF NOT EXISTS `Grupos` (
-  `Alumno` int(9) NOT NULL,
+  `Alumno` char(9) NOT NULL,
   `Nrc` int(5) NOT NULL,
   `1erdepa` int(11) DEFAULT NULL,
   `2dodepa` int(11) DEFAULT NULL,
   `Puntos` int(11) DEFAULT NULL,
-  `Promedio` int(11) NOT NULL,
+  `Promedio` int(11) NOT NULL DEFAULT '0',
   `Extra` int(11) DEFAULT NULL,
   UNIQUE KEY `Alumno` (`Alumno`,`Nrc`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -140,11 +140,11 @@ CREATE TABLE IF NOT EXISTS `Materias` (
 
 CREATE TABLE IF NOT EXISTS `Permisos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `aed_usuarios` tinyint(1) NOT NULL,
-  `crear_grupos` tinyint(1) NOT NULL,
-  `asignar_aplicadores` tinyint(1) NOT NULL,
-  `grupos_globales` tinyint(1) NOT NULL,
-  `crear_materias` tinyint(1) NOT NULL,
+  `aed_usuarios` tinyint(1) NOT NULL DEFAULT '0',
+  `crear_grupos` tinyint(1) NOT NULL DEFAULT '0',
+  `asignar_aplicadores` tinyint(1) NOT NULL DEFAULT '0',
+  `grupos_globales` tinyint(1) NOT NULL DEFAULT '0',
+  `crear_materias` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS `Secciones` (
 --
 
 CREATE TABLE IF NOT EXISTS `Sesiones_Alumnos` (
-  `Codigo` int(9) NOT NULL,
+  `Codigo` char(9) NOT NULL,
   `Pass` char(32) NOT NULL,
   `Permisos` int(11) NOT NULL,
   `Activo` tinyint(1) NOT NULL,
