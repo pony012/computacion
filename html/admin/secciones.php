@@ -24,11 +24,22 @@
 	<?php
 		require_once "../mysql-con.php";
 		
+		/* Recuperar la cantidad total de filas */
+		$result = mysql_query ("SELECT COUNT(*) AS TOTAL FROM Secciones", $mysql_con);
+		$row = mysql_fetch_object ($result);
+		$total = $row->TOTAL;
+		mysql_free_result ($result);
+		
 		$offset = (isset ($_GET['off'])) ? $_GET['off'] : 0;
 		settype ($offset, "integer");
-		$cant = 20;
+		$cant = 50;
+		$show = $cant;
 		
-		echo "<p>Mostrando los grupos del ". $offset ." al ". ($offset + $cant) . "</p>";
+		if ($offset >= $total) $offset = $total - $cant;
+		if ($offset < 0) $offset = 0;
+		if (($offset + $cant) >= $total) $show = $total - $offset;
+		
+		echo "<p>Mostrando los grupos del ". ($offset + 1) ." al ". ($offset + $show + 1) . "</p>";
 		
 		echo "<table border=\"1\">";
 		
@@ -45,7 +56,7 @@
 		if ($_GET['g'] == 'my') {
 			$query = sprintf ("SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo WHERE sec.Maestro='%s' LIMIT %s,%s", $_SESSION['codigo'], $offset, $cant);
 		} else {
-			$query = "SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo LIMIT ". $offset . ",". $cant;
+			$query = "SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo LIMIT ". $offset . ",". $show;
 		}
 		
 		$result = mysql_query ($query, $mysql_con);
@@ -70,21 +81,26 @@
 		
 		echo "</tbody>";
 		echo "</table>\n";
-		
 		echo "<p>";
-		/* Mostrar las flechas de dezplamiento */
-		echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=0\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n";
 		
-		if ($offset > 1) {
-			$prev = $offset - $cant;
-			if ($prev < 0) $prev = 0;
+		echo "<p>Cant: ".$cant. ", Show: ".$show ."</p>";
+		$next = $offset + $show;
+		$ultimo = $total - ($total % $cant);
+		if ($next >= $total) $next = $ultimo;
+		$prev = $offset - $cant;
+		if ($prev < 0) $prev = 0;
+		echo "</p>";
+		
+		/* Mostrar las flechas de dezplamiento */
+		if ($offset > 0) {
+			echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=0\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n";
 			echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$prev."\"><img class=\"icon\" src=\"../img/prev.png\" /></a>\n";
 		}
+		if ($offset + $show < $total - 1) { 
+			echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$next."\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n";
+			echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$ultimo."\"><img class=\"icon\" src=\"../img/last.png\" /></a>\n";
+		}
 		
-		/* FIXME: No mostrar si sobrepasa la cantidad de filas */
-		$next = $offset + $cant;
-		echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$next."\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n";
-		/* FIXME: Mostrar el botón de último */
 		echo "</p>\n";
 	?>
 	<?php
