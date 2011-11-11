@@ -19,102 +19,78 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
+	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
 	?></title>
-	<script language="javascript" type="text/javascript">
-		function habilita_depa1 () {
-			if (document.getElementById ("depa1").checked) {
-				document.getElementById ("porcentaje_depa1").disabled = false;
-			} else {
-				document.getElementById ("porcentaje_depa1").value = 0;
-				document.getElementById ("porcentaje_depa1").disabled = true;
+	<script type="text/javascript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+	<script type="text/javascript" type="text/javascript">
+		function agregar () {
+			var ids = document.getElementsByName("ids[]");
+			var combo = document.getElementById ("disponibles");
+			var selec = parseInt (combo.options[combo.selectedIndex].value);
+			
+			if (selec == -1) return nuevo ();
+			
+			alert ("Valor del seleccionado: " + selec);
+			alert ("Valor de la colección de ids: " + ids);
+			if (ids != null) {
+				alert ("Voy al for, ids.length: " + ids.length);
+				for (g = 0; g < ids.length; g++) {
+					alert ("Aviso, en la zona de span hay un: " + ids[g].value);
+					if (ids[g].value == selec) return;
+				}
 			}
+			
+			var separador = document.getElementById ("evals");
+			
+			separador.innerHTML += "<span name=\"eval" + selec + "\">" + 
+			                       "<p><input id=\"ids\" name=\"ids[]\" type=\"hidden\" value=\"" + selec + "\" / >" +
+			                       combo.options[combo.selectedIndex].text + " Porcentaje:" +
+			                       "<input id=\"valor\" name=\"valor[]\" type=\"text\" value=\"100\" / ></p>" +
+			                       "</span>";
+			
 		}
 		
-		function habilita_depa2 () {
-			if (document.getElementById ("depa2").checked) {
-				document.getElementById ("porcentaje_depa2").disabled = false;
-			} else {
-				document.getElementById ("porcentaje_depa2").value = 0;
-				document.getElementById ("porcentaje_depa2").disabled = true;
-			}
-		}
-		
-		function habilita_puntos () {
-			if (document.getElementById ("puntos").checked) {
-				document.getElementById ("porcentaje_puntos").disabled = false;
-			} else {
-				document.getElementById ("porcentaje_puntos").value = 0;
-				document.getElementById ("porcentaje_puntos").disabled = true;
-			}
-		}
-	</script>
-	<script language="javascript" type="text/javascript">
-		function validar () {
-			var n_1 = parseInt (document.getElementById ("porcentaje_depa1").value);
-			var n_2 = parseInt (document.getElementById ("porcentaje_depa2").value);
-			var n_p = parseInt (document.getElementById ("porcentaje_puntos").value);
-			var clave = document.getElementById ("clave").value;
-			
-			/* Validaciones sobre la clave */
-			if (!/^([A-Za-z]){2}([0-9]){3}$/.test(clave)) {
-				/* Clave incorrecta */
-				alert ("Clave incorrecta");
-				return false;
-			}
-			
-			if (n_1 <= 0 || isNaN (n_1)) {
-				document.getElementById ("porcentaje_depa1").value = 0;
-				document.getElementById ("porcentaje_depa1").disabled = true;
-				document.getElementById ("depa1").checked = false;
-				n_1 = 0;
-			}
-			
-			if (n_2 <= 0 || isNaN (n_2)) {
-				document.getElementById ("porcentaje_depa2").value = 0;
-				document.getElementById ("porcentaje_depa2").disabled = true;
-				document.getElementById ("depa2").checked = false;
-				n_2 = 0;
-			}
-			
-			if (n_p <= 0 || isNaN (n_p)) {
-				document.getElementById ("porcentaje_puntos").value = 0;
-				document.getElementById ("porcentaje_puntos").disabled = true;
-				document.getElementById ("puntos").checked = false;
-				n_p = 0;
-			}
-			
-			var suma = n_1 + n_2 + n_p;
-			
-			if (suma != 100) {
-				alert ("El porcentaje es incorrecto");
-				return false;
-			}
-			
-			return true;
+		function nuevo () {
+			alert ("Agregar una nueva opción");
 		}
 	</script>
 </head>
 <body>
 	<h1>Nueva materia</h1>
-	<form action="post_materia.php" method="POST" onsubmit="return validar ()" >
+	<form action="post_materia.php" method="POST" >
 	<input type="hidden" name="modo" value="nuevo" />
 	<p>Clave de la materia: <input type="text" name="clave" id="clave" length="5" /></p>
 	<p>Descripción: <input type="text" name="descripcion" id="descripcion" length="100" /></p>
-	<!-- Este también podría ser un frame o una cajita que adorna a los formularios -->
-	<h2>Forma de evaluación de la materia</h2>
-	<p><input type="checkbox" value="1" checked="checked" name="depa1" id="depa1" onchange="habilita_depa1 ()" />
-	<label for="depa1">Tiene Departamental 1</label><br />
-	&nbsp;&nbsp;&nbsp;Porcentaje: <input type="text" value="30" name="porcentaje_depa1" id="porcentaje_depa1" /></p>
-	<p><input type="checkbox" value="1" checked="checked" name="depa2" id="depa2" onchange="habilita_depa2 ()" />
-	<label for="depa2">Tiene Departamental 2</label><br />
-	&nbsp;&nbsp;&nbsp;Porcentaje: <input type="text" value="30" name="porcentaje_depa2" id="porcentaje_depa2" /></p>
-	<p><input type="checkbox" value="1" checked="checked" name="puntos" id="puntos" onchange="habilita_puntos ()" />
-	<label for="puntos">Otras Ponderaciones<label><br />
-	&nbsp;&nbsp;&nbsp;Porcentaje: <input type="text" value="40" name="porcentaje_puntos" id="porcentaje_puntos" /></p>
-	<p><input type="submit" value="Nueva materia" /></p>
+	<?php
+		echo "<select name=\"disponibles\" id=\"disponibles\">\n";
+		
+		echo "<optgroup label=\"Extraordinario\">";
+		echo "<option value=\"0\">Extraordinario</option>";
+		echo "</optgroup>\n";
+		
+		require_once '../mysql-con.php';
+		
+		$query = "SELECT * FROM Evaluaciones WHERE Id > 0";
+		
+		$result = mysql_query ($query, $mysql_con);
+		
+		echo "<optgroup label=\"Ordinario\">\n";
+		
+		while (($object = mysql_fetch_object ($result))) {
+			printf ("<option value=\"%s\">%s</option>\n", $object->Id, $object->Descripcion);
+		}
+		
+		echo "<option value=\"-1\">Nuevo...</option>\n";
+		echo "</optgroup>";
+		echo "</select>\n";
+	?>
+	<img class="icon" src="../img/add2.png" onclick="return agregar ()" />
+	<span id="evals">
+		
+	</span>
 	</form>
 </body>
 </html>
