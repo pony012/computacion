@@ -58,7 +58,6 @@
 			for (i = 0; i < agregados.length; i++) {
 				evals.innerHTML += "<input type=\"hidden\" name=\"evals[]\" value=\"" + agregados.options[i].value; + "\"/>";
 			}
-			alert (evals.innerHTML);
 			return true;
 		}
 	</script>

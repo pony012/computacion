@@ -45,7 +45,6 @@
 			for (i = 0; i < agregados.length; i++) {
 				evals.innerHTML += "<input type=\"hidden\" name=\"evals[]\" value=\"" + agregados.options[i].value; + "\"/>";
 			}
-			alert (evals.innerHTML);
 			return true;
 		}
 	</script>
@@ -81,7 +80,6 @@
 			
 			for (g = 0; g < porcen.length; g++) {
 				n = parseInt (porcen[g].value);
-				alert ("Voy en " + g + ": " + n);
 				if (n <= 0 || isNaN (n)) {
 					/* Mandar mensaje de error */
 					alert ("Porcentaje no válido");
@@ -90,8 +88,6 @@
 				
 				suma += n;
 			}
-			
-			alert (suma);
 			
 			if (suma != 100) {
 				alert ("Suma de porcentajes no válido");
