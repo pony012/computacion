@@ -83,13 +83,11 @@
 		echo "</table>\n";
 		echo "<p>";
 		
-		echo "<p>Cant: ".$cant. ", Show: ".$show ."</p>";
 		$next = $offset + $show;
 		$ultimo = $total - ($total % $cant);
 		if ($next >= $total) $next = $ultimo;
 		$prev = $offset - $cant;
 		if ($prev < 0) $prev = 0;
-		echo "</p>";
 		
 		/* Mostrar las flechas de dezplamiento */
 		if ($offset > 0) {
