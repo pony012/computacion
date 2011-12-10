@@ -13,43 +13,42 @@
 		header ("Location: vistas.php");
 		exit;
 	}
-	var_dump ($_POST);
-	exit;
+	
 	if (!isset ($_POST['modo']) || ($_POST['modo'] != 'nuevo' && $_POST['modo'] != 'editar')) {
 		header ("Location: materias.php");
 		exit;
 	}
 	
-	$tiene_depa1 = (isset ($_POST['depa1']) && $_POST['depa1'] == "1") ? $_POST['depa1'] : "0";
-	$tiene_depa2 = (isset ($_POST['depa2']) && $_POST['depa2'] == "1") ? $_POST['depa2'] : "0";
-	$tiene_puntos = (isset ($_POST['puntos']) && $_POST['puntos'] == "1") ? $_POST['puntos'] : "0";
-	
-	$n_1 = $_POST['porcentaje_depa1'];
-	$n_2 = $_POST['porcentaje_depa2'];
-	$n_p = $_POST['porcentaje_puntos'];
-	
-	settype ($n_1, "integer");
-	settype ($n_2, "integer");
-	settype ($n_p, "integer");
-	
-	if ($n_1 == 0) $tiene_depa1 = "0";
-	if ($n_2 == 0) $tiene_depa2 = "0";
-	if ($n_p == 0) $tiene_puntos = "0";
-	
-	if ($tiene_depa1 != "1" && $tiene_depa2 != "1" && $tiene_puntos != "1") {
-		/* Si no hay marcada ninguna forma de evaluación,
-		 * regresar un error */
+	if (count ($_POST['evals']) != count ($_POST['porcentajes']) || count ($_POST['evals']) <= 0) {
 		header ("Location: materias.php?e=eval");
 		exit;
 	}
 	
-	if ($n_1 < 0 || $n_2 < 0 || $n_p < 0) {
-		/* No números negativos */
-		header ("Location: materias.php?e=neg");
-		exit;
-	}
+	require_once '../mysql-con.php';
 	
-	$suma = $n_1 + $n_2 + $n_p;
+	/* Recuperar las formas de evaluación */
+	$result = mysql_query ("SELECT * FROM Evaluaciones", $mysql_con);
+	while (($row = mysql_fetch_row ($result)) != FALSE) $ar[$row[0]] = $row[1];
+	mysql_free_result ($result);
+	
+	$suma = 0;
+	for ($g = 0; $g < count ($_POST['evals']); $g++) {
+		settype ($_POST['evals'][$g], 'integer');
+		settype ($_POST['porcentajes'][$g], 'integer');
+		
+		if ($_POST['porcentajes'][$g] <= 0) {
+			header ("Location: materias.php?e=neg");
+			exit;
+		}
+		
+		if (!isset ($ar[$_POST['evals'][$g]])) {
+			unset ($_POST['evals'][$g]);
+			unset ($_POST['porcentajes'][$g]);
+			continue;
+		}
+		$suma += $_POST['porcentajes'][$g];
+		unset ($ar[$_POST['evals'][$g]]);
+	}
 	
 	if ($suma != 100) {
 		/* Suma incorrecta */
@@ -65,20 +64,30 @@
 	
 	$_POST['clave'] = strtoupper ($_POST['clave']);
 	
-	require '../mysql-con.php';
-	
 	if ($_POST['modo'] == 'nuevo') {
-		/*INSERT INTO `computacion`.`Materias` (`Clave`, `Descripcion`, `Depa1`, `Depa2`, `Puntos`, `Porcentaje_Depa1`, `Porcentaje_Depa2`, `Porcentaje_Puntos`) VALUES ('cc123', 'dgfhjk', '1', '0', '1', '23', NULL, '77');*/
-		$query = sprintf ("INSERT INTO Materias (Clave, Descripcion, Depa1, Depa2, Puntos, Porcentaje_Depa1, Porcentaje_Depa2, Porcentaje_Puntos) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s);", mysql_real_escape_string ($_POST['clave']), mysql_real_escape_string ($_POST['descripcion']), $tiene_depa1, $tiene_depa2, $tiene_puntos, $n_1, $n_2, $n_p);
+		/* INSERT INTO `computacion`.`Materias` (`Clave`, `Descripcion`) VALUES ('as123', 'sadfgh'); */
+		$query = sprintf ("INSERT INTO Materias (Clave, Descripcion) VALUES ('%s', '%s');", $_POST['clave'], mysql_real_escape_string ($_POST['descripcion']));
 		
 		$result = mysql_query ($query, $mysql_con);
 	
 		if (!$result) {
 			header ("Location: materias.php?e=desconocido");
-		} else {
-			header ("Location: materias.php?m=ok");
+			exit;
 		}
+		
+		/* Ahora insertar los porcentajes de evaluación */
+		/* INSERT INTO `computacion`.`Porcentajes` (`Clave`, `Tipo`, `Ponderacion`) VALUES ('as123', '1', '60'), ('as123', '2', '40'); */
+		for ($g = 0; $g < count ($_POST['evals']); $g++) {
+			$query = sprintf ("INSERT INTO Porcentajes (Clave, Tipo, Ponderacion) VALUES ('%s', '%s', '%s');", $_POST['clave'], $_POST['evals'][$g], $_POST['porcentajes'][$g]);
+			
+			$result = mysql_query ($query, $mysql_con);
+		}
+		
+		header ("Location: materias.php?a=ok");
+		exit;
 	} else if ($_POST['modo'] == 'editar') {
+		echo "Actualizar\n";
+		exit;
 		$query = sprintf ("UPDATE Materias SET Descripcion='%s', Depa1='%s', Depa2='%s', Puntos='%s', Porcentaje_Depa1=%s, Porcentaje_Depa2=%s, Porcentaje_Puntos=%s WHERE Clave='%s'", mysql_real_escape_string ($_POST['descripcion']), $tiene_depa1, $tiene_depa2, $tiene_puntos, $n_1, $n_2, $n_p, mysql_real_escape_string ($_POST['clave']));
 		
 		$result = mysql_query ($query, $mysql_con);

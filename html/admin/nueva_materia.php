@@ -12,7 +12,7 @@
 		/* Privilegios insuficientes */
 		header ("Location: vistas.php");
 		exit;
-	}
+	}po
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -24,7 +24,7 @@
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
 	?></title>
-	<?php if (!isset($_POST['post']) || $_POST['post'] != 'post') { ?>
+	<?php if (!isset($_POST['modo']) || $_POST['modo'] != 'repost') { ?>
 	<script language="javascript" type="text/javascript">
 		function validar () {
 			var clave = document.getElementById ("clave").value;
@@ -73,7 +73,7 @@
 			agregados.remove (agregados.selectedIndex);
 		}
 	</script>
-	<?php } else if ($_POST['post'] == 'post') { ?>
+	<?php } else if ($_POST['modo'] == 'repost') { ?>
 	<script language="javascript" type="text/javascript">
 		function validar () {
 			var porcen = document.getElementsByName("porcentajes[]");
@@ -105,9 +105,9 @@
 </head>
 <body>
 	<h1>Nueva materia</h1>
-	<?php if (!isset($_POST['post']) || $_POST['post'] != 'post') { ?>
+	<?php if (!isset($_POST['modo']) || $_POST['modo'] != 'repost') { ?>
 	<form action="nueva_materia.php" method="POST" onsubmit="return validar()">
-	<input type="hidden" name="post" value="post" />
+	<input type="hidden" name="modo" value="repost" />
 	<p>Clave de la materia: <input type="text" name="clave" id="clave" length="5" /></p>
 	<p>Descripción: <input type="text" name="descripcion" id="descripcion" length="100" /></p>
 	<p>Formas de evaluación disponibles: <br />
@@ -130,9 +130,9 @@
 	<span id="evals"></span>
 	<input type="submit" value="Siguiente" />
 	</form>
-	<?php } else if ($_POST['post'] == 'post') {
+	<?php } else if ($_POST['modo'] == 'repost') {
 		echo "<form action=\"post_materia.php\" method=\"POST\" onsubmit=\"return validar ()\" >\n";
-		echo "<input type=\"hidden\" name=\"post\" value=\"nuevo\" />\n";
+		echo "<input type=\"hidden\" name=\"modo\" value=\"nuevo\" />\n";
 		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" value=\"%s\" readonly=\"readonly\" length=\"5\" /></p>\n", $_POST['clave']);
 		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" value=\"%s\" readonly=\"readonly\" length=\"100\" /></p>\n", $_POST['descripcion']);
 		
