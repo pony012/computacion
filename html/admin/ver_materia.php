@@ -7,6 +7,27 @@
 		header ("Location: login.php");
 		exit;
 	}
+	
+	/* Validar la clave la materia */
+	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['clave'])) {
+		header ("Location: materias.php?e=clave");
+		exit;
+	}
+	
+	require_once '../mysql-con.php';
+	
+	$query = "SELECT * FROM Materias WHERE Clave='". $_GET['clave'] ."' LIMIT 1";
+	$result = mysql_query ($query, $mysql_con);
+	
+	if (mysql_num_rows ($result) == 0) {
+		header ("Location: materias.php?e=noexiste");
+		mysql_free_result ($result);
+		mysql_close ($mysql_con);
+		exit;
+	}
+	
+	$object = mysql_fetch_object ($result);
+	mysql_free_result ($result);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -21,36 +42,44 @@
 	?></title>
 </head>
 <body>
-	<h1>Materias</h1>
+	<h1>Detalles de la materia</h1>
 	<?php
+		echo "<p>Materia: " . $object->Clave . "</p>\n";
+		echo "<p>Descripción: " . $object->Descripcion . "</p>\n";
+		
 		require_once "../mysql-con.php";
 		
 		/* Recuperar la cantidad total de filas */
-		$result = mysql_query ("SELECT COUNT(*) AS TOTAL FROM Materias", $mysql_con);
+		$query = sprintf ("SELECT COUNT(*) AS TOTAL FROM Secciones WHERE Materia = '%s'", $_GET['clave']);
+		$result = mysql_query ($query, $mysql_con);
 		$row = mysql_fetch_object ($result);
 		$total = $row->TOTAL;
 		mysql_free_result ($result);
 		
 		$offset = (isset ($_GET['off'])) ? $_GET['off'] : 0;
 		settype ($offset, "integer");
-		$cant = 30;
+		$cant = 50;
 		$show = $cant;
 		
 		if ($offset >= $total) $offset = $total - $cant;
 		if ($offset < 0) $offset = 0;
 		if (($offset + $cant) >= $total) $show = $total - $offset;
 		
-		echo "<p>Mostrando registros del ". ($offset + 1) ." al ". ($offset + $cant + 1) . "</p>";
+		echo "<p>Grupos del ". ($offset + 1) ." al ". ($offset + $show) . "</p>";
 		
 		echo "<table border=\"1\">";
 		
 		/* Mostrar la cabecera */
-		echo "<thead><tr><th>Clave</th><th>Descripción</th><th>Acciones</th>";
+		echo "<thead><tr><th>NRC</th><th>Clave</th><th>Materia</th><th>Seccion</th><th>Maestro</th>";
+		
+		if ($_SESSION['permisos']['crear_grupos'] == 1) {
+			echo "<th colspan=\"2\">Acción</th>";
+		}
 		
 		echo "</tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
-		$query = "SELECT * FROM Materias LIMIT ". $offset . ",". $cant;
+		$query = sprintf ("SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo WHERE sec.Materia = '%s' LIMIT %s, %s", $_GET['clave'], $offset , $show);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -58,22 +87,16 @@
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
 			/* El nrc */
-			printf ("<td><a href=\"ver_materia.php?clave=%s\">%s</a></td>", $object->Clave, $object->Clave);
+			echo "<td>".$object->Nrc."</td>";
+			echo "<td>".$object->Materia."</td>";
 			echo "<td>".$object->Descripcion."</td>";
-			echo "<td>";
-			
-			if ($_SESSION['permisos']['crear_materias'] == 1) {
-				echo "<a href=\"editar_materia.php?clave=" . $object->Clave . "\"><img class=\"icon\" src=\"../img/properties.png\" /></a>";
-				echo "<a href=\"eliminar_materia.php?clave=" . $object->Clave . "\"\n";
-				echo " onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la materia ".$object->Clave."?')\">";
-				echo "<img class=\"icon\" src=\"../img/remove.png\" /></a>";
-			}
-			echo "</td></tr>\n";
+			echo "<td>".$object->Seccion."</td>";
+			echo "<td>".$object->Apellido." ".$object->Nombre."</td>";
+			echo "</tr>\n";
 		}
 		
 		echo "</tbody>";
 		echo "</table>\n";
-		
 		echo "<p>";
 		
 		$next = $offset + $show;
@@ -93,13 +116,6 @@
 		}
 		
 		echo "</p>\n";
-	?>
-	<?php
-		echo "<ul>";
-		if ($_SESSION['permisos']['crear_materias'] == 1) {
-			echo "<li><a href=\"nueva_materia.php\">Agregar una nueva materia</a></li>\n";
-		}
-		echo "</ul>";
 	?>
 </body>
 </html>
