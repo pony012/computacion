@@ -84,19 +84,29 @@
 		}
 		
 		header ("Location: materias.php?a=ok");
-		exit;
 	} else if ($_POST['modo'] == 'editar') {
-		echo "Actualizar\n";
-		exit;
-		$query = sprintf ("UPDATE Materias SET Descripcion='%s', Depa1='%s', Depa2='%s', Puntos='%s', Porcentaje_Depa1=%s, Porcentaje_Depa2=%s, Porcentaje_Puntos=%s WHERE Clave='%s'", mysql_real_escape_string ($_POST['descripcion']), $tiene_depa1, $tiene_depa2, $tiene_puntos, $n_1, $n_2, $n_p, mysql_real_escape_string ($_POST['clave']));
+		$query = sprintf ("UPDATE Materias SET Descripcion='%s' WHERE Clave='%s'", mysql_real_escape_string ($_POST['descripcion']), $_POST['clave']);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
 		if (!$result) {
 			header ("Location: materias.php?a=desconocido");
-		} else {
-			header ("Location: materias.php?a=ok");
+			exit;
 		}
+		
+		/* Limpiar los porcentajes anteriores */
+		$query = sprintf ("DELETE FROM Porcentajes WHERE Clave='%s'", $_POST['clave']);
+		mysql_query ($query, $mysql_con);
+		
+		/* Ahora insertar los porcentajes de evaluación */
+		/* INSERT INTO `computacion`.`Porcentajes` (`Clave`, `Tipo`, `Ponderacion`) VALUES ('as123', '1', '60'), ('as123', '2', '40'); */
+		for ($g = 0; $g < count ($_POST['evals']); $g++) {
+			$query = sprintf ("INSERT INTO Porcentajes (Clave, Tipo, Ponderacion) VALUES ('%s', '%s', '%s');", $_POST['clave'], $_POST['evals'][$g], $_POST['porcentajes'][$g]);
+			
+			$result = mysql_query ($query, $mysql_con);
+		}
+		
+		header ("Location: materias.php?a=ok");
 	}
 	
 	mysql_close ($mysql_con);

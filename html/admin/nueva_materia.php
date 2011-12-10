@@ -121,6 +121,7 @@
 		while (($object = mysql_fetch_object ($result))) {
 			printf ("<option value=\"%s\">%s</option>\n", $object->Id, $object->Descripcion);
 		}
+		mysql_free_result ($result);
 		
 		echo "</optgroup>";
 	?>
@@ -134,7 +135,7 @@
 		echo "<form action=\"post_materia.php\" method=\"POST\" onsubmit=\"return validar ()\" >\n";
 		echo "<input type=\"hidden\" name=\"modo\" value=\"nuevo\" />\n";
 		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" value=\"%s\" readonly=\"readonly\" length=\"5\" /></p>\n", $_POST['clave']);
-		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" value=\"%s\" readonly=\"readonly\" length=\"100\" /></p>\n", $_POST['descripcion']);
+		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" value=\"%s\" length=\"100\" /></p>\n", $_POST['descripcion']);
 		
 		echo "<h2>Asignar porcentajes:</h2>\n";
 		
