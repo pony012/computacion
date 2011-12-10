@@ -41,13 +41,17 @@
 	
 	/* Si no tiene alguna dependencia, entonces eliminarla */
 	$query = sprintf ("DELETE FROM Materias WHERE Clave='%s'", mysql_real_escape_string ($_GET['clave']));
-	
 	$result = mysql_query ($query, $mysql_con);
 	
-	if ($result) {
-		header ("Location: materias.php?r=ok");
-		exit;
-	} else {
+	if (!$result) {
 		header ("Location: materias.php?r=no");
+		exit;
 	}
+	
+	/* Limpiar los porcentajes asociados con esta materia */
+	$query = sprintf ("DELETE FROM Porcentajes WHERE Clave='%s'", $_POST['clave']);
+	mysql_query ($query, $mysql_con);
+	
+	header ("Location: materias.php?r=ok");
+	mysql_close ($mysql_con);
 ?>
