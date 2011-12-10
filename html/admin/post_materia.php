@@ -13,7 +13,8 @@
 		header ("Location: vistas.php");
 		exit;
 	}
-	
+	var_dump ($_POST);
+	exit;
 	if (!isset ($_POST['modo']) || ($_POST['modo'] != 'nuevo' && $_POST['modo'] != 'editar')) {
 		header ("Location: materias.php");
 		exit;
