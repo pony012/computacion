@@ -34,12 +34,7 @@
 		echo "<table border=\"1\">";
 		
 		/* Mostrar la cabecera */
-		echo "<thead><tr><th>Clave</th><th>Descripción</th><th>Departamental 1</th><th>Departamental 2</th><th>Puntos del maestro</th>";
-		
-		/* Si tiene permisos de edición, mostrar la columna de edición */
-		if ($_SESSION['permisos']['crear_materias'] == 1) {
-			echo "<th colspan=\"2\">Acción</th>";
-		}
+		echo "<thead><tr><th>Clave</th><th>Descripción</th><th>Acciones</th>";
 		
 		echo "</tr></thead>\n";
 		
@@ -54,17 +49,15 @@
 			/* El nrc */
 			echo "<td>".$object->Clave."</td>";
 			echo "<td>".$object->Descripcion."</td>";
-			echo "<td>".$object->Porcentaje_Depa1."</td>";
-			echo "<td>".$object->Porcentaje_Depa2."</td>";
-			echo "<td>".$object->Porcentaje_Puntos."</td>";
+			echo "<td>";
 			
 			if ($_SESSION['permisos']['crear_materias'] == 1) {
-				echo "<td><a href=\"editar_materia.php?clave=" . $object->Clave . "\"><img class=\"icon\" src=\"../img/properties.png\" /></a></td>";
-				echo "<td><a href=\"eliminar_materia.php?clave=" . $object->Clave . "\"\n";
+				echo "<a href=\"editar_materia.php?clave=" . $object->Clave . "\"><img class=\"icon\" src=\"../img/properties.png\" /></a>";
+				echo "<a href=\"eliminar_materia.php?clave=" . $object->Clave . "\"\n";
 				echo " onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la materia ".$object->Clave."?')\">";
-				echo "<img class=\"icon\" src=\"../img/remove.png\" /></a></td>";
+				echo "<img class=\"icon\" src=\"../img/remove.png\" /></a>";
 			}
-			echo "</tr>\n";
+			echo "</td></tr>\n";
 		}
 		
 		echo "</tbody>";
