@@ -14,7 +14,7 @@
 		exit;
 	}
 	
-	if (!isset ($_GET['clave'])) {
+	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['clave'])) {
 		header ("Location: materias.php?r=null");
 		exit;
 	}
@@ -49,7 +49,7 @@
 	}
 	
 	/* Limpiar los porcentajes asociados con esta materia */
-	$query = sprintf ("DELETE FROM Porcentajes WHERE Clave='%s'", $_POST['clave']);
+	$query = sprintf ("DELETE FROM Porcentajes WHERE Clave='%s'", $_GET['clave']);
 	mysql_query ($query, $mysql_con);
 	
 	header ("Location: materias.php?r=ok");

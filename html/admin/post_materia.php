@@ -75,6 +75,13 @@
 			exit;
 		}
 		
+		if (isset ($_POST['tiene_extra']) && $_POST['tiene_extra'] == 1) {
+			/* Insertar como caso especial el extraordinario */
+			$query = sprintf ("INSERT INTO Porcentajes (Clave, Tipo, Ponderacion) VALUES ('%s', 0, 100);", $_POST['clave']);
+			
+			$result = mysql_query ($query, $mysql_con);
+		}
+		
 		/* Ahora insertar los porcentajes de evaluación */
 		/* INSERT INTO `computacion`.`Porcentajes` (`Clave`, `Tipo`, `Ponderacion`) VALUES ('as123', '1', '60'), ('as123', '2', '40'); */
 		for ($g = 0; $g < count ($_POST['evals']); $g++) {
@@ -92,6 +99,13 @@
 		if (!$result) {
 			header ("Location: materias.php?a=desconocido");
 			exit;
+		}
+		
+		if (isset ($_POST['tiene_extra']) && $_POST['tiene_extra'] == 1) {
+			/* Insertar como caso especial el extraordinario */
+			$query = sprintf ("INSERT INTO Porcentajes (Clave, Tipo, Ponderacion) VALUES ('%s', 0, 100);", $_POST['clave']);
+			
+			$result = mysql_query ($query, $mysql_con);
 		}
 		
 		/* Limpiar los porcentajes anteriores */

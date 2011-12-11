@@ -12,7 +12,7 @@
 		/* Privilegios insuficientes */
 		header ("Location: vistas.php");
 		exit;
-	}po
+	}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -135,19 +135,26 @@
 		
 		echo "<h2>Asignar porcentajes:</h2>\n";
 		
-		asort ($_POST['evals'], SORT_NUMERIC);
+		sort ($_POST['evals'], SORT_NUMERIC);
 		
 		require_once '../mysql-con.php';
 		
 		/* Recuperar las formas de evaluación */
-		$result = mysql_query ("SELECT * FROM Evaluaciones", $mysql_con);
-		while (($row = mysql_fetch_row ($result)) != FALSE) $ar[$row[0]] = $row[1];
+		$result = mysql_query ("SELECT * FROM Evaluaciones WHERE id > 0", $mysql_con);
+		$ev_total = mysql_num_rows ($result);
+		while (($row = mysql_fetch_row ($result)) != FALSE) $ev[$row[0]] = $row[1];
 		mysql_free_result ($result);
 		
-		foreach ($_POST['evals'] as $eval) {
-			if (!isset ($ar[$eval])) continue;
-			printf ("<p>%s:<br /><input type=\"hidden\" name=\"evals[]\" value=\"%s\" />Porcentaje: <input type=\"text\" value=\"0%%\" name=\"porcentajes[]\" /><hr /></p>\n", $ar[$eval], $eval);
-			unset ($ar[$eval]);
+		if ($_POST['evals'][0] == 0) {
+			/* Significa que esta materia lleva extraordinario */
+			echo "<input type=\"hidden\" name=\"tiene_extra\" value=\"1\" />";
+			unset ($_POST['evals'][0]);
+		}
+		
+		foreach ($_POST['evals'] as $g) {
+			if (!isset ($ev[$g])) continue;
+			printf ("<p>%s:<br /><input type=\"hidden\" name=\"evals[]\" value=\"%s\" />Porcentaje: <input type=\"text\" value=\"0%%\" name=\"porcentajes[]\" /><hr /></p>\n", $ev[$g], $g);
+			unset ($ev[$g]);
 		}
 		
 		echo "<input type=\"submit\" value=\"Agregar materia\" />\n";
