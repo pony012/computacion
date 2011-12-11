@@ -23,8 +23,12 @@
 			/* Hay que agregar esta materia */
 			$descripcion = ucwords (strtolower (arreglar_n ($descripcion)));
 			
-			$query = sprintf ("INSERT INTO Materias VALUES ('%s', '%s', 1, 1, 1, 30, 30, 40)", $clave, $descripcion);
+			$query = sprintf ("INSERT INTO Materias VALUES ('%s', '%s')", $clave, $descripcion);
 			
+			mysql_query ($query, $mysql_con);
+			
+			/* Agregarle una forma de evaluación */
+			$query = sprintf ("INSERT INTO Porcentajes VALUES ('%s', 1, 100)", $clave);
 			mysql_query ($query, $mysql_con);
 		}
 		
@@ -154,6 +158,16 @@
 	$g = 0;
 	if (($archivo = fopen ($argv[1], "r")) !== FALSE) {
 		require_once 'mysql-con.php';
+		
+		/* Verificar que exista el Departamental 1 */
+		$result = mysql_query ("SELECT * FROM Evaluaciones WHERE Id = 1", $mysql_con);
+		
+		if (mysql_num_rows ($result) == 0) {
+			mysql_query ("INSERT INTO Evaluaciones VALUES (1, 'Departamental 1')", $mysql_con);
+		}
+		
+		mysql_free_result ($result);
+		
 		while (($linea = fgetcsv ($archivo, 400, ",", "\"")) !== FALSE) {
 			$no_campos = count ($linea);
 			
