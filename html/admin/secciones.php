@@ -25,7 +25,13 @@
 		require_once "../mysql-con.php";
 		
 		/* Recuperar la cantidad total de filas */
-		$result = mysql_query ("SELECT COUNT(*) AS TOTAL FROM Secciones", $mysql_con);
+		if (isset ($_GET['g']) && $_GET['g'] == 'my') {
+			$query = sprintf ("SELECT COUNT (*) AS TOTAL FROM Secciones WHERE Maestro='%s'", $_SESSION['codigo']);
+			$result = mysql_query ($query, $mysql_con);
+		} else {
+			$result = mysql_query ("SELECT COUNT(*) AS TOTAL FROM Secciones", $mysql_con);
+		}
+		
 		$row = mysql_fetch_object ($result);
 		$total = $row->TOTAL;
 		mysql_free_result ($result);
