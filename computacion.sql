@@ -173,6 +173,7 @@ CREATE TABLE IF NOT EXISTS `Permisos` (
   `asignar_aplicadores` tinyint(1) NOT NULL DEFAULT '0',
   `grupos_globales` tinyint(1) NOT NULL DEFAULT '0',
   `crear_materias` tinyint(1) NOT NULL DEFAULT '0',
+  `admin_carreras` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
