@@ -55,5 +55,5 @@
 		header ("Location: secciones.php?r=no");
 	}
 	
-	exit;
+	mysql_close ($mysql_con);
 ?>
