@@ -56,7 +56,14 @@
 			echo "<td>".$object->Clave."</td>";
 			echo "<td>".$object->Descripcion."</td>";
 			
-			echo "</tr>";
+			echo "<td>";
+			if ($_SESSION['permisos']['admin_carreras'] == 1) {
+				echo "<a href=\"editar_carrera.php?clave=" . $object->Clave . "\"><img class=\"icon\" src=\"../img/properties.png\" /></a>";
+				echo "<a href=\"eliminar_carrera.php?clave=" . $object->Clave . "\"\n";
+				echo " onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la carrera ".$object->Clave."?')\">";
+				echo "<img class=\"icon\" src=\"../img/remove.png\" /></a>";
+			}
+			echo "</td></tr>";
 		}
 		
 		mysql_free_result ($result);
@@ -82,6 +89,13 @@
 		}
 		
 		echo "</p>\n";
+	?>
+	<?php
+		echo "<ul>";
+		if ($_SESSION['permisos']['admin_carreras'] == 1) {
+			echo "<li><a href=\"nueva_carrera.php\">Nueva carrera</a></li>\n";
+		}
+		echo "</ul>";
 	?>
 </body>
 </html>
