@@ -39,7 +39,7 @@
 		if ($offset < 0) $offset = 0;
 		if (($offset + $cant) >= $total) $show = $total - $offset;
 		
-		echo "<p>Mostrando registros del ". ($offset + 1) ." al ". ($offset + $show + 1) . "</p>";
+		echo "<p>Mostrando registros del ". ($offset + 1) ." al ". ($offset + $show) . "</p>";
 		
 		echo "<table border=\"1\">";
 		
@@ -58,7 +58,7 @@
 		echo "<tbody>";
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
-			echo "<td>".$object->codigo."</td>";
+			printf ("<td><a href=\"ver_maestro.php?codigo=%s\">%s</a></td>", $object->codigo, $object->codigo);
 			echo "<td>".$object->Apellido." ".$object->nombre."</td>";
 			if ($_SESSION['permisos']['aed_usuarios'] == 1) {
 				if ($object->activo == 1) {
