@@ -25,12 +25,7 @@
 		require_once "../mysql-con.php";
 		
 		/* Recuperar la cantidad total de filas */
-		if (isset ($_GET['g']) && $_GET['g'] == 'my') {
-			$query = sprintf ("SELECT COUNT(*) AS TOTAL FROM Secciones WHERE Maestro='%s'", $_SESSION['codigo']);
-			$result = mysql_query ($query, $mysql_con);
-		} else {
-			$result = mysql_query ("SELECT COUNT(*) AS TOTAL FROM Secciones", $mysql_con);
-		}
+		$result = mysql_query ("SELECT COUNT(*) AS TOTAL FROM Secciones", $mysql_con);
 		
 		$row = mysql_fetch_object ($result);
 		$total = $row->TOTAL;
@@ -45,7 +40,7 @@
 		if ($offset < 0) $offset = 0;
 		if (($offset + $cant) >= $total) $show = $total - $offset;
 		
-		echo "<p>Mostrando los grupos del ". ($offset + 1) ." al ". ($offset + $show + 1) . "</p>";
+		echo "<p>Mostrando los grupos del ". ($offset + 1) ." al ". ($offset + $show) . "</p>";
 		
 		echo "<table border=\"1\">";
 		
@@ -59,11 +54,7 @@
 		echo "</tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
-		if ($_GET['g'] == 'my') {
-			$query = sprintf ("SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo WHERE sec.Maestro='%s' LIMIT %s,%s", $_SESSION['codigo'], $offset, $cant);
-		} else {
-			$query = "SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido, m.Codigo FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo LIMIT ". $offset . ",". $show;
-		}
+		$query = "SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido, m.Codigo FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo LIMIT ". $offset . ",". $show;
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -75,8 +66,7 @@
 			printf ("<td><a href=\"ver_materia.php?clave=%s\">%s</a></td>", $object->Materia, $object->Materia);
 			echo "<td>".$object->Descripcion."</td>";
 			echo "<td>".$object->Seccion."</td>";
-			if (isset ($_GET['g']) && $_GET['g'] == 'my') printf ("<td>%s %s</td>", $object->Apellido, $object->Nombre);
-			else printf ("<td><a href=\"ver_maestro.php?codigo=%s\">%s %s</a></td>", $object->Codigo, $object->Apellido, $object->Nombre);
+			printf ("<td><a href=\"ver_maestro.php?codigo=%s\">%s %s</a></td>", $object->Codigo, $object->Apellido, $object->Nombre);
 			if ($_SESSION['permisos']['crear_grupos'] == 1) {
 				echo "<td><a href=\"editar_seccion.php?nrc=" . $object->Nrc . "\"><img class=\"icon\" src=\"../img/properties.png\" /></a></td>\n";
 				echo "<td><a href=\"eliminar_seccion.php?nrc=" . $object->Nrc . "\"";
@@ -96,15 +86,14 @@
 		$prev = $offset - $cant;
 		if ($prev < 0) $prev = 0;
 		
-		$my = (isset ($_GET['g']) && $_GET['g'] == 'my') ? 'my' : '';
 		/* Mostrar las flechas de dezplamiento */
 		if ($offset > 0) {
-			printf ("<a href=\"%s?g=%s&off=0\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $my);
-			printf ("<a href=\"%s?g=%s&off=%s\"><img class=\"icon\" src=\"../img/prev.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $my, $prev);
+			printf ("<a href=\"%s?off=0\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n", $_SERVER['SCRIPT_NAME']);
+			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/prev.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $prev);
 		}
-		if ($offset + $show < $total - 1) { 
-			printf ("<a href=\"%s?g=%s&off=%s\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $my, $next);
-			printf ("<a href=\"%s?g=%s&off=%s\"><img class=\"icon\" src=\"../img/last.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $my, $ultimo);
+		if ($offset + $show < $total) { 
+			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $next);
+			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/last.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $ultimo);
 		}
 		
 		echo "</p>\n";

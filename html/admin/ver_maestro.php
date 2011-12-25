@@ -42,8 +42,12 @@
 	?></title>
 </head>
 <body>
-	<h1>Profesor</h1>
 	<?php
+		if ($_SESSION['codigo'] == $_GET['codigo']) {
+			echo "<h1>Mis grupos</h1>";
+		} else {
+			echo "<h1>Profesor</h1>";
+		}
 		printf ("<p>Profesor: %s %s (%s)</p>\n", $object->Nombre, $object->Apellido, $object->Codigo);
 		printf ("<p>Correo electrónico: %s</p>", $object->Correo);
 		

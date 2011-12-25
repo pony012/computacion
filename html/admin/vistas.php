@@ -29,8 +29,9 @@
 		} else {
 			echo "<li><a href=\"usuarios.php\">Maestros del departamente</a></li>\n";
 		}
+		
+		printf ("<li><a href=\"ver_maestro.php?codigo=%s\">Mis grupos</a></li>", $_SESSION['codigo']);
 	?>
-	<li><a href="secciones.php?g=my">Mis grupos</a></li>
 	<li><a href="secciones.php">Grupos del departamento</a></li>
 	<li><a href="materias.php">Materias del departamento</a></li>
 	</ul>
