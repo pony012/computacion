@@ -20,20 +20,18 @@
 </head>
 <body>
 	<h1>Acciones para el sistema</h1>
-	<?php
-		echo "<ul>";
-		
-		/* Si tiene el permiso de gestionar usuarios, mostrar el enlace */
-		if ($_SESSION['permisos']['aed_usuarios'] == 1) {
-			echo "<li><a href=\"usuarios.php\">Gestionar usuarios</a></li>\n";
-		} else {
-			echo "<li><a href=\"usuarios.php\">Maestros del departamente</a></li>\n";
-		}
-		
-		printf ("<li><a href=\"ver_maestro.php?codigo=%s\">Mis grupos</a></li>", $_SESSION['codigo']);
-	?>
+	<ul>
 	<li><a href="secciones.php">Grupos del departamento</a></li>
 	<li><a href="materias.php">Materias del departamento</a></li>
+	<li><a href="usuarios.php">Maestros del departamento</a></li>
+	<?php
+		printf ("<li><a href=\"ver_maestro.php?codigo=%s\">Mis grupos</a></li>", $_SESSION['codigo']);
+		
+		if (!isset ($_SESSION['permisos']['admin_evaluaciones']) || $_SESSION['permisos']['admin_evaluaciones'] == 1) {
+			echo "<li><a href=\"evaluaciones.php\">Formas de evaluación</a></li>";
+		}
+	?>
+	<li><a href="carreras.php">Carreras</a></li>
 	</ul>
 </body>
 </html>
