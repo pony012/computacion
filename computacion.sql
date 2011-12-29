@@ -71,16 +71,20 @@ CREATE TABLE IF NOT EXISTS `Aplicadores` (
 --
 
 CREATE TABLE IF NOT EXISTS `Calificaciones` (
-  `Id` int(11) NOT NULL,
+  `Alumno` char(9) NOT NULL,
+  `Nrc` int(5) NOT NULL,
   `Tipo` int(11) NOT NULL,
   `Valor` int(11) DEFAULT NULL,
-  KEY `Id` (`Id`)
+  PRIMARY KEY (`Alumno`,`Nrc`,`Tipo`),
+  KEY `Calificacion` (`Alumno`,`Nrc`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- RELACIONES PARA LA TABLA `Calificaciones`:
---   `Id`
+--   `Alumno`
 --       `Grupos` -> `Alumno`
+--   `Nrc`
+--       `Grupos` -> `Nrc`
 --   `Tipo`
 --       `Evaluaciones` -> `Id`
 --
@@ -119,10 +123,8 @@ CREATE TABLE IF NOT EXISTS `Evaluaciones` (
 CREATE TABLE IF NOT EXISTS `Grupos` (
   `Alumno` char(9) NOT NULL,
   `Nrc` int(5) NOT NULL,
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`Id`),
-  UNIQUE KEY `Alumno` (`Alumno`,`Nrc`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  PRIMARY KEY (`Alumno`,`Nrc`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- RELACIONES PARA LA TABLA `Grupos`:
