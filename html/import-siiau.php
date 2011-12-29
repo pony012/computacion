@@ -122,7 +122,7 @@
 			mysql_free_result ($result);
 		}
 		
-		$query_mat = substr_replace ($query_mat, ";", -1);
+		$query_mat = substr_replace ($query_mat, " ", -1) . " ON DUPLICATE KEY UPDATE 0=0;";
 		if (isset ($query_por)) $query_por = substr_replace ($query_por, ";", -1);
 		
 		/* Ejecutar los query extendidos */
@@ -151,8 +151,8 @@
 			mysql_free_result ($result);
 		}
 		
-		$query_maestros = substr_replace ($query_maestros,  ";", -1);
-		if (isset ($query_sesiones_m)) $query_sesiones_m = substr_replace ($query_sesiones_m, ";", -1);
+		$query_maestros = substr_replace ($query_maestros,  " ", -1) . " ON DUPLICATE KEY UPDATE Flag=0;";
+		if (isset ($query_sesiones_m)) $query_sesiones_m = substr_replace ($query_sesiones_m, " ", -1) . " ON DUPLICATE KEY UPDATE Activo=1;";
 		
 		/* Ejecutar los querys */
 		mysql_query ($query_maestros, $mysql_con);
@@ -181,7 +181,7 @@
 			$query_secciones = $query_secciones . sprintf ("('%s', '%s', '%s', '%s'),", $nrc, $value[0], $value[1], $value[2]);
 		}
 		
-		$query_secciones = substr_replace ($query_secciones, " ", -1) . " ON DUPLICATE KEY UPDATE Maestro=VALUES(Maestro)";
+		$query_secciones = substr_replace ($query_secciones, " ", -1) . " ON DUPLICATE KEY UPDATE Maestro=VALUES(Maestro);";
 		
 		mysql_query ($query_secciones, $mysql_con);
 		
@@ -218,18 +218,17 @@
 			
 			if ($no_campos < 20) continue;
 			
-			$query = sprintf ("INSERT INTO Grupos (Alumno, Nrc) VALUES ('%s', '%s');", $linea[17], $linea[0]);
+			$query = sprintf ("INSERT DELAYED INTO Grupos (Alumno, Nrc) VALUES ('%s', '%s');", $linea[17], $linea[0]);
 			mysql_query ($query, $mysql_con);
 			
-			$query_evals = "INSERT INTO Calificaciones (Alumno, Nrc, Tipo, Valor) VALUES ";
+			$query_evals = "INSERT DELAYED INTO Calificaciones (Alumno, Nrc, Tipo, Valor) VALUES ";
 			
 			foreach ($evals[strtoupper ($linea[1])] as $value) {
 				$query_evals = $query_evals . sprintf ("('%s', '%s', '%s', NULL),", $linea[17], $linea[0], $value);
 			}
-			
 			$query_evals = substr_replace ($query_evals, ";", -1);
 			
-			mysql_query ($query_evals);
+			mysql_query ($query_evals, $mysql_con);
 		}
 		
 		mysql_close ($mysql_con);
