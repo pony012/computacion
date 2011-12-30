@@ -9,8 +9,8 @@
 	}
 	
 	/* Validar la clave la materia */
-	if (!isset ($_GET['nrc']) || !preg_match ("/^([0-9]){5}$/", $_GET['nrc'])) {
-		header ("Location: usuarios.php?e=codigo");
+	if (!isset ($_GET['nrc']) || !preg_match ("/^([0-9]){1,5}$/", $_GET['nrc'])) {
+		header ("Location: vistas.php?e=nrcerr");
 		exit;
 	}
 	

@@ -27,27 +27,28 @@
 	require_once '../mysql-con.php';
 	
 	/* Recuperar las formas de evaluación */
-	$result = mysql_query ("SELECT * FROM Evaluaciones", $mysql_con);
-	while (($row = mysql_fetch_row ($result)) != FALSE) $ar[$row[0]] = $row[1];
+	$result = mysql_query ("SELECT Id FROM Evaluaciones", $mysql_con);
+	while (($row = mysql_fetch_row ($result)) != FALSE) $todas[$row[0]] = 1;
 	mysql_free_result ($result);
 	
-	$suma = 0;
+	$nuevas = array ();
 	for ($g = 0; $g < count ($_POST['evals']); $g++) {
-		settype ($_POST['evals'][$g], 'integer');
-		settype ($_POST['porcentajes'][$g], 'integer');
-		
-		if ($_POST['porcentajes'][$g] <= 0) {
+		$nuevas [((int) $_POST['evals'][$g])] = (int) $_POST['porcentajes'][$g];
+	}
+	
+	$suma = 0;
+	foreach ($nuevas as $key => $porcentaje) {
+		if ($porcentaje <= 0) {
 			header ("Location: materias.php?e=neg");
 			exit;
 		}
 		
-		if (!isset ($ar[$_POST['evals'][$g]])) {
-			unset ($_POST['evals'][$g]);
-			unset ($_POST['porcentajes'][$g]);
-			continue;
+		if (!isset ($todas [$key])) {
+			header ("Location: materias.php?e=unknown");
+			exit;
 		}
-		$suma += $_POST['porcentajes'][$g];
-		unset ($ar[$_POST['evals'][$g]]);
+		
+		$suma += $porcentaje;
 	}
 	
 	if ($suma != 100) {
@@ -55,6 +56,8 @@
 		header ("Location: materias.php?e=suma");
 		exit;
 	}
+	
+	if (isset ($_POST['tiene_extra']) && $_POST['tiene_extra'] == 1) $nuevas[0] = 100;
 	
 	/* Validar la clave la materia */
 	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_POST['clave'])) {
@@ -75,20 +78,15 @@
 			exit;
 		}
 		
-		if (isset ($_POST['tiene_extra']) && $_POST['tiene_extra'] == 1) {
-			/* Insertar como caso especial el extraordinario */
-			$query = sprintf ("INSERT INTO Porcentajes (Clave, Tipo, Ponderacion) VALUES ('%s', 0, 100);", $_POST['clave']);
-			
-			$result = mysql_query ($query, $mysql_con);
+		/* Insertar las formas de evaluación */
+		$query = "INSERT INTO Porcentajes (Clave, Tipo, Ponderacion) VALUES ";
+		
+		foreach ($nuevas as $key => $porcentaje) {
+			$query = $query . sprintf ("('%s', '%s', '%s'),", $_POST['clave'], $key, $porcentaje);
 		}
 		
-		/* Ahora insertar los porcentajes de evaluación */
-		/* INSERT INTO `computacion`.`Porcentajes` (`Clave`, `Tipo`, `Ponderacion`) VALUES ('as123', '1', '60'), ('as123', '2', '40'); */
-		for ($g = 0; $g < count ($_POST['evals']); $g++) {
-			$query = sprintf ("INSERT INTO Porcentajes (Clave, Tipo, Ponderacion) VALUES ('%s', '%s', '%s');", $_POST['clave'], $_POST['evals'][$g], $_POST['porcentajes'][$g]);
-			
-			$result = mysql_query ($query, $mysql_con);
-		}
+		$query = substr_replace ($query, ";", -1);
+		mysql_query ($query, $mysql_con);
 		
 		header ("Location: materias.php?a=ok");
 	} else if ($_POST['modo'] == 'editar') {
@@ -101,23 +99,54 @@
 			exit;
 		}
 		
+		/* Antes de limpiarlos, sacar las actuales forma de evaluación */
+		$query = sprintf ("SELECT Tipo FROM Porcentajes WHERE Clave='%s'", $_POST['clave']);
+		
+		$result = mysql_query ($query, $mysql_con);
+		$old = array ();
+		while (($object = mysql_fetch_object ($result))) $old [$object->Tipo] = 1;
+		mysql_free_result ($result);
+		
 		/* Limpiar los porcentajes anteriores */
 		$query = sprintf ("DELETE FROM Porcentajes WHERE Clave='%s'", $_POST['clave']);
 		mysql_query ($query, $mysql_con);
 		
-		if (isset ($_POST['tiene_extra']) && $_POST['tiene_extra'] == 1) {
-			/* Insertar como caso especial el extraordinario */
-			$query = sprintf ("INSERT INTO Porcentajes (Clave, Tipo, Ponderacion) VALUES ('%s', 0, 100);", $_POST['clave']);
-			
-			$result = mysql_query ($query, $mysql_con);
+		/* Insertar las nuevas formas de evaluación */
+		$query = "INSERT INTO Porcentajes (Clave, Tipo, Ponderacion) VALUES ";
+		
+		foreach ($nuevas as $key => $porcentaje) {
+			$query = $query . sprintf ("('%s', '%s', '%s'),", $_POST['clave'], $key, $porcentaje);
 		}
 		
-		/* Ahora insertar los porcentajes de evaluación */
-		/* INSERT INTO `computacion`.`Porcentajes` (`Clave`, `Tipo`, `Ponderacion`) VALUES ('as123', '1', '60'), ('as123', '2', '40'); */
-		for ($g = 0; $g < count ($_POST['evals']); $g++) {
-			$query = sprintf ("INSERT INTO Porcentajes (Clave, Tipo, Ponderacion) VALUES ('%s', '%s', '%s');", $_POST['clave'], $_POST['evals'][$g], $_POST['porcentajes'][$g]);
-			
+		$query = substr_replace ($query, ";", -1);
+		mysql_query ($query, $mysql_con);
+		
+		/* Luego, corregir la tabla de calificaciones */
+		foreach ($old as $key => $value) {
+			if (!isset ($nuevas[$key])) {
+				/* Eliminar este de la tabla de calificaciones
+				 * DELETE FROM C USING Calificaciones AS C INNER JOIN Secciones AS S ON C.Nrc = S.Nrc WHERE S.Materia='CC204' AND C.Tipo='7' */
+				$query = sprintf ("DELETE FROM C USING Calificaciones AS C INNER JOIN Secciones AS S ON C.Nrc = S.Nrc WHERE S.Materia='%s' AND C.Tipo='%s'", $_POST['clave'], $key);
+				mysql_query ($query, $mysql_con);
+			} else {
+				unset ($nuevas [$key]);
+			}
+		}
+		
+		/* Las nuevas calificaciones */
+		foreach ($nuevas as $key => $value) {
+			$query = sprintf ("SELECT G.* FROM Grupos AS G INNER JOIN Secciones AS Sec ON G.Nrc = Sec.Nrc WHERE Sec.Materia = '%s'", $_POST['clave']);
 			$result = mysql_query ($query, $mysql_con);
+			
+			$query_cal = "INSERT INTO Calificaciones (Alumno, Nrc, Tipo, Valor) VALUES ";
+			while (($object = mysql_fetch_object ($result))) {
+				$query_cal = $query_cal . sprintf ("('%s', '%s', '%s', NULL),", $object->Alumno, $object->Nrc, $key);
+			}
+			mysql_free_result ($result);
+			
+			$query_cal = substr_replace ($query_cal, ";", -1);
+			
+			mysql_query ($query_cal, $mysql_con);
 		}
 		
 		header ("Location: materias.php?a=ok");

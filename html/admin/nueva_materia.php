@@ -147,7 +147,7 @@
 		
 		if ($_POST['evals'][0] == 0) {
 			/* Significa que esta materia lleva extraordinario */
-			echo "<input type=\"hidden\" name=\"tiene_extra\" value=\"1\" />";
+			echo "<p>La materia tiene extraordinario<input type=\"hidden\" name=\"tiene_extra\" value=\"1\" /><hr /></p>";
 			unset ($_POST['evals'][0]);
 		}
 		
