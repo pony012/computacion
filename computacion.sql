@@ -48,7 +48,8 @@ CREATE TABLE IF NOT EXISTS `Alumnos` (
 
 CREATE TABLE IF NOT EXISTS `Aplicadores` (
   `Alumno` char(9) NOT NULL,
-  `Salon` char(6) NOT NULL,
+  `Materia` char(5) NOT NULL,
+  `Salon` char(20) NOT NULL,
   `FechaHora` datetime NOT NULL,
   `Tipo` int(11) NOT NULL,
   `Maestro` int(7) NOT NULL
@@ -111,6 +112,9 @@ CREATE TABLE IF NOT EXISTS `Carreras` (
 CREATE TABLE IF NOT EXISTS `Evaluaciones` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Descripcion` varchar(100) NOT NULL,
+  `Exclusiva` tinyint(1) NOT NULL,
+  `Apertura` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `Cierre` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`Id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
