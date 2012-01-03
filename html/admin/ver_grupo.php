@@ -56,14 +56,27 @@
 		printf ("<p>Maestro: <a href=\"ver_maestro.php?codigo=%s\">%s %s</a></p>", $object->Codigo, $object->Nombre, $object->Apellido);
 		printf ("<p>Seccion: %s</p>", $object->Seccion);
 		
-		echo "<table border=\"1\">";
-		
-		echo "<thead><tr><th>No. Lista</th><th>Código</th><th>Alumno</th>";
+		printf ("<p>Subida de calificaciones:</p><p>");
 		
 		require_once '../mysql-con.php';
 		
-		$query = sprintf ("SELECT E.Id, E.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave='%s' ORDER BY E.Id", $object->Clave);
+		$query = sprintf ("SELECT E.Id, E.Descripcion, E.Exclusiva, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave='%s' ORDER BY E.Id", $object->Clave);
+		
 		$result = mysql_query ($query, $mysql_con);
+		
+		while (($object2 = mysql_fetch_object ($result))) {
+			if ($object2->Cierre - $object2->Apertura == 0) continue; /* Esta forma de evaluación está deshabilitada */
+			$now = time ();
+			if ($now >= $object2->Apertura && $now < $object2->Cierre && $object2->Exclusiva == 1) {
+				printf ("<a href=\"ningun_lugar.php\">Para %s</a><br />", $object2->Descripcion);
+			}
+		}
+		echo "</p><table border=\"1\">";
+		
+		echo "<thead><tr><th>No. Lista</th><th>Código</th><th>Alumno</th>";
+		
+		/* Rebobinar las formas de evaluación */
+		mysql_data_seek ($result, 0);
 		
 		$extra = 0;
 		while (($object2 = mysql_fetch_object ($result))) {

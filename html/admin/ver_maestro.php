@@ -85,11 +85,15 @@
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
 			/* El nrc */
-			echo "<td>".$object->Nrc."</td>";
+			if ($_SESSION['codigo'] == $_GET['codigo'] || (isset ($_SESSION['permisos']['grupos_globales']) && $_SESSION['permisos']['grupos_globales'] == 1)) {
+				printf ("<td><a href=\"ver_grupo.php?nrc=%s\">%s</a></td>",$object->Nrc, $object->Nrc);
+			} else {
+				printf ("<td>%s</td>", $object->Nrc);
+			}
 			printf ("<td><a href=\"ver_materia.php?clave=%s\">%s</a></td>", $object->Materia, $object->Materia);
-			echo "<td>".$object->Descripcion."</td>";
-			echo "<td>".$object->Seccion."</td>";
-			echo "<td>".$object->Apellido." ".$object->Nombre."</td>";
+			printf ("<td>%s</td>", $object->Descripcion);
+			printf ("<td>%s</td>", $object->Seccion);
+			printf ("<td>%s %s</td>", $object->Apellido, $object->Nombre);
 			echo "</tr>\n";
 		}
 		
