@@ -30,15 +30,16 @@
 	<h1>Formas de evaluación</h1>
 	<p>Las siguientes formas de evalución están disponibles para las materias</p>
 	<?php
+		setlocale (LC_ALL, "es_MX.UTF-8");
 		require_once "../mysql-con.php";
 		
 		echo "<table border=\"1\">";
 		
 		/* Mostrar la cabecera */
-		echo "<thead><tr><th>Nombre</th><th colspan=\"2\">Acción</th></tr></thead>";
+		echo "<thead><tr><th>Nombre</th><th>Para el maestro</th><th>Tiempo de apertura</th><th>Tiempo de cierre</th><th>Acción</th></tr></thead>";
 		
 		/* Empezar la consulta mysql */
-		$query = "SELECT * FROM Evaluaciones";
+		$query = "SELECT Descripcion, Id, UNIX_TIMESTAMP (Apertura) AS Apertura, UNIX_TIMESTAMP (Cierre) AS Cierre FROM Evaluaciones";
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -46,7 +47,12 @@
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
 			
-			printf ("<td>%s<td>", $object->Descripcion);
+			printf ("<td>%s</td>", $object->Descripcion);
+			
+			/* TODO: Propia del maestro */
+			printf ("<td>NULL</td>");
+			printf ("<td>%s</td>", strftime ("%a %e %h %Y a las %H:%M", $object->Apertura));
+			printf ("<td>%s</td>", strftime ("%a %e %h %Y a las %H:%M", $object->Cierre));
 			if ($object->Id != 0) { /* El extraordinario es un caso especial */
 				printf ("<td><a href=\"edit_eval.php?m=e&id=%s\"><img class=\"icon\" src=\"../img/properties.png\" /></a>", $object->Id);
 				
