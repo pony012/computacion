@@ -36,10 +36,10 @@
 		echo "<table border=\"1\">";
 		
 		/* Mostrar la cabecera */
-		echo "<thead><tr><th>Nombre</th><th>Para el maestro</th><th>Tiempo de apertura</th><th>Tiempo de cierre</th><th>Acción</th></tr></thead>";
+		echo "<thead><tr><th>Nombre</th><th>Exclusiva del maestro</th><th>Tiempo de apertura</th><th>Tiempo de cierre</th><th>Acción</th></tr></thead>";
 		
 		/* Empezar la consulta mysql */
-		$query = "SELECT Descripcion, Id, UNIX_TIMESTAMP (Apertura) AS Apertura, UNIX_TIMESTAMP (Cierre) AS Cierre FROM Evaluaciones";
+		$query = "SELECT Descripcion, Id, Exclusiva, UNIX_TIMESTAMP (Apertura) AS Apertura, UNIX_TIMESTAMP (Cierre) AS Cierre FROM Evaluaciones";
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -49,8 +49,12 @@
 			
 			printf ("<td>%s</td>", $object->Descripcion);
 			
-			/* TODO: Propia del maestro */
-			printf ("<td>NULL</td>");
+			if ($object->Exclusiva == 1) {
+				printf ("<td>Sí</td>");
+			} else {
+				printf ("<td>No</td");
+			}
+			
 			printf ("<td>%s</td>", strftime ("%a %e %h %Y a las %H:%M", $object->Apertura));
 			printf ("<td>%s</td>", strftime ("%a %e %h %Y a las %H:%M", $object->Cierre));
 			if ($object->Id != 0) { /* El extraordinario es un caso especial */
