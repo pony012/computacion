@@ -58,14 +58,14 @@
 		
 		$offset = (isset ($_GET['off'])) ? $_GET['off'] : 0;
 		settype ($offset, "integer");
-		$cant = 50;
+		$cant = 30;
 		$show = $cant;
 		
 		if ($offset >= $total) $offset = $total - $cant;
 		if ($offset < 0) $offset = 0;
 		if (($offset + $cant) >= $total) $show = $total - $offset;
 		
-		echo "<p>Grupos del ". ($offset + 1) ." al ". ($offset + $show) . "</p>";
+		printf ("<p>Grupos de la materia %s, mostrando de %s al %s</p>", $_GET['clave'], ($offset + 1), ($offset + $show));
 		
 		echo "<table border=\"1\">";
 		
@@ -81,7 +81,7 @@
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
 			/* El nrc */
-			if ($_SESSION['codigo'] == $object->Codigo || (isset ($_SESSION['permisos']['grupos_globales']) && $_SESSION['permisos']['grupos_globales'] == 1)) {
+			if ($_SESSION['codigo'] == $_GET['codigo'] || (isset ($_SESSION['permisos']['grupos_globales']) && $_SESSION['permisos']['grupos_globales'] == 1)) {
 				printf ("<td><a href=\"ver_grupo.php?nrc=%s\">%s</a></td>",$object->Nrc, $object->Nrc);
 			} else {
 				printf ("<td>%s</td>", $object->Nrc);
@@ -108,7 +108,7 @@
 			printf ("<a href=\"%s?clave=%s&off=0\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $_GET['clave']);
 			printf ("<a href=\"%s?clave=%s&off=%s\"><img class=\"icon\" src=\"../img/prev.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $_GET['clave'], $prev);
 		}
-		if ($offset + $show < $total - 1) { 
+		if ($offset + $show < $total) { 
 			printf ("<a href=\"%s?clave=%s&off=%s\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $_GET['clave'], $next);
 			printf ("<a href=\"%s?clave=%s&off=%s\"><img class=\"icon\" src=\"../img/last.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $_GET['clave'], $ultimo);
 		}

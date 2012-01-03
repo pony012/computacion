@@ -48,7 +48,7 @@
 	if ($offset < 0) $offset = 0;
 	if (($offset + $cant) >= $total) $show = $total - $offset;
 	
-	echo "<p>Mostrando registros del ". ($offset + 1) ." al ". ($offset + $show) . "</p>";
+	printf ("<p>Mostrando salones del %s al %s</p>", ($offset + 1), ($offset + $show));
 	
 	$query = sprintf ("SELECT DISTINCT A.Materia, A.Salon, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Tipo, A.Maestro, Mat.Descripcion, M.Nombre, M.Apellido, E.Descripcion AS Evaluacion FROM Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Maestros AS M ON A.Maestro = M.Codigo INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id ORDER BY Materia, Tipo, Salon, FechaHora LIMIT %s, %s", $offset, $show);
 	
@@ -79,14 +79,14 @@
 	if ($prev < 0) $prev = 0;
 	
 	/* Mostrar las flechas de dezplamiento */
-	if ($offset > 0) {
-		echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=0\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n";
-		echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$prev."\"><img class=\"icon\" src=\"../img/prev.png\" /></a>\n";
-	}
-	if ($offset + $show < $total) { 
-		echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$next."\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n";
-		echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$ultimo."\"><img class=\"icon\" src=\"../img/last.png\" /></a>\n";
-	}
+		if ($offset > 0) {
+			printf ("<a href=\"%s?off=0\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n", $_SERVER['SCRIPT_NAME']);
+			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/prev.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $prev);
+		}
+		if ($offset + $show < $total) { 
+			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $next);
+			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/last.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $ultimo);
+		}
 	
 	echo "</p>\n";
 ?>

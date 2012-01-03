@@ -39,7 +39,7 @@
 		if ($offset < 0) $offset = 0;
 		if (($offset + $cant) >= $total) $show = $total - $offset;
 		
-		echo "<p>Mostrando registros del ". ($offset + 1) ." al ". ($offset + $show) . "</p>";
+		printf ("<p>Mostrando usuarios del %s al %s</p>", ($offset + 1), ($offset + $show));
 		
 		echo "<table border=\"1\">";
 		
@@ -51,7 +51,7 @@
 		echo "</tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
-		$query = "SELECT m.codigo, m.Apellido, m.nombre, s.activo FROM Maestros AS m INNER JOIN Sesiones_Maestros AS s ON m.Codigo = s.Codigo LIMIT ". $offset . ",". $cant;
+		$query = sprintf ("SELECT m.codigo, m.Apellido, m.nombre, s.activo FROM Maestros AS m INNER JOIN Sesiones_Maestros AS s ON m.Codigo = s.Codigo LIMIT %s, %s", $offset, $show);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -83,12 +83,12 @@
 		
 		/* Mostrar las flechas de dezplamiento */
 		if ($offset > 0) {
-			echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=0\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n";
-			echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$prev."\"><img class=\"icon\" src=\"../img/prev.png\" /></a>\n";
+			printf ("<a href=\"%s?off=0\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n", $_SERVER['SCRIPT_NAME']);
+			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/prev.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $prev);
 		}
 		if ($offset + $show < $total) { 
-			echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$next."\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n";
-			echo "<a href=\"".$_SERVER['SCRIPT_NAME']."?off=".$ultimo."\"><img class=\"icon\" src=\"../img/last.png\" /></a>\n";
+			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $next);
+			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/last.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $ultimo);
 		}
 		
 		echo "</p>\n";

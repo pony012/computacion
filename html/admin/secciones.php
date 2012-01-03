@@ -40,7 +40,7 @@
 		if ($offset < 0) $offset = 0;
 		if (($offset + $cant) >= $total) $show = $total - $offset;
 		
-		echo "<p>Mostrando los grupos del ". ($offset + 1) ." al ". ($offset + $show) . "</p>";
+		printf ("<p>Mostrando los grupos del %s al %s</p>", ($offset + 1), ($offset + $show));
 		
 		echo "<table border=\"1\">";
 		
@@ -54,7 +54,7 @@
 		echo "</tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
-		$query = "SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido, m.Codigo FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo LIMIT ". $offset . ",". $show;
+		$query = sprintf ("SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido, m.Codigo FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo LIMIT %s, %s", $offset, $show);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -62,7 +62,7 @@
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
 			/* El nrc */
-			if ($_SESSION['codigo'] == $object->Codigo || (isset ($_SESSION['permisos']['grupos_globales']) && $_SESSION['permisos']['grupos_globales'] == 1)) {
+			if ($_SESSION['codigo'] == $_GET['codigo'] || (isset ($_SESSION['permisos']['grupos_globales']) && $_SESSION['permisos']['grupos_globales'] == 1)) {
 				printf ("<td><a href=\"ver_grupo.php?nrc=%s\">%s</a></td>",$object->Nrc, $object->Nrc);
 			} else {
 				printf ("<td>%s</td>", $object->Nrc);

@@ -62,14 +62,14 @@
 		
 		$offset = (isset ($_GET['off'])) ? $_GET['off'] : 0;
 		settype ($offset, "integer");
-		$cant = 50;
+		$cant = 20;
 		$show = $cant;
 		
 		if ($offset >= $total) $offset = $total - $cant;
 		if ($offset < 0) $offset = 0;
 		if (($offset + $cant) >= $total) $show = $total - $offset;
 		
-		echo "<p>Grupos del maestro. (Mostrando del ". ($offset + 1) ." al ". ($offset + $show) . ")</p>";
+		printf ("<p>Grupos del maestro. (Mostrando del %s al %s)</p>", ($offset + 1), ($offset + $show));
 		
 		echo "<table border=\"1\">";
 		
@@ -112,7 +112,7 @@
 			printf ("<a href=\"%s?codigo=%s&off=0\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $_GET['codigo']);
 			printf ("<a href=\"%s?codigo=%s&off=%s\"><img class=\"icon\" src=\"../img/prev.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $_GET['codigo'], $prev);
 		}
-		if ($offset + $show < $total - 1) { 
+		if ($offset + $show < $total) { 
 			printf ("<a href=\"%s?codigo=%s&off=%s\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $_GET['codigo'], $next);
 			printf ("<a href=\"%s?codigo=%s&off=%s\"><img class=\"icon\" src=\"../img/last.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $_GET['codigo'], $ultimo);
 		}
