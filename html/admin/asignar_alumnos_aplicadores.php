@@ -59,6 +59,37 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script language="javascript" type="text/javascript">
+		$(document).ready(function(){
+			$('#boton_bus').click(function() {
+				var txt = $('#busqueda').val ();
+				var mat = $('#materia').val();
+				alert ("Materia: " + mat);
+				alert ("Texto a buscar:" + txt);
+				if (txt == "" || txt == null) {
+					$('#disponibles').empty ();
+					$('#disponibles').append ($("<optgroup></optgroup>").attr("label", "Demasiados alumnos para ser mostrados"));
+					return;
+				}
+				$.getJSON("json.php",
+				{
+					modo: 'grupos',
+					materia: mat,
+					bus: txt
+				},
+				function(data) {
+					alert ("Json dice sí");
+					alert (data);
+					$('#disponibles').empty ();
+					$.each(data, function(i,item){
+						if (i < 5) alert (item);
+						$('#disponibles').append ($("<option></option>").attr("value", item.Alumno).text(item.Apellido + " " + item.Nombre));
+					});
+				});
+			});
+		});
+	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
@@ -67,7 +98,7 @@
 <body>
 	<h1>Seleccionar alumnos</h1>
 	<?php
-		printf ("<p>Materia: %s %s</p><input type=\"hidden\" name=\"materia\" value=\"%s\" />\n", $datos->Clave, $datos->Descripcion, $datos->Clave);
+		printf ("<p>Materia: %s %s</p><input type=\"hidden\" id=\"materia\" name=\"materia\" value=\"%s\" />\n", $datos->Clave, $datos->Descripcion, $datos->Clave);
 		printf ("<p>Evaluación: %s</p><input type=\"hidden\" name=\"evaluacion\" value=\"%s\" />\n", $datos->Evaluacion, $datos->Tipo);
 		
 		$tiempo_fecha = $_GET['fecha'] - ($_GET['fecha'] % 900);
@@ -91,7 +122,7 @@
 		
 		echo "<td><select id=\"disponibles\" size=\"20\"><optgroup label=\"Demasiados alumnos para ser mostrados\"></optgroup></select></td></tr>";
 		
-		echo "<tr><td colspan=\"3\"><input type=\"text\" id=\"busqueda\" /><br /><input type=\"button\" value=\"Buscar\" /></td></tr>";
+		echo "<tr><td colspan=\"3\"><input type=\"text\" id=\"busqueda\" /><br /><input type=\"button\" id=\"boton_bus\" value=\"Buscar\" /></td></tr>";
 		
 		echo "</tbody></table>";
 	?>

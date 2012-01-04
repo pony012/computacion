@@ -9,6 +9,9 @@
 	
 	if ($_GET['modo'] == 'evals') {
 		if (!isset ($_GET['materia'])) exit;
+		if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) {
+			exit;
+		}
 		if (isset ($_GET['exclusiva']) && $_GET['exclusiva'] == 1) $exclu = 1;
 		else $exclu = 0;
 		
@@ -26,6 +29,33 @@
 		
 		$json_string = json_encode ($json);
 		
+		printf ($json_string);
+		exit;
+	}
+	
+	if ($_GET['modo'] == 'grupos') {
+		if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) exit;
+		if (!isset ($_GET['materia']) || !isset ($_GET['bus']) || $_GET['bus'] == "") exit;
+		if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) {
+			exit;
+		}
+		
+		$mate = strtoupper ($_GET['materia']);
+		
+		require_once '../mysql-con.php';
+		$busqueda = mysql_real_escape_string ($_GET['bus']);
+		/* SELECT G.Alumno, A.Nombre, A.Apellido FROM Grupos AS G INNER JOIN Secciones AS Sec ON G.Nrc = Sec.Nrc INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE Sec.Materia = 'CC100' ORDER BY A.Apellido, A.Nombre */
+		$query = sprintf ("SELECT G.Alumno, A.Nombre, A.Apellido FROM Grupos AS G INNER JOIN Secciones AS Sec ON G.Nrc = Sec.Nrc INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE Sec.Materia = '%s' AND (A.Nombre LIKE '%%%s%%' OR G.Alumno LIKE '%%%s%%' OR A.Apellido LIKE '%%%s%%') ORDER BY A.Apellido, A.Nombre", $_GET['materia'], $busqueda, $busqueda, $busqueda);
+		
+		$result = mysql_query ($query, $mysql_con);
+		
+		$json = array ();
+		
+		while (($object = mysql_fetch_object ($result))) {
+			$json[] = $object;
+		}
+		
+		$json_string = json_encode ($json);
 		printf ($json_string);
 		exit;
 	}
