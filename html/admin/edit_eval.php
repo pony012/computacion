@@ -63,7 +63,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	<script type="text/javascript" src="../scripts/jquery-ui-timepicker-addon.js"></script>
 	<script type="text/javascript" src="../scripts/ui-timepicker-es.js"></script>
 	<script language="javascript" type="text/javascript">
-		$(function() {
+		$(document).ready(function(){
 			$('#apertura').datetimepicker({
 				dateFormat: 'D dd M yy',
 				timeFormat: 'hh:mm',
