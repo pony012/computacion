@@ -42,6 +42,26 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				timeFormat: 'hh:mm',
 				separator: ' a las '
 			});
+			
+			$('#materia').change(function() {
+				if ($('#materia').val() == 'NULL') {
+					$('#evaluacion').empty ();
+					$('#evaluacion').append ($("<option></option>").attr("value", "NULL").text("Selecciona una materia primero"));
+					return;
+				}
+				$.getJSON("json.php",
+				{
+					modo: 'evals',
+					materia: $('#materia').val(),
+					exclusiva: '0'
+				},
+				function(data) {
+					$('#evaluacion').empty ();
+					$.each(data, function(i,item){
+						$('#evaluacion').append ($("<option></option>").attr("value", item.Tipo).text(item.Descripcion));
+					});
+				});
+			});
 		});
 	</script>
 	<script language="javascript" type="text/javascript">
