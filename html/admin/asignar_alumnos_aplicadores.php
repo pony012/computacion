@@ -62,11 +62,10 @@
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script language="javascript" type="text/javascript">
 		$(document).ready(function(){
-			$('#boton_bus').click(function() {
-				var txt = $('#busqueda').val ();
+			$('#btn_busqueda').click(function() {
+				var txt = $('#txt_busqueda').val ();
 				var mat = $('#materia').val();
-				alert ("Materia: " + mat);
-				alert ("Texto a buscar:" + txt);
+				
 				if (txt == "" || txt == null) {
 					$('#disponibles').empty ();
 					$('#disponibles').append ($("<optgroup></optgroup>").attr("label", "Demasiados alumnos para ser mostrados"));
@@ -79,16 +78,34 @@
 					bus: txt
 				},
 				function(data) {
-					alert ("Json dice sí");
-					alert (data);
 					$('#disponibles').empty ();
 					$.each(data, function(i,item){
-						if (i < 5) alert (item);
 						$('#disponibles').append ($("<option></option>").attr("value", item.Alumno).text(item.Apellido + " " + item.Nombre));
 					});
 				});
 			});
 		});
+	</script>
+	<script language="javascript" type="text/javascript">
+		function agregar () {
+			var disponibles = document.getElementById ("disponibles");
+			var alumnos = document.getElementById ("alumnos");
+			var num = disponibles.options[disponibles.selectedIndex].value;
+			
+			for (i = 0; i < alumnos.length; i++) {
+				if (alumnos.options[i].value == num) return; /* Item duplicado */
+			}
+			var nueva_opc = document.createElement ("option");
+			nueva_opc.text = disponibles.options[disponibles.selectedIndex].text;
+			nueva_opc.value = num;
+			alumnos.add (nueva_opc, null);
+		}
+		
+		function eliminar () {
+			var alumnos = document.getElementById ("alumnos");
+			if (alumnos.options.length == 0) return;
+			alumnos.remove (alumnos.selectedIndex);
+		}
 	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
@@ -108,7 +125,7 @@
 		
 		echo "<table border=\"1\"><tbody>";
 		
-		echo "<tr><td><select size=\"20\"><optgroup label=\"Alumnos en este salón\">";
+		echo "<tr><td><select id=\"alumnos\" size=\"20\"><optgroup label=\"Alumnos en este salón\">";
 		
 		$query = sprintf ("SELECT A.Alumno, Al.Nombre, Al.Apellido FROM Aplicadores AS A INNER JOIN Alumnos AS Al ON A.Alumno = Al.Codigo WHERE A.Materia = '%s' AND A.Salon = '%s' AND A.FechaHora = FROM_UNIXTIMESTAMP(%s) AND A.Tipo = '%s' ORDER BY Al.Apellido, Al.Nombre", $datos->Clave, mysql_real_escape_string ($_GET['salon']), $tiempo_fecha, $datos->Tipo);
 		$result = mysql_query ($query, $mysql_con);
@@ -118,11 +135,11 @@
 		}
 		echo "</optgroup></select></td>";
 		
-		echo "<td>Botón más, botón menos</td>";
+		echo "<td><img id=\"Agregar\" src=\"../img/add2.png\" alt=\"Agregar\" onclick=\"return agregar ()\" /><img id=\"Eliminar\" src=\"../img/remove2.png\" alt=\"Eliminar\" onclick=\"return eliminar ()\" /></td>\n";
 		
 		echo "<td><select id=\"disponibles\" size=\"20\"><optgroup label=\"Demasiados alumnos para ser mostrados\"></optgroup></select></td></tr>";
 		
-		echo "<tr><td colspan=\"3\"><input type=\"text\" id=\"busqueda\" /><br /><input type=\"button\" id=\"boton_bus\" value=\"Buscar\" /></td></tr>";
+		echo "<tr><td colspan=\"3\"><input type=\"text\" id=\"txt_busqueda\" /><br /><input type=\"button\" id=\"btn_busqueda\" value=\"Buscar\" /></td></tr>";
 		
 		echo "</tbody></table>";
 	?>
