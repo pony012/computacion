@@ -64,7 +64,7 @@
 		$(document).ready(function(){
 			$('#btn_busqueda').click(function() {
 				var txt = $('#txt_busqueda').val ();
-				var mat = $('#materia').val();
+				var mat = $('#j_materia').val();
 				
 				if (txt == "" || txt == null) {
 					$('#disponibles').empty ();
@@ -79,9 +79,11 @@
 				},
 				function(data) {
 					$('#disponibles').empty ();
+					$('#disponibles').append ($("<optgroup>").attr("label", "Búsqueda para " + txt));
 					$.each(data, function(i,item){
-						$('#disponibles').append ($("<option></option>").attr("value", item.Alumno).text(item.Apellido + " " + item.Nombre));
+						$('#disponibles').append ($("<option></option>").attr("value", item.Alumno).text(item.Apellido + " " + item.Nombre + " (" + item.Alumno + ")"));
 					});
+					$('#disponibles').append ($("</optgroup>"));
 				});
 			});
 		});
@@ -106,6 +108,22 @@
 			if (alumnos.options.length == 0) return;
 			alumnos.remove (alumnos.selectedIndex);
 		}
+		
+		function validar () {
+			var lista_al = document.getElementById ("lista_al");
+			var alumnos = document.getElementById ("alumnos");
+			
+			if (alumnos.options.length == 0) {
+				alert ("No alumnos seleccionados");
+				return false;
+			}
+			
+			for (i = 0; i < alumnos.length; i++) {
+				lista_al.innerHTML += "<input type=\"hidden\" name=\"alumno[]\" value=\"" + alumnos.options[i].value + "\" />";
+			}
+			
+			return true;
+		}
 	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
@@ -114,8 +132,9 @@
 </head>
 <body>
 	<h1>Seleccionar alumnos</h1>
+	<form method="POST" action="post_aplicadores.php" onsubmit="return validar()">
 	<?php
-		printf ("<p>Materia: %s %s</p><input type=\"hidden\" id=\"materia\" name=\"materia\" value=\"%s\" />\n", $datos->Clave, $datos->Descripcion, $datos->Clave);
+		printf ("<p>Materia: %s %s</p><input type=\"hidden\" id=\"j_materia\" name=\"materia\" value=\"%s\" />\n", $datos->Clave, $datos->Descripcion, $datos->Clave);
 		printf ("<p>Evaluación: %s</p><input type=\"hidden\" name=\"evaluacion\" value=\"%s\" />\n", $datos->Evaluacion, $datos->Tipo);
 		
 		$tiempo_fecha = $_GET['fecha'] - ($_GET['fecha'] % 900);
@@ -143,5 +162,8 @@
 		
 		echo "</tbody></table>";
 	?>
+	<span id="lista_al"></span>
+	<input type="submit" value="Agregar alumnos" />
+	</form>
 </body>
 </html>
