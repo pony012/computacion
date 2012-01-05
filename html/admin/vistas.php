@@ -27,8 +27,11 @@
 	<?php
 		printf ("<li><a href=\"ver_maestro.php?codigo=%s\">Mis grupos</a></li>", $_SESSION['codigo']);
 		
-		if (!isset ($_SESSION['permisos']['admin_evaluaciones']) || $_SESSION['permisos']['admin_evaluaciones'] == 1) {
+		if (isset ($_SESSION['permisos']['admin_evaluaciones']) && $_SESSION['permisos']['admin_evaluaciones'] == 1) {
 			echo "<li><a href=\"evaluaciones.php\">Formas de evaluación</a></li>";
+		}
+		if (isset ($_SESSION['permisos']['asignar_aplicadores']) && $_SESSION['permisos']['asignar_aplicadores'] == 1) {
+			echo "<li><a href=\"aplicadores.php\">Gestionar salones de aplicacion de exámenes</a></li>";
 		}
 	?>
 	<li><a href="carreras.php">Carreras</a></li>
