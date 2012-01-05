@@ -60,7 +60,7 @@
 	
 	echo "<tbody>";
 	while (($object = mysql_fetch_object ($result))) {
-		printf ("<tr><td><a href=\"ver_materia.php?nrc=%s\">%s</a></td><td>%s</td>", $object->Materia, $object->Descripcion, $object->Salon);
+		printf ("<tr><td><a href=\"ver_materia.php?clave=%s\">%s</a> %s</td><td>%s</td>", $object->Materia, $object->Materia, $object->Descripcion, $object->Salon);
 		printf ("<td>%s</td><td>%s</td>", strftime ("%a %e %h %Y", $object->FechaHora), strftime ("%H:%M", $object->FechaHora));
 		printf ("<td>%s</td><td>%s %s</td></tr>\n", $object->Evaluacion, $object->Apellido, $object->Nombre);
 	}
