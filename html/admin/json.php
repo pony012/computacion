@@ -29,6 +29,7 @@
 		
 		$json_string = json_encode ($json);
 		
+		mysql_close ($mysql_con);
 		printf ($json_string);
 		exit;
 	}
@@ -36,9 +37,7 @@
 	if ($_GET['modo'] == 'grupos') {
 		if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) exit;
 		if (!isset ($_GET['materia']) || !isset ($_GET['bus']) || $_GET['bus'] == "") exit;
-		if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) {
-			exit;
-		}
+		if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) exit;
 		
 		$mate = strtoupper ($_GET['materia']);
 		
@@ -56,7 +55,35 @@
 		}
 		
 		$json_string = json_encode ($json);
+		
+		mysql_close ($mysql_con);
 		printf ($json_string);
 		exit;
+	}
+	
+	if ($_GET['modo'] == 'count') {
+		if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) exit;
+		if (!isset ($_GET['tipo'])) exit;
+		
+		if ($_GET['tipo'] == 'alumnos') {
+			if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) exit;
+			
+			$mate = strtoupper ($_GET['materia']);
+			
+			require_once '../mysql-con.php';
+			
+			/* SELECT COUNT (*) AS TOTAL FROM Grupos AS G INNER JOIN Secciones AS S ON G.Nrc = S.Nrc WHERE S.Materia = 'CC204' */
+			$query = sprintf ("SELECT COUNT(*) AS TOTAL FROM Grupos AS G INNER JOIN Secciones AS S ON G.Nrc = S.Nrc WHERE S.Materia = '%s'", $mate);
+			$result = mysql_query ($query, $mysql_con);
+			
+			$json_object = mysql_fetch_object ($result);
+			
+			mysql_free_result ($result);
+			$json_string = json_encode ($json_object);
+			
+			mysql_close ($mysql_con);
+			printf ($json_string);
+			exit;
+		}
 	}
 ?>

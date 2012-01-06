@@ -49,6 +49,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				if ($('#materia').val() == 'NULL') {
 					$('#evaluacion').empty ();
 					$('#evaluacion').append ($("<option></option>").attr("value", "NULL").text("Selecciona una materia primero"));
+					$('#aprox').val("indefinido");
 					return;
 				}
 				$.getJSON("json.php",
@@ -63,8 +64,58 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 						$('#evaluacion').append ($("<option></option>").attr("value", item.Tipo).text(item.Descripcion));
 					});
 				});
+				
+				actualizar_aprox ();
+			});
+			
+			$('#no_alumnos').focusout(function() {
+				actualizar_aprox ();
 			});
 		});
+	</script>
+	<script language="javascript" type="text/javascript">
+		function actualizar_aprox () {
+			if (document.getElementById ('grupos').checked) return;
+			
+			if ($('#materia').val() == 'NULL') {
+				$('#aprox').val("indefinido");
+				return;
+			}
+			
+			var num = parseInt ($('#no_alumnos').val ());
+			
+			if (!isNaN (num)) {
+				/* Calcular el aproximado de salones */
+				$.getJSON ("json.php",
+				{
+					modo: 'count',
+					tipo: 'alumnos',
+					materia: $('#materia').val()
+				},
+				function (data) {
+					var n_salones = Math.ceil (data.TOTAL / num);
+					$('#aprox').val(n_salones);
+				});
+			} else {
+				$('#aprox').val("indefinido");
+			}
+		}
+		
+		function por_grupos () {
+			if (document.getElementById ('grupos').checked) {
+				document.getElementById ('no_alumnos').disabled = true;
+				document.getElementById ('aprox').disabled = true;
+				document.getElementById ('aprox').value = "No aplica";
+			}
+		}
+		
+		function por_otros () {
+			if (!document.getElementById ('grupos').checked) {
+				document.getElementById ('no_alumnos').disabled = false;
+				document.getElementById ('aprox').disabled = false;
+				actualizar_aprox ();
+			}
+		}
 	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
@@ -94,9 +145,9 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 		echo "<p>Fecha y hora de aplicación:<input type=\"text\" id=\"SFecha\" /><input type=\"hidden\" id=\"fecha\" name=\"fecha\" /></p>\n";
 		
 		echo "<p>Ordernar los alumnos:</p>\n";
-		echo "<input type=\"radio\" name=\"select_order\" id=\"order\" value=\"order\" checked=\"checked\" /><label for=\"order\">Alfabeticamente</label><br />\n";
-		echo "<input type=\"radio\" name=\"select_order\" id=\"random\" value=\"random\" /><label for=\"random\">Aleatoriamente</label><br />\n";
-		echo "<input type=\"radio\" name=\"select_order\" id=\"grupos\" value=\"grupos\" /><label for=\"grupos\">Por grupos</label><br />\n";
+		echo "<input type=\"radio\" name=\"select_order\" id=\"order\" value=\"order\" checked=\"checked\" onchange=\"por_otros ()\" /><label for=\"order\">Alfabeticamente</label><br />\n";
+		echo "<input type=\"radio\" name=\"select_order\" id=\"random\" value=\"random\" onchange=\"por_otros ()\" /><label for=\"random\">Aleatoriamente</label><br />\n";
+		echo "<input type=\"radio\" name=\"select_order\" id=\"grupos\" value=\"grupos\" onchange=\"por_grupos ()\" /><label for=\"grupos\">Por grupos</label><br />\n";
 		
 		echo "<p>Número de alumnos por salón: <input type=\"text\" id=\"no_alumnos\" name=\"no_alumnos\" value=\"20\" /></p>";
 		
