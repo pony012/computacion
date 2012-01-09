@@ -60,6 +60,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				},
 				function(data) {
 					$('#evaluacion').empty ();
+					$('#evaluacion').append ($("<option></option>").attr("value", "NULL").attr("selected", "selected").text("Seleccione una forma de evaluación"));
 					$.each(data, function(i,item){
 						$('#evaluacion').append ($("<option></option>").attr("value", item.Tipo).text(item.Descripcion));
 					});
@@ -84,7 +85,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 			
 			var num = parseInt ($('#no_alumnos').val ());
 			
-			if (!isNaN (num)) {
+			if (!isNaN (num) && num > 0) {
 				/* Calcular el aproximado de salones */
 				$.getJSON ("json.php",
 				{
@@ -98,6 +99,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				});
 			} else {
 				$('#aprox').val("indefinido");
+				$('#no_alumnos').val (0);
 			}
 		}
 		
@@ -116,6 +118,34 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				actualizar_aprox ();
 			}
 		}
+		
+		function validar () {
+			if (document.getElementById ("materia").value == "NULL" || document.getElementById ("evaluacion").value == "NULL") {
+				alert ("No ha seleccionado una materia, o forma de evaluación");
+				return false;
+			}
+			if (!document.getElementById ('grupos').checked) {
+				var no_al = parseInt (document.getElementById ("no_alumnos").value);
+			
+				if (isNaN (no_al) || no_al < 1) {
+					/* El número de alumnos por salón es inválido */
+					alert ("El número de alumnos por salón es inválido");
+					return false;
+				}
+			}
+			var fecha = $('#SFecha').datetimepicker('getDate');
+			
+			if (fecha == null) {
+				alert ("Fecha es null");
+				return false;
+			}
+			
+			var tf = fecha.getTime() / 1000;
+			
+			document.getElementById ("fecha").value = parseInt (tf);
+			
+			return true;
+		}
 	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
@@ -124,7 +154,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 </head>
 <body>
 	<h1>Cálculo de salones automático</h1>
-	<form>
+	<form action="post_auto_salones.php" method="post" onsubmit="return validar ()">
 	<?php
 		require_once '../mysql-con.php';
 		
@@ -154,4 +184,6 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 		echo "<p>Cantidad de salones a utilizar: <input type=\"text\" id=\"aprox\" readonly=\"readonly\" value=\"indefinido\" /></p>";
 		
 	?>
+	<input type="submit" value="Generar salones" />
+	<input type="submit" value="Generar salones y editar" />
 	</form>
