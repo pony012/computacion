@@ -80,10 +80,40 @@
 			}
 		}
 		
+		mysql_free_result ($result);
+		
 		if ($g != 0) {
 			$query_aplicadores = substr_replace ($query_aplicadores, ";", -1);
 			mysql_query ($query_aplicadores, $mysql_con);
 		}
+		
+		header ("Location: aplicadores.php?auto=ok");
+		exit;
+	} else if ($_POST['select_order'] == 'grupos') {
+		$query = sprintf ("SELECT Nrc, Maestro FROM Secciones WHERE Materia='%s'", $_POST['materia']);
+		
+		$result = mysql_query ($query, $mysql_con);
+		
+		$salon = 1;
+		while (($nrc = mysql_fetch_object ($result))) {
+			/* Por cada Nrc, generar un query extendido */
+			$query_aplicadores = "INSERT INTO Aplicadores (Alumno, Materia, Tipo, Salon, FechaHora, Maestro) VALUES ";
+			
+			$query = sprintf ("SELECT Alumno FROM Grupos WHERE Nrc = '%s'", $nrc->Nrc);
+			
+			$res_al = mysql_query ($query);
+			
+			while (($object = mysql_fetch_object ($res_al))) {
+				$query_aplicadores = $query_aplicadores . sprintf ("('%s', '%s', '%s', 'Salón %s', FROM_UNIXTIME ('%s'), '%s'),", $object->Alumno, $_POST['materia'], $_POST['evaluacion'], $salon, $tiempo_fecha, $nrc->Maestro);
+			}
+			mysql_free_result ($res_al);
+			
+			$query_aplicadores = substr_replace ($query_aplicadores, ";", -1);
+			mysql_query ($query_aplicadores, $mysql_con);
+			$salon++;
+		}
+		
+		mysql_free_result ($result);
 		
 		header ("Location: aplicadores.php?auto=ok");
 		exit;
