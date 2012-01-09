@@ -127,9 +127,9 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 			if (!document.getElementById ('grupos').checked) {
 				var no_al = parseInt (document.getElementById ("no_alumnos").value);
 			
-				if (isNaN (no_al) || no_al < 1) {
+				if (isNaN (no_al) || no_al < 10) {
 					/* El número de alumnos por salón es inválido */
-					alert ("El número de alumnos por salón es inválido");
+					alert ("El número de alumnos por salón es inválido\n10 es el número mínimo");
 					return false;
 				}
 			}
