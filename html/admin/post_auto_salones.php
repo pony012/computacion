@@ -68,7 +68,7 @@
 		
 		while (($object = mysql_fetch_object ($result))) {
 			$g++;
-			$query_aplicadores = $query_aplicadores . sprintf ("('%s', '%s', '%s', 'Salón %s', FROM_UNIXTIME ('%s'), '%s'),", $object->Alumno, $_POST['materia'], $_POST['evaluacion'], $salon, $tiempo_fecha, $_SESSION['codigo']);
+			$query_aplicadores = $query_aplicadores . sprintf ("('%s', '%s', '%s', 'Salon %s', FROM_UNIXTIME ('%s'), '%s'),", $object->Alumno, $_POST['materia'], $_POST['evaluacion'], $salon, $tiempo_fecha, $_SESSION['codigo']);
 			
 			if ($g == $_POST['no_alumnos']) {
 				/* Ejecutar la query, resetar la consulta y aumentar el salón */
@@ -104,7 +104,7 @@
 			$res_al = mysql_query ($query);
 			
 			while (($object = mysql_fetch_object ($res_al))) {
-				$query_aplicadores = $query_aplicadores . sprintf ("('%s', '%s', '%s', 'Salón %s', FROM_UNIXTIME ('%s'), '%s'),", $object->Alumno, $_POST['materia'], $_POST['evaluacion'], $salon, $tiempo_fecha, $nrc->Maestro);
+				$query_aplicadores = $query_aplicadores . sprintf ("('%s', '%s', '%s', 'Salon %s', FROM_UNIXTIME ('%s'), '%s'),", $object->Alumno, $_POST['materia'], $_POST['evaluacion'], $salon, $tiempo_fecha, $nrc->Maestro);
 			}
 			mysql_free_result ($res_al);
 			

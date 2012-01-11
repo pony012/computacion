@@ -31,12 +31,12 @@
 	setlocale (LC_ALL, "es_MX.UTF-8");
 	require_once '../mysql-con.php';
 	
-	/* SELECT DISTINCT `Materia`, `Salon`, `FechaHora`,`Tipo`,`Maestro` FROM `Aplicadores` */
-	$query = "SELECT DISTINCT A.Materia, A.Salon, A.FechaHora, A.Tipo, A.Maestro, Mat.Descripcion, M.Nombre, M.Apellido, E.Descripcion AS Evaluacion FROM Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Maestros AS M ON A.Maestro = M.Codigo INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id ORDER BY Materia, Tipo, Salon, FechaHora";
+	/* SELECT COUNT(DISTINCT A.Materia, A.Tipo) AS TOTAL FROM Aplicadores AS A */
+	$query = "SELECT COUNT(DISTINCT Materia, Tipo) AS TOTAL FROM Aplicadores";
 	
 	$result = mysql_query ($query, $mysql_con);
-	/* FIXME: Número de filas */
-	$total = mysql_num_rows ($result);
+	$object = mysql_fetch_object ($result);
+	$total = $object->TOTAL;
 	mysql_free_result ($result);
 	
 	$offset = (isset ($_GET['off'])) ? $_GET['off'] : 0;
@@ -48,21 +48,21 @@
 	if ($offset < 0) $offset = 0;
 	if (($offset + $cant) >= $total) $show = $total - $offset;
 	
-	printf ("<p>Mostrando salones del %s al %s</p>", ($offset + 1), ($offset + $show));
+	printf ("<p>Departamentales asignados (mostrando del %s al %s)</p>", ($offset + 1), ($offset + $show));
 	
-	$query = sprintf ("SELECT DISTINCT A.Materia, A.Salon, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Tipo, A.Maestro, Mat.Descripcion, M.Nombre, M.Apellido, E.Descripcion AS Evaluacion FROM Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Maestros AS M ON A.Maestro = M.Codigo INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id ORDER BY Materia, Tipo, Salon, FechaHora LIMIT %s, %s", $offset, $show);
+	/* SELECT DISTINCT A.Materia, A.Tipo, M.Descripcion, E.Descripcion AS Evaluaciones FROM Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id */
+	$query = sprintf ("SELECT DISTINCT A.Materia, A.Tipo, M.Descripcion, E.Descripcion AS Evaluacion FROM Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id ORDER BY A.Materia, A.Tipo LIMIT %s, %s", $offset, $show);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
 	echo "<table border=\"1\">";
 	
-	echo "<thead><tr><th>Materia</th><th>Salón</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Maestro</th></tr></thead>\n";
+	echo "<thead><tr><th>Materia</th><th>Tipo</th></tr></thead>\n";
 	
 	echo "<tbody>";
 	while (($object = mysql_fetch_object ($result))) {
-		printf ("<tr><td><a href=\"ver_materia.php?clave=%s\">%s</a> %s</td><td>%s</td>", $object->Materia, $object->Materia, $object->Descripcion, $object->Salon);
-		printf ("<td>%s</td><td>%s</td>", strftime ("%a %e %h %Y", $object->FechaHora), strftime ("%H:%M", $object->FechaHora));
-		printf ("<td>%s</td><td>%s %s</td></tr>\n", $object->Evaluacion, $object->Apellido, $object->Nombre);
+		printf ("<tr><td><a href=\"aplicadores_materia.php?materia=%s\">%s %s</a></td>", $object->Materia, $object->Materia, $object->Descripcion);
+		printf ("<td><a href=\"aplicadores_materia.php?materia=%s&tipo=%s\">%s</a></td></tr>\n", $object->Materia, $object->Tipo, $object->Evaluacion);
 	}
 	
 	mysql_free_result ($result);
