@@ -82,13 +82,14 @@
 		$object = mysql_fetch_object ($result);
 		
 		printf ("<p>Departamentales para la materia %s</p>\n", $object->Descripcion);
+		echo "<p>Ver <a href=\"aplicadores_general.php\">todas las materias</a></p>";
 		mysql_free_result ($result);
 	} else {
-		$query = sprintf ("SELECT M.Descripcion, E.Descripcion AS Evaluacion FROM Porcentajes AS P INNER JOIN Materias AS M ON P.Clave = M.Clave INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave = '%s' AND Tipo = '%s'", $_GET['materia'], $_GET['tipo']);
+		$query = sprintf ("SELECT P.Clave, M.Descripcion, E.Descripcion AS Evaluacion FROM Porcentajes AS P INNER JOIN Materias AS M ON P.Clave = M.Clave INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave = '%s' AND Tipo = '%s'", $_GET['materia'], $_GET['tipo']);
 		$result = mysql_query ($query, $mysql_con);
 		$object = mysql_fetch_object ($result);
 		
-		printf ("<p>Salones asignados para %s en la fomra de evaluación %s</p>\n", $object->Descripcion, $object->Evaluacion);
+		printf ("<p>Salones asignados para <a href=\"aplicadores_materia.php?materia=%s\">%s</a> en la fomra de evaluación %s</p>\n", $object->Clave, $object->Descripcion, $object->Evaluacion);
 		mysql_free_result ($result);
 	}
 	
@@ -117,7 +118,9 @@
 		echo "<tbody>";
 		
 		while (($object = mysql_fetch_object ($result))) {
-			printf ("<tr><td>%s %s</td><td>%s</td>", $object->Materia, $object->Descripcion, $object->Salon);
+			printf ("<tr><td>%s %s</td>", $object->Materia, $object->Descripcion);
+			$link = array ('materia' => $object->Materia, 'tipo' => $object->Tipo, 'salon' => $object->Salon);
+			printf ("<td><a href=\"ver_salon_aplicador.php?%s\">%s</a></td>", htmlentities (http_build_query ($link)), $object->Salon);
 			printf ("<td>%s</td><td>%s</td>", strftime ("%a %e %h %Y", $object->FechaHora), strftime ("%H:%M", $object->FechaHora));
 			printf ("<td>%s</td><td>%s %s</td></tr>\n", $object->Evaluacion, $object->Apellido, $object->Nombre);
 		}
