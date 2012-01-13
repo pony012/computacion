@@ -52,7 +52,7 @@
 		return $codigo;
 	}
 	
-	function agregar_alumno (&$alumnos, $codigo, $linea, $carrera) {
+	function agregar_alumno (&$alumnos, &$carreras, $codigo, $linea, $carrera) {
 		settype ($codigo, "string");
 		if (isset ($alumnos [$codigo])) return;
 		
@@ -61,6 +61,11 @@
 		$apellido = trim (ucwords (strtolower (arreglar_n ($explote[0]))));
 		$nombre = trim (ucwords (strtolower (arreglar_n ($explote[1]))));
 		$carrera = trim (strtoupper ($carrera));
+		
+		/* Si la carrera no existe, agregarla */
+		if (!isset ($carreras [$carrera])) {
+			$carreras [$carrera] = "Una carrera con clave " . $carrera;
+		}
 		
 		$alumnos [$codigo] = array (0 => $nombre, 1 => $apellido, 2 => $carrera);
 	}
@@ -88,6 +93,7 @@
 		$alumnos = array ();
 		$maestros = array ();
 		$secciones = array ();
+		$carreras = array ();
 		
 		/* Primera pasada, llenar los arreglos */
 		while (($linea = fgetcsv ($archivo, 400, ",", "\"")) !== FALSE) {
@@ -99,12 +105,22 @@
 			
 			agregar_materia ($materias, $linea[1], $linea[2]);
 			$codigo_del_maestro = agregar_maestro ($maestros, $linea[16]);
-			agregar_alumno ($alumnos, $linea[17], $linea[18], $linea[19]);
+			agregar_alumno ($alumnos, $carreras, $linea[17], $linea[18], $linea[19]);
 			agregar_seccion ($secciones, $linea[0], $linea[1], $linea[3], $codigo_del_maestro);
 		}
 		
+		/* Crear todas las carreras */
+		$query_car = "INSERT INTO Carreras (Clave, Descripcion) VALUES ";
 		
-		/* Crear todo */
+		foreach ($carreras as $clave => $descripcion) {
+			$query_car = $query_car . sprintf ("('%s', '%s'),", $clave, $descripcion);
+		}
+		
+		$query_car = substr_replace ($query_car, " ", -1) . " ON DUPLICATE KEY UPDATE 0=0;";
+		
+		mysql_query ($query_car, $mysql_con);
+		
+		/* Crear todas las materias */
 		$query_mat = "INSERT INTO Materias (Clave, Descripcion) VALUES ";
 		
 		
