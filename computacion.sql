@@ -52,7 +52,9 @@ CREATE TABLE IF NOT EXISTS `Aplicadores` (
   `Salon` char(20) NOT NULL,
   `FechaHora` datetime NOT NULL,
   `Tipo` int(11) NOT NULL,
-  `Maestro` int(7) NOT NULL
+  `Maestro` int(7) DEFAULT NULL,
+  PRIMARY KEY (`Alumno`,`Materia`,`Tipo`),
+  KEY `Alumno` (`Alumno`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --

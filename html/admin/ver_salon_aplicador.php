@@ -59,14 +59,24 @@
 	/* SELECT A.Materia, M.Descripcion, A.Maestro, MAS.Nombre, MAS.Apellido, A.Tipo, E.Descripcion AS Evaluacion, UNIX_TIMESTAMP (A.FechaHora) AS
 	 FechaHora, A.Salon FROM Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Maestros AS MAS ON A.Maestro = MAS.Codigo
 	  INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Materia = 'CC422' AND A.Tipo = '2' AND A.Salon = 'Salón 2' LIMIT 1*/
-	$query = sprintf ("SELECT A.Materia, M.Descripcion, A.Maestro, MAS.Nombre, MAS.Apellido, A.Tipo, E.Descripcion AS Evaluacion, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Salon FROM Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Maestros AS MAS ON A.Maestro = MAS.Codigo INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Materia = '%s' AND A.Tipo = '%s' AND A.Salon = '%s' LIMIT 1", $_GET['materia'], $_GET['tipo'], $lugar);
+	$query = sprintf ("SELECT A.Materia, M.Descripcion, A.Maestro, A.Tipo, E.Descripcion AS Evaluacion, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Salon FROM Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Materia = '%s' AND A.Tipo = '%s' AND A.Salon = '%s' LIMIT 1", $_GET['materia'], $_GET['tipo'], $lugar);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
 	$datos_salon = mysql_fetch_object ($result);
 	mysql_free_result ($result);
 	
-	printf ("<p>Materia: %s %s<br />\nMaestro a cargo: %s %s<br />\nForma de evaluación: %s<br />\nFecha: %s<br />Hora: %s</p>\n", $datos_salon->Materia, $datos_salon->Descripcion, $datos_salon->Apellido, $datos_salon->Nombre, $datos_salon->Evaluacion, strftime ("%a %e %h %Y", $datos_salon->FechaHora), strftime ("%H:%M", $datos_salon->FechaHora));
+	printf ("<p>Materia: %s %s<br />\n", $datos_salon->Materia, $datos_salon->Descripcion);
+	if (!is_null ($datos_salon->Maestro)) {
+		$query_m = sprintf ("SELECT Nombre, Apellido FROM Maestros WHERE Codigo = '%s'", $datos_salon->Maestro);
+		$result_m = mysql_query ($query_m);
+		$maestro = mysql_fetch_object ($result_m);
+		printf ("Maestro a cargo: %s %s<br />\n", $maestro->Apellido, $maestro->Nombre);
+		mysql_free_result ($result_m);
+	} else {
+		echo "Maestro a cargo: <b>Indefinido</b><br />\n";
+	}
+	printf ("Forma de evaluación: %s<br />\nFecha: %s<br />Hora: %s</p>\n", $datos_salon->Evaluacion, strftime ("%a %e %h %Y", $datos_salon->FechaHora), strftime ("%H:%M", $datos_salon->FechaHora));
 	
 	echo "<table border=\"1\">";
 	

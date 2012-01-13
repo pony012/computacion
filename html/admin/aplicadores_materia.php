@@ -112,7 +112,8 @@
 		echo "</tbody>";
 	} else {
 		echo "<thead><tr><th>Materia</th><th>Salón</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Maestro</th></tr></thead>\n";
-		$query = sprintf ("SELECT DISTINCT A.Materia, Mat.Descripcion, A.Salon, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Tipo, E.Descripcion AS Evaluacion, A.Maestro, M.Nombre, M.Apellido FROM Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id INNER JOIN Maestros AS M ON A.Maestro = M.Codigo WHERE A.Materia = '%s' AND A.Tipo = '%s' ORDER BY A.Salon, FechaHora LIMIT %s, %s", $_GET['materia'], $_GET['tipo'], $offset, $show);
+		/* INNER JOIN Maestros AS M ON A.Maestro = M.Codigo */
+		$query = sprintf ("SELECT DISTINCT A.Materia, Mat.Descripcion, A.Salon, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Tipo, E.Descripcion AS Evaluacion, A.Maestro FROM Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Materia = '%s' AND A.Tipo = '%s' ORDER BY A.Salon, FechaHora LIMIT %s, %s", $_GET['materia'], $_GET['tipo'], $offset, $show);
 		$result = mysql_query ($query, $mysql_con);
 		
 		echo "<tbody>";
@@ -122,9 +123,20 @@
 			$link = array ('materia' => $object->Materia, 'tipo' => $object->Tipo, 'salon' => $object->Salon);
 			printf ("<td><a href=\"ver_salon_aplicador.php?%s\">%s</a></td>", htmlentities (http_build_query ($link)), $object->Salon);
 			printf ("<td>%s</td><td>%s</td>", strftime ("%a %e %h %Y", $object->FechaHora), strftime ("%H:%M", $object->FechaHora));
-			printf ("<td>%s</td><td>%s %s</td></tr>\n", $object->Evaluacion, $object->Apellido, $object->Nombre);
+			printf ("<td>%s</td>\n", $object->Evaluacion);
+			if (!is_null ($object->Maestro)) {
+				$query_m = sprintf ("SELECT Nombre, Apellido FROM Maestros WHERE Codigo = '%s'", $object->Maestro);
+				$result_m = mysql_query ($query_m);
+				$maestro = mysql_fetch_object ($result_m);
+				printf ("<td>%s %s</td></tr>\n", $maestro->Apellido, $maestro->Nombre);
+				mysql_free_result ($result_m);
+			} else {
+				echo "<td><b>Indefinido</b></td></tr>\n";
+			}
 		}
 		echo "</tbody>";
+		
+		mysql_free_result ($result);
 	}
 	
 	echo "</table>";

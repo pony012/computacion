@@ -72,7 +72,7 @@
 			
 			if ($g == $_POST['no_alumnos']) {
 				/* Ejecutar la query, resetar la consulta y aumentar el salón */
-				$query_aplicadores = substr_replace ($query_aplicadores, ";", -1);
+				$query_aplicadores = substr_replace ($query_aplicadores, " ", -1) . " ON DUPLICATE KEY UPDATE Salon = VALUES(Salon), FechaHora = VALUES(FechaHora), Maestro = VALUES(Maestro);";
 				mysql_query ($query_aplicadores, $mysql_con);
 				$query_aplicadores = "INSERT INTO Aplicadores (Alumno, Materia, Tipo, Salon, FechaHora, Maestro) VALUES ";
 				$salon++;
@@ -83,7 +83,7 @@
 		mysql_free_result ($result);
 		
 		if ($g != 0) {
-			$query_aplicadores = substr_replace ($query_aplicadores, ";", -1);
+			$query_aplicadores = substr_replace ($query_aplicadores, " ", -1) . " ON DUPLICATE KEY UPDATE Salon = VALUES(Salon), FechaHora = VALUES(FechaHora), Maestro = VALUES(Maestro);"
 			mysql_query ($query_aplicadores, $mysql_con);
 		}
 		
