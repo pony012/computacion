@@ -15,12 +15,12 @@
 	}
 	
 	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) {
-		header ("Location: aplicadores.php?e=clave");
+		header ("Location: aplicadores_general.php?e=clave");
 		exit;
 	}
 	
 	if (!preg_match ("/^([0-9]){1,7}$/", $_GET['maestro'])) {
-		header ("Location: aplicadores.php?e=maestro");
+		header ("Location: aplicadores_general.php?e=maestro");
 		exit;
 	}
 	
@@ -35,7 +35,7 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
-		header ("Location: aplicadores.php?e=noexiste");
+		header ("Location: aplicadores_general.php?e=noexiste");
 		exit;
 	}
 	
@@ -46,7 +46,7 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
-		header ("Location: aplicadores.php?e=maestro");
+		header ("Location: aplicadores_general.php?e=maestro");
 		exit;
 	}
 	

@@ -31,7 +31,7 @@
 			echo "<li><a href=\"evaluaciones.php\">Formas de evaluación</a></li>";
 		}
 		if (isset ($_SESSION['permisos']['asignar_aplicadores']) && $_SESSION['permisos']['asignar_aplicadores'] == 1) {
-			echo "<li><a href=\"aplicadores.php\">Gestionar salones de aplicacion de exámenes</a></li>";
+			echo "<li><a href=\"aplicadores_general.php\">Gestionar salones de aplicacion de exámenes</a></li>";
 		}
 	?>
 	<li><a href="carreras.php">Carreras</a></li>

@@ -15,12 +15,12 @@
 	}
 	
 	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_POST['materia'])) {
-		header ("Location: aplicadores.php?e=clave");
+		header ("Location: aplicadores_general.php?e=clave");
 		exit;
 	}
 	
 	if (!isset ($_POST['select_order'])) {
-		header ("Location: aplicadores.php?e=unknown");
+		header ("Location: aplicadores_general.php?e=unknown");
 		exit;
 	}
 	
@@ -38,7 +38,7 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
-		header ("Location: aplicadores.php?e=noexiste");
+		header ("Location: aplicadores_general.php?e=noexiste");
 		exit;
 	}
 	
@@ -47,7 +47,7 @@
 	if ($_POST['select_order'] == 'order' || $_POST['select_order'] == 'random') {
 		settype ($_POST['no_alumnos'], 'integer');
 		if ($_POST['no_alumnos'] < 10) {
-			header ("Location: aplicadores.php?e=unknown");
+			header ("Location: aplicadores_general.php?e=unknown");
 			mysql_close ($mysql_con);
 			exit;
 		}
@@ -87,7 +87,7 @@
 			mysql_query ($query_aplicadores, $mysql_con);
 		}
 		
-		header ("Location: aplicadores.php?auto=ok");
+		header ("Location: aplicadores_general.php?auto=ok");
 		exit;
 	} else if ($_POST['select_order'] == 'grupos') {
 		$query = sprintf ("SELECT Nrc, Maestro FROM Secciones WHERE Materia='%s'", $_POST['materia']);
@@ -115,7 +115,7 @@
 		
 		mysql_free_result ($result);
 		
-		header ("Location: aplicadores.php?auto=ok");
+		header ("Location: aplicadores_general.php?auto=ok");
 		exit;
 	}
 ?>

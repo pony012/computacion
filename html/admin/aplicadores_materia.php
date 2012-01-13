@@ -15,7 +15,7 @@
 	}
 	
 	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) {
-		header ("Location: aplicadores.php?e=clave");
+		header ("Location: aplicadores_general.php?e=clave");
 		exit;
 	}
 	
@@ -34,7 +34,7 @@
 	if (mysql_num_rows ($result) == 0) {
 		mysql_free_result ($result);
 		mysql_close ($mysql_con);
-		header ("Location: aplicadores.php?e=noexiste");
+		header ("Location: aplicadores_general.php?e=noexiste");
 		exit;
 	}
 	
