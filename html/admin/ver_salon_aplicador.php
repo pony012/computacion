@@ -67,6 +67,26 @@
 	mysql_free_result ($result);
 	
 	printf ("<p>Materia: %s %s<br />\nMaestro a cargo: %s %s<br />\nForma de evaluación: %s<br />\nFecha: %s<br />Hora: %s</p>\n", $datos_salon->Materia, $datos_salon->Descripcion, $datos_salon->Apellido, $datos_salon->Nombre, $datos_salon->Evaluacion, strftime ("%a %e %h %Y", $datos_salon->FechaHora), strftime ("%H:%M", $datos_salon->FechaHora));
+	
+	echo "<table border=\"1\">";
+	
+	echo "<thead><tr><th>No. Lista</th><th>Código</th><th>Alumno</th></tr></thead>";
+	
+	/* SELECT A.Alumno, AL.Nombre, AL.Apellido FROM Aplicadores as A INNER JOIN Alumnos AS AL ON A.Alumno = AL.Codigo ORDER BY AL.Apellido, AL.Nombre */
+	$query = sprintf ("SELECT A.Alumno, AL.Nombre, AL.Apellido FROM Aplicadores as A INNER JOIN Alumnos AS AL ON A.Alumno = AL.Codigo WHERE A.Materia = '%s' AND A.Tipo = '%s' AND A.Salon = '%s' ORDER BY AL.Apellido, AL.Nombre", $_GET['materia'], $_GET['tipo'], $lugar);
+	
+	$result = mysql_query ($query, $mysql_con);
+	
+	echo "<tbody>";
+	$g = 0;
+	while (($object = mysql_fetch_object ($result))) {
+		$g++;
+		printf ("<tr><td>%s</td><td>%s</td><td>%s %s</td></tr>", $g, $object->Alumno, $object->Apellido, $object->Nombre);
+	}
+	echo "</tbody>";
+	mysql_free_result ($result);
+	
+	echo "</table>";
 ?>
 </html>
 </body>
