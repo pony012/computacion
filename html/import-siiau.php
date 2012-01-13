@@ -79,7 +79,7 @@
 		$result = mysql_query ("SELECT * FROM Evaluaciones WHERE Id = 1", $mysql_con);
 		
 		if (mysql_num_rows ($result) == 0) {
-			mysql_query ("INSERT INTO Evaluaciones VALUES (1, 'Departamental 1')", $mysql_con);
+			mysql_query ("INSERT INTO Evaluaciones (Id, Descripcion, Exclusiva) VALUES (1, 'Departamental 1', 0)", $mysql_con);
 		}
 		
 		mysql_free_result ($result);
