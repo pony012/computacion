@@ -143,7 +143,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 		echo "<p><input type=\"radio\" id=\"pre_salon_2\" name=\"pre_salon\" onchange=\"actualizar_cajas ()\"/><label for=\"pre_salon_2\">Un nuevo salón:</label>\n";
 		echo "<input type=\"text\" id=\"txt_salon\" name=\"salon\" disabled=\"disabled\" /></p>\n";
 		
-		echo "<p>Maestro a cargo del salón:<select name=\"maestro\" id=\"maestro\">\n";
+		echo "<p>Maestro a cargo del salón:<select name=\"maestro\" id=\"maestro\">\n<option value=\"NULL\" selected=\"selected\" >Pendiente</option>\n";
 		
 		$query = "SELECT Codigo, Nombre, Apellido FROM Maestros ORDER BY Apellido, Nombre";
 		$result = mysql_query ($query, $mysql_con);

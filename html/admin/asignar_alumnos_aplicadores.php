@@ -19,7 +19,7 @@
 		exit;
 	}
 	
-	if (!preg_match ("/^([0-9]){1,7}$/", $_GET['maestro'])) {
+	if (!preg_match ("/^([0-9]){1,7}$/", $_GET['maestro']) && $_GET['maestro'] != "NULL") {
 		header ("Location: aplicadores_general.php?e=maestro");
 		exit;
 	}
@@ -42,16 +42,18 @@
 	$datos = mysql_fetch_object ($result);
 	mysql_free_result ($result);
 	
-	$query = sprintf ("SELECT Codigo, Nombre, Apellido FROM Maestros WHERE Codigo = '%s'", $_GET['maestro']);
-	$result = mysql_query ($query, $mysql_con);
-	
-	if (mysql_num_rows ($result) == 0) {
-		header ("Location: aplicadores_general.php?e=maestro");
-		exit;
+	if ($_GET['maestro'] != "NULL") {
+		$query = sprintf ("SELECT Codigo, Nombre, Apellido FROM Maestros WHERE Codigo = '%s'", $_GET['maestro']);
+		$result = mysql_query ($query, $mysql_con);
+		
+		if (mysql_num_rows ($result) == 0) {
+			header ("Location: aplicadores_general.php?e=maestro");
+			exit;
+		}
+		
+		$maestro = mysql_fetch_object ($result);
+		mysql_free_result ($result);
 	}
-	
-	$maestro = mysql_fetch_object ($result);
-	mysql_free_result ($result);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -140,7 +142,12 @@
 		$tiempo_fecha = $_GET['fecha'] - ($_GET['fecha'] % 900);
 		printf ("<p>Fecha y hora seleccionada: %s</p><input type=\"hidden\" name=\"fechahora\" value=\"%s\" />\n", strftime ("%a %e %h %Y a las %H:%M", $tiempo_fecha), $tiempo_fecha);
 		printf ("<p>Salón: %s</p><input type=\"hidden\" name=\"salon\" value=\"%s\" />\n", $_GET['salon'], $_GET['salon']);
-		printf ("<p>Maestro a cargo: %s %s</p><input type=\"hidden\" name=\"maestro\" value=\"%s\" />\n", $maestro->Apellido, $maestro->Nombre, $maestro->Codigo);
+		
+		if ($_GET['maestro'] == "NULL") {
+			echo "<p>Maestro a cargo: <b>Pendiente</b><input type=\"hidden\" name=\"maestro\" value=\"NULL\" />\n";
+		} else {
+			printf ("<p>Maestro a cargo: %s %s</p><input type=\"hidden\" name=\"maestro\" value=\"%s\" />\n", $maestro->Apellido, $maestro->Nombre, $maestro->Codigo);
+		}
 		
 		echo "<table border=\"1\"><tbody>";
 		
