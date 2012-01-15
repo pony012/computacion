@@ -26,3 +26,40 @@ td .icon {
     margin: 0;
 }
 
+.advertencia, .error, .info, .pregunta
+{
+	padding-left:52px;
+	padding-top:16px;
+	min-height:52px;
+	/* background-color:#1F1F1F; */
+}
+
+.advertencia
+{
+	border:2px solid #f69724;
+	background:url('../img/warning.png') no-repeat 10px 10px;
+}
+
+.error
+{
+	border:2px solid #d93b30;
+	background:url('../img/error.png') no-repeat 10px 10px;
+}
+
+.pregunta
+{
+	border:2px solid #395e90;
+	background:url('../img/question.png') no-repeat 10px 10px;
+}
+
+.info
+{
+	border:2px solid #dce5f6;
+	background:url('../img/info.png') no-repeat 10px 10px;
+}
+
+.advertencia p, .error p, .pregunta p, .info p
+{
+	margin-top:0;
+}
+

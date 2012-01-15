@@ -15,12 +15,15 @@
 	}
 	
 	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['clave'])) {
-		header ("Location: materias.php?r=null");
+		header ("Location: materias.php");
 		exit;
 	}
 	
 	if (!isset ($_GET['confirmado_js']) || $_GET['confirmado_js'] != 1) {
-		header ("Location: materias.php?r=err");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 1;
+		$_SESSION['m_klass'] = 'n_js';
+		header ("Location: materias.php");
 		exit;
 	}
 	
@@ -52,6 +55,9 @@
 	$query = sprintf ("DELETE FROM Porcentajes WHERE Clave='%s'", $_GET['clave']);
 	mysql_query ($query, $mysql_con);
 	
-	header ("Location: materias.php?r=ok");
+	$_SESSION['mensaje'] = 1;
+	$_SESSION['m_tipo'] = 0;
+	$_SESSION['m_klass'] = 'm_r_ok';
+	header ("Location: materias.php");
 	mysql_close ($mysql_con);
 ?>

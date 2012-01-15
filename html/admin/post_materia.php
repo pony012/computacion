@@ -20,7 +20,10 @@
 	}
 	
 	if (count ($_POST['evals']) != count ($_POST['porcentajes']) || count ($_POST['evals']) <= 0) {
-		header ("Location: materias.php?e=eval");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 3;
+		$_SESSION['m_klass'] = 'm_wrong';
+		header ("Location: materias.php");
 		exit;
 	}
 	
@@ -38,13 +41,11 @@
 	
 	$suma = 0;
 	foreach ($nuevas as $key => $porcentaje) {
-		if ($porcentaje <= 0) {
-			header ("Location: materias.php?e=neg");
-			exit;
-		}
-		
-		if (!isset ($todas [$key])) {
-			header ("Location: materias.php?e=unknown");
+		if ($porcentaje <= 0 || !isset ($todas [$key])) {
+			$_SESSION['mensaje'] = 1;
+			$_SESSION['m_tipo'] = 3;
+			$_SESSION['m_klass'] = 'unknown';
+			header ("Location: materias.php");
 			exit;
 		}
 		
@@ -53,7 +54,10 @@
 	
 	if ($suma != 100) {
 		/* Suma incorrecta */
-		header ("Location: materias.php?e=suma");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 3;
+		$_SESSION['m_klass'] = 'm_wrong';
+		header ("Location: materias.php");
 		exit;
 	}
 	
@@ -61,7 +65,10 @@
 	
 	/* Validar la clave la materia */
 	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_POST['clave'])) {
-		header ("Location: materias.php?e=clave");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 3;
+		$_SESSION['m_klass'] = 'm_clave';
+		header ("Location: materias.php");
 		exit;
 	}
 	
@@ -74,7 +81,10 @@
 		$result = mysql_query ($query, $mysql_con);
 	
 		if (!$result) {
-			header ("Location: materias.php?e=desconocido");
+			$_SESSION['mensaje'] = 1;
+			$_SESSION['m_tipo'] = 3;
+			$_SESSION['m_klass'] = 'unknown';
+			header ("Location: materias.php");
 			exit;
 		}
 		
@@ -88,14 +98,20 @@
 		$query = substr_replace ($query, ";", -1);
 		mysql_query ($query, $mysql_con);
 		
-		header ("Location: materias.php?a=ok");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 0;
+		$_SESSION['m_klass'] = 'm_n_ok';
+		header ("Location: materias.php");
 	} else if ($_POST['modo'] == 'editar') {
 		$query = sprintf ("UPDATE Materias SET Descripcion='%s' WHERE Clave='%s'", mysql_real_escape_string ($_POST['descripcion']), $_POST['clave']);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
 		if (!$result) {
-			header ("Location: materias.php?a=desconocido");
+			$_SESSION['mensaje'] = 1;
+			$_SESSION['m_tipo'] = 3;
+			$_SESSION['m_klass'] = 'unknown';
+			header ("Location: materias.php");
 			exit;
 		}
 		
@@ -149,7 +165,10 @@
 			mysql_query ($query_cal, $mysql_con);
 		}
 		
-		header ("Location: materias.php?a=ok");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 0;
+		$_SESSION['m_klass'] = 'm_a_ok';
+		header ("Location: materias.php");
 	}
 	
 	mysql_close ($mysql_con);
