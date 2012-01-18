@@ -53,8 +53,13 @@
 		echo "<tbody>";
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
-			echo "<td>".$object->Clave."</td>";
-			echo "<td>".$object->Descripcion."</td>";
+			
+			if (isset ($_SESSION['permisos']['grupos_globales']) && $_SESSION['permisos']['grupos_globales'] == 1) {
+				printf ("<td><a href=\"ver_por_carrera.php?carrera=%s\">%s</a></td>", $object->Clave, $object->Clave);
+			} else {
+				printf ("<td>%s</td>", $object->Clave);
+			}
+			printf ("<td>%s</td>", $object->Descripcion);
 			
 			echo "<td>";
 			if ($_SESSION['permisos']['admin_carreras'] == 1) {
