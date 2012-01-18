@@ -108,6 +108,9 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				document.getElementById ('no_alumnos').disabled = true;
 				document.getElementById ('aprox').disabled = true;
 				document.getElementById ('aprox').value = "No aplica";
+				
+				document.getElementById ('disponibles').disabled = true;
+				document.getElementById ('maestros').disabled = true;
 			}
 		}
 		
@@ -116,6 +119,9 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				document.getElementById ('no_alumnos').disabled = false;
 				document.getElementById ('aprox').disabled = false;
 				actualizar_aprox ();
+				
+				document.getElementById ('disponibles').disabled = false;
+				document.getElementById ('maestros').disabled = false;
 			}
 		}
 		
@@ -144,7 +150,34 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 			
 			document.getElementById ("fecha").value = parseInt (tf);
 			
+			var lista_m = document.getElementById ("lista_m");
+			var maestros = document.getElementById ("maestros");
+			
+			for (i = 0; i < maestros.length; i++) {
+				lista_m.innerHTML += "<input type=\"hidden\" name=\"maestro[]\" value=\"" + maestros.options[i].value + "\" /\>";
+			}
+			
 			return true;
+		}
+		
+		function agregar () {
+			var disponibles = document.getElementById ("disponibles");
+			var maestros = document.getElementById ("maestros");
+			var num = disponibles.options[disponibles.selectedIndex].value;
+			
+			for (i = 0; i < maestros.length; i++) {
+				if (maestros.options[i].value == num) return; /* Item duplicado */
+			}
+			var nueva_opc = document.createElement ("option");
+			nueva_opc.text = disponibles.options[disponibles.selectedIndex].text;
+			nueva_opc.value = num;
+			maestros.add (nueva_opc, null);
+		}
+		
+		function eliminar () {
+			var maestros = document.getElementById ("maestros");
+			if (maestros.options.length == 0) return;
+			maestros.remove (maestros.selectedIndex);
 		}
 	</script>
 	<title><?php
@@ -170,20 +203,30 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 		}
 		echo "</select></p>";
 		mysql_free_result ($result);
-		
-		echo "<p>Evaluación: <select name=\"evaluacion\" id=\"evaluacion\"><option value=\"NULL\" selected=\"selected\">Seleccione una materia primero</option></select></p>\n";
-		echo "<p>Fecha y hora de aplicación:<input type=\"text\" id=\"SFecha\" /><input type=\"hidden\" id=\"fecha\" name=\"fecha\" /></p>\n";
-		
-		echo "<p>Ordernar los alumnos:</p>\n";
-		echo "<input type=\"radio\" name=\"select_order\" id=\"order\" value=\"order\" checked=\"checked\" onchange=\"por_otros ()\" /><label for=\"order\">Alfabeticamente</label><br />\n";
-		echo "<input type=\"radio\" name=\"select_order\" id=\"random\" value=\"random\" onchange=\"por_otros ()\" /><label for=\"random\">Aleatoriamente</label><br />\n";
-		echo "<input type=\"radio\" name=\"select_order\" id=\"grupos\" value=\"grupos\" onchange=\"por_grupos ()\" /><label for=\"grupos\">Por grupos</label><br />\n";
-		
-		echo "<p>Número de alumnos por salón: <input type=\"text\" id=\"no_alumnos\" name=\"no_alumnos\" value=\"20\" /></p>";
-		
-		echo "<p>Cantidad de salones a utilizar: <input type=\"text\" id=\"aprox\" readonly=\"readonly\" value=\"indefinido\" /></p>";
-		
 	?>
-	<input type="submit" value="Generar salones" />
-	<input type="submit" value="Generar salones y editar" />
+	<p>Evaluación: <select name="evaluacion" id="evaluacion"><option value="NULL" selected="selected">Seleccione una materia primero</option></select></p>
+	<p>Fecha y hora de aplicación:<input type="text" id="SFecha" /><input type="hidden" id="fecha" name="fecha" /></p>
+	<p>Ordernar los alumnos:</p>
+	<input type="radio" name="select_order" id="order" value="order" checked="checked" onchange="por_otros ()" /><label for="order">Alfabeticamente</label><br />
+	<input type="radio" name="select_order" id="random" value="random" onchange="por_otros ()" /><label for="random">Aleatoriamente</label><br />
+	<input type="radio" name="select_order" id="grupos" value="grupos" onchange="por_grupos ()" /><label for="grupos">Por grupos</label><br />
+	<p>Número de alumnos por salón: <input type="text" id="no_alumnos" name="no_alumnos" value="20" /></p>
+	<p>Cantidad de salones a utilizar: <input type="text" id="aprox" readonly="readonly" value="indefinido" /></p>
+	<p>Preasignar maestros:<br />
+	<?php
+		$query = "SELECT Codigo, Nombre, Apellido FROM Maestros ORDER BY Apellido, Nombre";
+		
+		$result = mysql_query ($query, $mysql_con);
+		
+		echo "<select id=\"disponibles\">\n";
+		while (($object = mysql_fetch_object ($result))) {
+			printf ("<option value=\"%s\">%s %s</option>\n", $object->Codigo, $object->Apellido, $object->Nombre);
+		}
+		echo "</select>";
+		mysql_free_result ($result);
+	?><img id="Agregar" src="../img/add2.png" alt="Agregar" onclick="return agregar ()" /></p>
+	<select id="maestros" size="20"><optgroup label="Maestros seleccionados" ></optgroup></select><img id="Eliminar" src="../img/remove2.png" alt="Eliminar" onclick="return eliminar ()" />
+	<span id="lista_m"></span>
+	<p><input type="submit" value="Generar salones" />
+	<input type="submit" value="Generar salones y editar" /></p>
 	</form>

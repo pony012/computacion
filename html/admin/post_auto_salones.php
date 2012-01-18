@@ -44,6 +44,25 @@
 	
 	mysql_free_result ($result);
 	
+	/* Verificar los maestros */
+	foreach  ($_POST['maestro'] as $key => $m) {
+		if (!preg_match ("/^([0-9]){1,7}$/", $m)) {
+			unset ($_POST['maestro'][$key]);
+			continue;
+		}
+		
+		$query = sprintf ("SELECT Codigo FROM Maestros WHERE Codigo = '%s'", $m);
+		$result = mysql_query ($query, $mysql_con);
+		
+		if (mysql_num_rows ($result) == 0) {
+			unset ($_POST['maestro'][$key]);
+		}
+		mysql_free_result ($result);
+	}
+	
+	/* Re-indexar el arreglo */
+	$_POST['maestro'] = array_values ($_POST['maestro']);
+	
 	if ($_POST['select_order'] == 'order' || $_POST['select_order'] == 'random') {
 		settype ($_POST['no_alumnos'], 'integer');
 		if ($_POST['no_alumnos'] < 10) {
@@ -68,9 +87,19 @@
 		
 		while (($object = mysql_fetch_object ($result))) {
 			$g++;
-			$query_aplicadores = $query_aplicadores . sprintf ("('%s', '%s', '%s', 'Salon %s', FROM_UNIXTIME ('%s'), '%s'),", $object->Alumno, $_POST['materia'], $_POST['evaluacion'], $salon, $tiempo_fecha, $_SESSION['codigo']);
+			
+			/* Tomar un maestro de la lista */
+			if (isset ($_POST['maestro'][$salon - 1])) {
+				$un_maestro = $_POST['maestro'][$salon - 1];
+			} else {
+				$un_maestro = "NULL";
+			}
+			
+			$query_aplicadores = $query_aplicadores . sprintf ("('%s', '%s', '%s', 'Salon %s', FROM_UNIXTIME ('%s'), %s),", $object->Alumno, $_POST['materia'], $_POST['evaluacion'], $salon, $tiempo_fecha, $un_maestro);
 			
 			if ($g == $_POST['no_alumnos']) {
+				/* Verificar que el maestro asignado existe */
+				
 				/* Ejecutar la query, resetar la consulta y aumentar el salón */
 				$query_aplicadores = substr_replace ($query_aplicadores, " ", -1) . " ON DUPLICATE KEY UPDATE Salon = VALUES(Salon), FechaHora = VALUES(FechaHora), Maestro = VALUES(Maestro);";
 				mysql_query ($query_aplicadores, $mysql_con);
@@ -83,7 +112,7 @@
 		mysql_free_result ($result);
 		
 		if ($g != 0) {
-			$query_aplicadores = substr_replace ($query_aplicadores, " ", -1) . " ON DUPLICATE KEY UPDATE Salon = VALUES(Salon), FechaHora = VALUES(FechaHora), Maestro = VALUES(Maestro);"
+			$query_aplicadores = substr_replace ($query_aplicadores, " ", -1) . " ON DUPLICATE KEY UPDATE Salon = VALUES(Salon), FechaHora = VALUES(FechaHora), Maestro = VALUES(Maestro);";
 			mysql_query ($query_aplicadores, $mysql_con);
 		}
 		
