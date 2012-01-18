@@ -15,19 +15,20 @@
 		exit;
 	}
 	
-	if (!isset ($_GET['nrc'])) {
-		header ("Location: secciones.php?r=null");
+	header ("Location: secciones.php");
+	
+	/* Validar primero el NRC */
+	if (!isset ($_GET['nrc']) || !preg_match ("/^([0-9]){1,5}$/", $_GET['nrc'])) {
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 3;
+		$_SESSION['m_klass'] = 's_nrc';
 		exit;
 	}
 	
 	if (!isset ($_GET['confirmado_js']) || $_GET['confirmado_js'] != 1) {
-		header ("Location: secciones.php?r=err");
-		exit;
-	}
-	
-	/* Validar primero el NRC */
-	if (!preg_match ("/^([0-9]){1,5}$/", $_GET['nrc'])) {
-		header ("Location: secciones.php?e=nrc");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 1;
+		$_SESSION['m_klass'] = 'n_js';
 		exit;
 	}
 	
@@ -39,7 +40,9 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows($result) == 0) {
-		header ("Location: secciones.php?r=uso");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 1;
+		$_SESSION['m_klass'] = 's_r_uso';
 		exit;
 	}
 	
@@ -50,9 +53,13 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if ($result) {
-		header ("Location: secciones.php?r=ok");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 0;
+		$_SESSION['m_klass'] = 's_r_ok';
 	} else {
-		header ("Location: secciones.php?r=no");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 3;
+		$_SESSION['m_klass'] = 's_r_no';
 	}
 	
 	mysql_close ($mysql_con);

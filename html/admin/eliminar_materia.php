@@ -13,9 +13,12 @@
 		header ("Location: vistas.php");
 		exit;
 	}
+	header ("Location: materias.php");
 	
 	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['clave'])) {
-		header ("Location: materias.php");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 3;
+		$_SESSION['m_klass'] = 'm_clave';
 		exit;
 	}
 	
@@ -36,7 +39,9 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) > 0) {
-		header ("Location: materias.php?r=uso");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 1;
+		$_SESSION['m_klass'] = 'm_r_uso';
 		exit;
 	}
 	
@@ -47,7 +52,9 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (!$result) {
-		header ("Location: materias.php?r=no");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 3;
+		$_SESSION['m_klass'] = 'unknown';
 		exit;
 	}
 	
@@ -58,6 +65,5 @@
 	$_SESSION['mensaje'] = 1;
 	$_SESSION['m_tipo'] = 0;
 	$_SESSION['m_klass'] = 'm_r_ok';
-	header ("Location: materias.php");
 	mysql_close ($mysql_con);
 ?>

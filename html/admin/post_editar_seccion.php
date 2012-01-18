@@ -19,9 +19,13 @@
 	 * maestro: El nuevo maestro
 	 */
 	
+	header ("Location: secciones.php");
+	
 	/* Validar primero el NRC */
-	if (!preg_match ("/^([0-9]){1,5}$/", $_POST['nrc'])) {
-		header ("Location: secciones.php?e=nrc");
+	if (!isset ($_POST['nrc']) || !preg_match ("/^([0-9]){1,5}$/", $_POST['nrc'])) {
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 3;
+		$_SESSION['m_klass'] = 's_nrc';
 		exit;
 	}
 	
@@ -33,7 +37,9 @@
 	
 	if (mysql_num_rows ($result) == 0) {
 		/* El maestro no existe */
-		header ("Location: secciones.php?e=maestro");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 3;
+		$_SESSION['m_klass'] = 's_maestro';
 		mysql_close ($mysql_con);
 		exit;
 	}
@@ -45,9 +51,13 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (!$result) {
-		header ("Location: secciones.php?a=desconocido");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 1;
+		$_SESSION['m_klass'] = 'unknown';
 	} else {
-		header ("Location: secciones.php?a=ok");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 1;
+		$_SESSION['m_klass'] = 's_a_ok';
 	}
 	
 	mysql_close ($mysql_con);

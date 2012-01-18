@@ -19,7 +19,7 @@
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body>
+<body><?php require_once 'mensajes.php' ?>
 	<h1>Grupos</h1>
 	<?php
 		require_once "../mysql-con.php";

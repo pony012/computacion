@@ -13,9 +13,12 @@
 		header ("Location: vistas.php");
 		exit;
 	}
+	header ("Location: materias.php");
 	
 	if (!isset ($_POST['modo']) || ($_POST['modo'] != 'nuevo' && $_POST['modo'] != 'editar')) {
-		header ("Location: materias.php");
+		$_SESSION['mensaje'] = 1;
+		$_SESSION['m_tipo'] = 3;
+		$_SESSION['m_klass'] = 'unknown';
 		exit;
 	}
 	
@@ -23,7 +26,6 @@
 		$_SESSION['mensaje'] = 1;
 		$_SESSION['m_tipo'] = 3;
 		$_SESSION['m_klass'] = 'm_wrong';
-		header ("Location: materias.php");
 		exit;
 	}
 	
@@ -45,7 +47,6 @@
 			$_SESSION['mensaje'] = 1;
 			$_SESSION['m_tipo'] = 3;
 			$_SESSION['m_klass'] = 'unknown';
-			header ("Location: materias.php");
 			exit;
 		}
 		
@@ -57,7 +58,6 @@
 		$_SESSION['mensaje'] = 1;
 		$_SESSION['m_tipo'] = 3;
 		$_SESSION['m_klass'] = 'm_wrong';
-		header ("Location: materias.php");
 		exit;
 	}
 	
@@ -68,7 +68,6 @@
 		$_SESSION['mensaje'] = 1;
 		$_SESSION['m_tipo'] = 3;
 		$_SESSION['m_klass'] = 'm_clave';
-		header ("Location: materias.php");
 		exit;
 	}
 	
@@ -84,7 +83,6 @@
 			$_SESSION['mensaje'] = 1;
 			$_SESSION['m_tipo'] = 3;
 			$_SESSION['m_klass'] = 'unknown';
-			header ("Location: materias.php");
 			exit;
 		}
 		
@@ -101,7 +99,6 @@
 		$_SESSION['mensaje'] = 1;
 		$_SESSION['m_tipo'] = 0;
 		$_SESSION['m_klass'] = 'm_n_ok';
-		header ("Location: materias.php");
 	} else if ($_POST['modo'] == 'editar') {
 		$query = sprintf ("UPDATE Materias SET Descripcion='%s' WHERE Clave='%s'", mysql_real_escape_string ($_POST['descripcion']), $_POST['clave']);
 		
@@ -111,7 +108,6 @@
 			$_SESSION['mensaje'] = 1;
 			$_SESSION['m_tipo'] = 3;
 			$_SESSION['m_klass'] = 'unknown';
-			header ("Location: materias.php");
 			exit;
 		}
 		
@@ -168,7 +164,6 @@
 		$_SESSION['mensaje'] = 1;
 		$_SESSION['m_tipo'] = 0;
 		$_SESSION['m_klass'] = 'm_a_ok';
-		header ("Location: materias.php");
 	}
 	
 	mysql_close ($mysql_con);
