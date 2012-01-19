@@ -164,6 +164,7 @@
 	}
 ?>
 <ul>
+	<li><a href="auto_aplicadores.php">Calcular automáticamente salones para un departamental</a></li>
 	<li><a href="nuevo_salon_aplicador.php">Nuevo salón para aplicar examen</a></li>
 </ul>
 </body>
