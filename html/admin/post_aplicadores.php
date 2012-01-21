@@ -14,26 +14,17 @@
 		exit;
 	}
 	
-	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_POST['materia'])) {
-		header ("Location: aplicadores_general.php?e=clave");
+	if (!isset ($_POST['id'])) {
+		header ("Location: aplicadores_general.php?e=unknown");
 		exit;
 	}
 	
-	if (!preg_match ("/^([0-9]){1,7}$/", $_POST['maestro'])) {
-		header ("Location: aplicadores_general.php?e=maestro");
-		exit;
-	}
-	
-	settype ($_POST['fechahora'], 'integer');
-	settype ($_POST['evaluacion'], 'integer');
+	settype ($_POST['id'], 'integer');
 	
 	require_once '../mysql-con.php';
 	
-	$lugar = mysql_real_escape_string ($_POST['salon']);
-	$tiempo_fecha = $_POST['fechahora'] - ($_POST['fechahora'] % 900);
-	
-	/* SELECT * FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave */
-	$query = sprintf ("SELECT P.Tipo FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Tipo='%s' AND P.Clave='%s' AND E.Exclusiva = 0", $_POST['evaluacion'], $_POST['materia']);
+	/* SELECT * FROM Salones_Aplicadores AS SA INNER JOIN Evaluaciones as E ON SA.Tipo = E.Id INNER JOIN Materias AS M ON SA.Materia = M.Clave WHERE Id = 1 */
+	$query = sprintf ("SELECT Id FROM Salones_Aplicadores WHERE Id = '%s'", $_POST['id']);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -44,19 +35,8 @@
 	
 	mysql_free_result ($result);
 	
-	/* Validar el maestro */
-	$query = sprintf ("SELECT Codigo FROM Maestros WHERE Codigo = '%s'", $_POST['maestro']);
-	$result = mysql_query ($query, $mysql_con);
-	
-	if (mysql_num_rows ($result) == 0) {
-		header ("Location: aplicadores_general.php?e=maestro");
-		exit;
-	}
-	
-	mysql_free_result ($result);
-	
 	/* Empezar el query extendido */
-	$query_aplicadores = "INSERT INTO Aplicadores (Alumno, Materia, Tipo, Salon, FechaHora, Maestro) VALUES ";
+	$query_aplicadores = "INSERT INTO Alumnos_Aplicadores (Id, Alumno) VALUES ";
 	
 	foreach ($_POST['alumno'] as $value) {
 		$query_alumno = sprintf ("SELECT Codigo FROM Alumnos WHERE Codigo = '%s'", $value);
@@ -68,10 +48,10 @@
 		
 		mysql_free_result ($result);
 		
-		$query_aplicadores = $query_aplicadores . sprintf ("('%s', '%s', '%s', '%s', FROM_UNIXTIME ('%s'), '%s'),", $value, $_POST['materia'], $_POST['evaluacion'], $lugar, $tiempo_fecha, $_POST['maestro']);
+		$query_aplicadores = $query_aplicadores . sprintf ("('%s', '%s'),", $_POST['id'], $value);
 	}
 	
-	$query_aplicadores = substr_replace ($query_aplicadores, " ", -1) . " ON DUPLICATE KEY UPDATE Maestro=VALUES(Maestro), Salon=VALUES(Salon), FechaHora=VALUES(FechaHora);";
+	$query_aplicadores = substr_replace ($query_aplicadores, ";", -1);
 	
 	$result = mysql_query ($query_aplicadores, $mysql_con);
 	

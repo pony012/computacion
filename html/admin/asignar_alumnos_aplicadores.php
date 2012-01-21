@@ -14,23 +14,17 @@
 		exit;
 	}
 	
-	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) {
-		header ("Location: aplicadores_general.php?e=clave");
+	if (!isset ($_GET['id'])) {
+		header ("Location: aplicadores_general.php?e=unknown");
 		exit;
 	}
 	
-	if (!preg_match ("/^([0-9]){1,7}$/", $_GET['maestro']) && $_GET['maestro'] != "NULL") {
-		header ("Location: aplicadores_general.php?e=maestro");
-		exit;
-	}
-	
-	settype ($_GET['fecha'], 'integer');
-	settype ($_GET['evaluacion'], 'integer');
+	settype ($_GET['id'], 'integer');
 	
 	require_once '../mysql-con.php';
 	
-	/* SELECT * FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave */
-	$query = sprintf ("SELECT E.Descripcion AS Evaluacion, M.Descripcion, P.Clave, P.Tipo FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave WHERE P.Tipo='%s' AND P.Clave='%s' AND E.Exclusiva = 0", $_GET['evaluacion'], $_GET['materia']);
+	/* SELECT * FROM Salones_Aplicadores AS SA INNER JOIN Evaluaciones as E ON SA.Tipo = E.Id INNER JOIN Materias AS M ON SA.Materia = M.Clave WHERE Id = 1 */
+	$query = sprintf ("SELECT SA.Id, M.Clave, M.Descripcion, SA.Tipo, E.Descripcion AS Evaluacion, SA.Salon, UNIX_TIMESTAMP (SA.FechaHora) AS FechaHora, SA.Maestro FROM Salones_Aplicadores AS SA INNER JOIN Evaluaciones as E ON SA.Tipo = E.Id INNER JOIN Materias AS M ON SA.Materia = M.Clave WHERE SA.Id = '%s'", $_GET['id']);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -42,8 +36,8 @@
 	$datos = mysql_fetch_object ($result);
 	mysql_free_result ($result);
 	
-	if ($_GET['maestro'] != "NULL") {
-		$query = sprintf ("SELECT Codigo, Nombre, Apellido FROM Maestros WHERE Codigo = '%s'", $_GET['maestro']);
+	if (!is_null ($datos->Maestro)) {
+		$query = sprintf ("SELECT Codigo, Nombre, Apellido FROM Maestros WHERE Codigo = '%s'", $datos->Maestro);
 		$result = mysql_query ($query, $mysql_con);
 		
 		if (mysql_num_rows ($result) == 0) {
@@ -136,24 +130,24 @@
 	<h1>Seleccionar alumnos</h1>
 	<form method="POST" action="post_aplicadores.php" onsubmit="return validar()">
 	<?php
-		printf ("<p>Materia: %s %s</p><input type=\"hidden\" id=\"j_materia\" name=\"materia\" value=\"%s\" />\n", $datos->Clave, $datos->Descripcion, $datos->Clave);
-		printf ("<p>Evaluación: %s</p><input type=\"hidden\" name=\"evaluacion\" value=\"%s\" />\n", $datos->Evaluacion, $datos->Tipo);
+		printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />", $datos->Id);
+		printf ("<p>Materia: %s %s</p><input type=\"hidden\" id=\"j_materia\" value=\"%s\" />\n", $datos->Clave, $datos->Descripcion, $datos->Clave);
+		printf ("<p>Evaluación: %s</p>\n", $datos->Evaluacion);
 		
-		$tiempo_fecha = $_GET['fecha'] - ($_GET['fecha'] % 900);
-		printf ("<p>Fecha y hora seleccionada: %s</p><input type=\"hidden\" name=\"fechahora\" value=\"%s\" />\n", strftime ("%a %e %h %Y a las %H:%M", $tiempo_fecha), $tiempo_fecha);
-		printf ("<p>Salón: %s</p><input type=\"hidden\" name=\"salon\" value=\"%s\" />\n", $_GET['salon'], $_GET['salon']);
+		printf ("<p>Fecha y hora seleccionada: %s</p>\n", strftime ("%a %e %h %Y a las %H:%M", $datos->FechaHora));
+		printf ("<p>Salón: %s</p>\n", $datos->Salon);
 		
-		if ($_GET['maestro'] == "NULL") {
-			echo "<p>Maestro a cargo: <b>Pendiente</b><input type=\"hidden\" name=\"maestro\" value=\"NULL\" />\n";
+		if (is_null ($datos->Maestro)) {
+			echo "<p>Maestro a cargo: <b>Pendiente</b>\n";
 		} else {
-			printf ("<p>Maestro a cargo: %s %s</p><input type=\"hidden\" name=\"maestro\" value=\"%s\" />\n", $maestro->Apellido, $maestro->Nombre, $maestro->Codigo);
+			printf ("<p>Maestro a cargo: %s %s</p>\n", $maestro->Apellido, $maestro->Nombre, $maestro->Codigo);
 		}
 		
 		echo "<table border=\"1\"><tbody>";
 		
 		echo "<tr><td><select id=\"alumnos\" size=\"20\"><optgroup label=\"Alumnos en este salón\">";
 		
-		$query = sprintf ("SELECT A.Alumno, Al.Nombre, Al.Apellido FROM Aplicadores AS A INNER JOIN Alumnos AS Al ON A.Alumno = Al.Codigo WHERE A.Materia = '%s' AND A.Salon = '%s' AND A.FechaHora = FROM_UNIXTIMESTAMP(%s) AND A.Tipo = '%s' ORDER BY Al.Apellido, Al.Nombre", $datos->Clave, mysql_real_escape_string ($_GET['salon']), $tiempo_fecha, $datos->Tipo);
+		$query = sprintf ("SELECT A.Alumno, Al.Nombre, Al.Apellido FROM Alumnos_Aplicadores AS A INNER JOIN Alumnos AS Al ON A.Alumno = Al.Codigo WHERE A.Id = '%s' ORDER BY Al.Apellido, Al.Nombre", $datos->Id);
 		$result = mysql_query ($query, $mysql_con);
 		
 		while (($object = mysql_fetch_object ($result))) {

@@ -109,7 +109,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	<?php
 		require_once '../mysql-con.php';
 		
-		echo "<form method=\"GET\" action=\"asignar_alumnos_aplicadores.php\" onsubmit=\"return validar ();\" ><p>Materia:";
+		echo "<form method=\"POST\" action=\"post_nuevo_salon.php\" onsubmit=\"return validar ();\" ><p>Materia:";
 		
 		/* SELECT DISTINCT P.Clave, M.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave WHERE E.Exclusiva = 0 */
 		$query = "SELECT DISTINCT P.Clave, M.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave WHERE E.Exclusiva = 0";
@@ -129,7 +129,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 		echo "<p><input type=\"radio\" id=\"pre_salon_1\" name=\"pre_salon\" checked=\"checked\" onchange=\"actualizar_cajas ()\"/><label for=\"pre_salon_1\">Un salón de la lista:</label>\n";
 		
 		echo "<select id=\"sel_salon\" name=\"salon\">\n";
-		$query = "SELECT DISTINCT Salon FROM Aplicadores ORDER BY Salon";
+		$query = "SELECT DISTINCT Salon FROM Salones_Aplicadores ORDER BY Salon";
 		
 		$result = mysql_query ($query, $mysql_con);
 		
