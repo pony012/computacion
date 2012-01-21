@@ -43,26 +43,49 @@ CREATE TABLE IF NOT EXISTS `Alumnos` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `Aplicadores`
+-- Estructura de tabla para la tabla `Alumnos_Aplicadores`
 --
 
-CREATE TABLE IF NOT EXISTS `Aplicadores` (
+CREATE TABLE IF NOT EXISTS `Alumnos_Aplicadores` (
+  `Id` int(11) NOT NULL,
   `Alumno` char(9) NOT NULL,
-  `Materia` char(5) NOT NULL,
-  `Salon` char(20) NOT NULL,
-  `FechaHora` datetime NOT NULL,
-  `Tipo` int(11) NOT NULL,
-  `Maestro` int(7) DEFAULT NULL,
-  PRIMARY KEY (`Alumno`,`Materia`,`Tipo`),
-  KEY `Alumno` (`Alumno`)
+  KEY `Alumno` (`Alumno`),
+  KEY `Id` (`Id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
--- RELACIONES PARA LA TABLA `Aplicadores`:
+-- RELACIONES PARA LA TABLA `Alumnos_Aplicadores`:
 --   `Alumno`
 --       `Alumnos` -> `Codigo`
+--   `Id`
+--       `Salones_Aplicadores` -> `Id`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `Salones_Aplicadores`
+--
+
+CREATE TABLE IF NOT EXISTS `Salones_Aplicadores` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Materia` char(5) NOT NULL,
+  `Tipo` int(11) NOT NULL,
+  `Salon` char(20) NOT NULL,
+  `FechaHora` timestamp NOT NULL,
+  `Maestro` int(7) DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Salon` (`Salon`,`FechaHora`),
+  KEY `Materia` (`Materia`),
+  KEY `Evaluacion` (`Materia`,`Tipo`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- RELACIONES PARA LA TABLA `Salones_Aplicadores`:
 --   `Maestro`
 --       `Maestros` -> `Codigo`
+--   `Materia`
+--       `Materias` -> `Clave`
 --   `Tipo`
 --       `Evaluaciones` -> `Id`
 --
