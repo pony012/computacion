@@ -22,12 +22,12 @@
 	require_once '../mysql-con.php';
 	
 	if (!isset ($_GET['tipo'])) { /* Cuando sólo abren Materia */
-		$query = sprintf ("SELECT Materia FROM Aplicadores WHERE Materia = '%s' LIMIT 1", $_GET['materia']);
+		$query = sprintf ("SELECT Materia FROM Salones_Aplicadores WHERE Materia = '%s' LIMIT 1", $_GET['materia']);
 	} else { /* Cuando nos dan materia y Tipo */
 		settype ($_GET['tipo'], 'integer');
 		
 		/* Verificar si el tipo de evaluación existe */
-		$query = sprintf ("SELECT Tipo FROM Aplicadores WHERE Materia = '%s' AND Tipo = '%s' LIMIT 1", $_GET['materia'], $_GET['tipo']);
+		$query = sprintf ("SELECT Tipo FROM Salones_Aplicadores WHERE Materia = '%s' AND Tipo = '%s' LIMIT 1", $_GET['materia'], $_GET['tipo']);
 	}
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -59,7 +59,7 @@
 	
 	/* SELECT COUNT(DISTINCT A.Materia, A.Tipo) AS TOTAL FROM Aplicadores AS A */
 	if (isset ($_GET['tipo'])) {
-		$query = sprintf ("SELECT COUNT(DISTINCT Materia, Tipo, Salon) AS TOTAL FROM Aplicadores WHERE Materia = '%s' AND Tipo = '%s'", $_GET['materia'], $_GET['tipo']);
+		$query = sprintf ("SELECT COUNT(DISTINCT Materia, Tipo, Salon) AS TOTAL FROM Salones_Aplicadores WHERE Materia = '%s' AND Tipo = '%s'", $_GET['materia'], $_GET['tipo']);
 	
 		$result = mysql_query ($query, $mysql_con);
 		$object = mysql_fetch_object ($result);
@@ -97,7 +97,7 @@
 	
 	if (!isset ($_GET['tipo'])) {
 		echo "<thead><tr><th>Materia</th><th>Tipo</th></tr></thead>\n";
-		$query = sprintf ("SELECT DISTINCT A.Materia, A.Tipo, Mat.Descripcion, E.Descripcion AS Evaluacion FROM Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE Materia = '%s' ORDER BY A.Materia, A.Tipo", $_GET['materia']);
+		$query = sprintf ("SELECT DISTINCT A.Materia, A.Tipo, Mat.Descripcion, E.Descripcion AS Evaluacion FROM Salones_Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE Materia = '%s' ORDER BY A.Materia, A.Tipo", $_GET['materia']);
 		$result = mysql_query ($query, $mysql_con);
 		
 		echo "<tbody>";
@@ -113,14 +113,14 @@
 	} else {
 		echo "<thead><tr><th>Materia</th><th>Salón</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Maestro</th></tr></thead>\n";
 		/* INNER JOIN Maestros AS M ON A.Maestro = M.Codigo */
-		$query = sprintf ("SELECT DISTINCT A.Materia, Mat.Descripcion, A.Salon, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Tipo, E.Descripcion AS Evaluacion, A.Maestro FROM Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Materia = '%s' AND A.Tipo = '%s' ORDER BY A.Salon, FechaHora LIMIT %s, %s", $_GET['materia'], $_GET['tipo'], $offset, $show);
+		$query = sprintf ("SELECT DISTINCT A.Id, A.Materia, Mat.Descripcion, A.Salon, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Tipo, E.Descripcion AS Evaluacion, A.Maestro FROM Salones_Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Materia = '%s' AND A.Tipo = '%s' ORDER BY A.Salon, FechaHora LIMIT %s, %s", $_GET['materia'], $_GET['tipo'], $offset, $show);
 		$result = mysql_query ($query, $mysql_con);
 		
 		echo "<tbody>";
 		
 		while (($object = mysql_fetch_object ($result))) {
 			printf ("<tr><td>%s %s</td>", $object->Materia, $object->Descripcion);
-			$link = array ('materia' => $object->Materia, 'tipo' => $object->Tipo, 'salon' => $object->Salon);
+			$link = array ('salon' => $object->Id);
 			printf ("<td><a href=\"ver_salon_aplicador.php?%s\">%s</a></td>", htmlentities (http_build_query ($link)), $object->Salon);
 			printf ("<td>%s</td><td>%s</td>", strftime ("%a %e %h %Y", $object->FechaHora), strftime ("%H:%M", $object->FechaHora));
 			printf ("<td>%s</td>\n", $object->Evaluacion);

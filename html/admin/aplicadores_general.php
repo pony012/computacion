@@ -32,7 +32,7 @@
 	require_once '../mysql-con.php';
 	
 	/* SELECT COUNT(DISTINCT A.Materia, A.Tipo) AS TOTAL FROM Aplicadores AS A */
-	$query = "SELECT COUNT(DISTINCT Materia, Tipo) AS TOTAL FROM Aplicadores";
+	$query = "SELECT COUNT(DISTINCT Materia, Tipo) AS TOTAL FROM Salones_Aplicadores";
 	
 	$result = mysql_query ($query, $mysql_con);
 	$object = mysql_fetch_object ($result);
@@ -51,7 +51,7 @@
 	printf ("<p>Departamentales asignados (mostrando del %s al %s)</p>", ($offset + 1), ($offset + $show));
 	
 	/* SELECT DISTINCT A.Materia, A.Tipo, M.Descripcion, E.Descripcion AS Evaluaciones FROM Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id */
-	$query = sprintf ("SELECT DISTINCT A.Materia, A.Tipo, M.Descripcion, E.Descripcion AS Evaluacion FROM Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id ORDER BY A.Materia, A.Tipo LIMIT %s, %s", $offset, $show);
+	$query = sprintf ("SELECT DISTINCT A.Materia, A.Tipo, M.Descripcion, E.Descripcion AS Evaluacion FROM Salones_Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id ORDER BY A.Materia, A.Tipo LIMIT %s, %s", $offset, $show);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
