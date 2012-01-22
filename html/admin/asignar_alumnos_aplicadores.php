@@ -55,9 +55,29 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
+	<link rel="stylesheet" media="all" type="text/css" href="../css/smoothness/jquery-ui-1.8.16.custom.css" />
+	<style type="text/css">
+	/* css for timepicker */
+.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+.ui-timepicker-div dl { text-align: left; }
+.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+.ui-timepicker-div td { font-size: 90%; }
+.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
+	</style>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../scripts/jquery-ui-timepicker-addon.js"></script>
+	<script type="text/javascript" src="../scripts/ui-timepicker-es.js"></script>
 	<script language="javascript" type="text/javascript">
 		$(document).ready(function(){
+			$('#SFecha').datetimepicker({
+				dateFormat: 'D dd M yy',
+				timeFormat: 'hh:mm',
+				separator: ' a las ',
+				stepMinute: 15
+			});
 			$('#btn_busqueda').click(function() {
 				var txt = $('#txt_busqueda').val ();
 				var mat = $('#j_materia').val();
@@ -113,9 +133,19 @@
 				alert ("No alumnos seleccionados");
 				return false;
 			}
+			var fecha = $('#SFecha').datetimepicker('getDate');
+			
+			if (fecha == null) {
+				alert ("Fecha es null");
+				return false;
+			}
+			
+			var tf = fecha.getTime() / 1000;
+			
+			document.getElementById ("fecha").value = parseInt (tf);
 			
 			for (i = 0; i < alumnos.length; i++) {
-				lista_al.innerHTML += "<input type=\"hidden\" name=\"alumno[]\" value=\"" + alumnos.options[i].value + "\" />";
+				lista_al.innerHTML += "<input type=\"hidden\" name=\"alumno[]\" value=\"" + alumnos.options[i].value + "\" /\>";
 			}
 			
 			return true;
@@ -134,14 +164,42 @@
 		printf ("<p>Materia: %s %s</p><input type=\"hidden\" id=\"j_materia\" value=\"%s\" />\n", $datos->Clave, $datos->Descripcion, $datos->Clave);
 		printf ("<p>Evaluación: %s</p>\n", $datos->Evaluacion);
 		
-		printf ("<p>Fecha y hora seleccionada: %s</p>\n", strftime ("%a %e %h %Y a las %H:%M", $datos->FechaHora));
-		printf ("<p>Salón: %s</p>\n", $datos->Salon);
+		echo "<p>Fecha y hora seleccionada: <input type=\"text\" id=\"SFecha\" /><input type=\"hidden\" id=\"fecha\" /></p>";
+		/* Forzar una actualizacion del selector de fechas */
+		echo "<script language=\"javascript\" type=\"text/javascript\">\n$(function() {";
+		printf ("var d1 = new Date (%s);\n", ($datos->FechaHora * 1000));
+		echo "$('#SFecha').datetimepicker('setDate', d1);\n});</script>";
+		
+		printf ("<p>Salón: <input type=\"text\" name=\"salon\" value=\"%s\" /></p>\n", $datos->Salon);
+		
+		echo "<p>Maestro a cargo: <select name=\"maestro\">\n";
+		if (is_null ($datos->Maestro)) {
+			echo "<option value=\"NULL\" selected=\"selected\" >Pendiente</option>";
+		} else {
+			echo "<option value=\"NULL\" >Pendiente</option>";
+		}
+		
+		$query = "SELECT Codigo, Nombre, Apellido FROM Maestros ORDER BY Apellido, Nombre";
+		
+		$result = mysql_query ($query, $mysql_con);
 		
 		if (is_null ($datos->Maestro)) {
-			echo "<p>Maestro a cargo: <b>Pendiente</b>\n";
+			while (($object = mysql_fetch_object ($result))) {
+				printf ("<option value=\"%s\">%s %s</option>\n", $object->Codigo, $object->Apellido, $object->Nombre);
+			}
 		} else {
-			printf ("<p>Maestro a cargo: %s %s</p>\n", $maestro->Apellido, $maestro->Nombre, $maestro->Codigo);
+			while (($object = mysql_fetch_object ($result))) {
+				if ($object->Codigo == $datos->Maestro) {
+					printf ("<option value=\"%s\" selected=\"selected\" >%s %s</option>\n", $object->Codigo, $object->Apellido, $object->Nombre);
+				} else {
+					printf ("<option value=\"%s\">%s %s</option>\n", $object->Codigo, $object->Apellido, $object->Nombre);
+				}
+			}
 		}
+		
+		mysql_free_result ($result);
+		
+		echo "</select></p>";
 		
 		echo "<table border=\"1\"><tbody>";
 		
