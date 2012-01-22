@@ -26,9 +26,9 @@
 		exit;
 	}
 	
-	$object = mysql_fetch_object ($result);
+	$grupo = mysql_fetch_object ($result);
 	
-	if ($object->Codigo != $_SESSION['codigo'] && (!isset ($_SESSION['permisos']['grupos_globales']) || $_SESSION['permisos']['grupos_globales'] != 1)) {
+	if ($grupo->Codigo != $_SESSION['codigo'] && (!isset ($_SESSION['permisos']['grupos_globales']) || $_SESSION['permisos']['grupos_globales'] != 1)) {
 		/* No puedes ver el grupo porque no tienes permisos globales */
 		header ("Location: vistas.php?e=noaccess");
 		mysql_free_result ($result);
@@ -44,6 +44,14 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
+	<link rel="stylesheet" media="all" type="text/css" href="../css/smoothness/jquery-ui-1.8.16.custom.css" />
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+	<script language="javascript" type="text/javascript">
+		$(document).ready(function(){
+			$('#cal_tabs').tabs ();
+		});
+	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
@@ -52,95 +60,144 @@
 <body>
 	<h1>Grupo</h1>
 	<?php
-		printf ("<p>Materia: <a href=\"ver_materia.php?clave=%s\">%s - %s</a></p>", $object->Clave, $object->Clave, $object->Descripcion);
-		printf ("<p>Maestro: <a href=\"ver_maestro.php?codigo=%s\">%s %s</a></p>", $object->Codigo, $object->Nombre, $object->Apellido);
-		printf ("<p>Seccion: %s</p>", $object->Seccion);
+		printf ("<p>Materia: <a href=\"ver_materia.php?clave=%s\">%s - %s</a></p>", $grupo->Clave, $grupo->Clave, $grupo->Descripcion);
+		printf ("<p>Maestro: <a href=\"ver_maestro.php?codigo=%s\">%s %s</a></p>", $grupo->Codigo, $grupo->Nombre, $grupo->Apellido);
+		printf ("<p>Seccion: %s</p>", $grupo->Seccion);
 		
 		require_once '../mysql-con.php';
 		
-		$query = sprintf ("SELECT E.Id, E.Descripcion, E.Exclusiva, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave='%s' ORDER BY E.Id", $object->Clave);
+		$query = sprintf ("SELECT E.Id, E.Descripcion, E.Exclusiva, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave='%s' ORDER BY E.Id", $grupo->Clave);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
-		if ($_SESSION['codigo'] == $object->codigo) {
+		if ($_SESSION['codigo'] == $grupo->Codigo) {
 			echo "<p>Subida de calificaciones:</p><p>";
 			
-			while (($object2 = mysql_fetch_object ($result))) {
-				if ($object2->Cierre - $object2->Apertura == 0) continue; /* Esta forma de evaluación está deshabilitada */
+			while (($object = mysql_fetch_object ($result))) {
+				if ($object->Cierre - $object->Apertura == 0) continue; /* Esta forma de evaluación está deshabilitada */
 				$now = time ();
-				if ($object2->Exclusiva == 1 && $now >= $object2->Apertura && $now < $object2->Cierre) {
-					printf ("<a href=\"ningun_lugar.php\">Para %s</a><br />", $object2->Descripcion);
+				if ($object->Exclusiva == 1 && $now >= $object->Apertura && $now < $object->Cierre) {
+					printf ("Para <a href=\"ningun_lugar.php\">%s</a><br />", $object->Descripcion);
 				}
 			}
 			echo "</p>";
 		}/* No es el maestro, o no hay permiso de subida */
 		
-		echo "<table border=\"1\">";
+		echo "<div id=\"cal_tabs\"><ul>\n";
 		
-		echo "<thead><tr><th>No. Lista</th><th>Código</th><th>Alumno</th>";
-		
-		/* Rebobinar las formas de evaluación */
 		mysql_data_seek ($result, 0);
 		
-		$extra = 0;
-		while (($object2 = mysql_fetch_object ($result))) {
-			if ($object2->Id == 0) {
-				$extra = 1;
+		$extra = false; $ordinario = false;
+		while (($object = mysql_fetch_object ($result))) {
+			if ($object->Id == 0) {
+				$extra = true;
 				continue;
 			}
-			printf ("<th>%s</th>", $object2->Descripcion);
+			if ($object->Id > 0) {
+				$ordinario = true;
+				break;
+			}
 		}
 		
-		if ($extra == 1) echo "<th>Extraordinario</th>";
 		mysql_free_result ($result);
 		
-		echo "</tr></thead>\n<tbody>";
+		if ($ordinario) echo "<li><a href=\"#ordinario\">Ordinario</a></li>";
+		if ($extra) echo "<li><a href=\"#extra\">Extraordinario</a></li>";
 		
-		/* SELECT * FROM Calificaciones AS C INNER JOIN Alumnos AS Al ON C.Alumno = Al.Codigo WHERE C.Nrc = '02006' ORDER BY Al.Apellido */
-		$query = sprintf ("SELECT G.Alumno, A.Nombre, A.Apellido FROM Grupos AS G INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE Nrc='%s' ORDER BY A.Apellido", $_GET['nrc']);
-		$result = mysql_query ($query, $mysql_con);
+		echo "</ul>";
 		
-		$g = 1;
-		while (($alumno = mysql_fetch_object ($result))) {
-			printf ("<tr><td>%s</td><td>%s</td><td>%s %s</td>", $g, $alumno->Alumno, $alumno->Apellido, $alumno->Nombre);
+		if ($ordinario) {
+			echo "<div id=\"ordinario\">";
 			
-			$sub_query = sprintf ("SELECT C.Tipo, C.Valor FROM Calificaciones AS C WHERE C.Alumno='%s' AND C.Nrc = '%s' ORDER BY C.Tipo", $alumno->Alumno, $_GET['nrc']);
-			$sub_result = mysql_query ($sub_query, $mysql_con);
+			echo "<table border=\"1\">";
 			
-			$extra = 0;
-			while (($cal = mysql_fetch_row ($sub_result))) {
-				if ($cal[0] == '0') { /* FIXME: Ugly Fix for extra */
-					$extra = 1;
-					$extra_cal = $cal[1];
-					continue;
+			echo "<thead><tr><th>No. Lista</th><th>Código</th><th>Alumno</th>";
+			
+			$query = sprintf ("SELECT E.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave='%s' AND E.Id > 0 ORDER BY E.Id", $grupo->Clave);
+			
+			$result = mysql_query ($query, $mysql_con);
+			
+			while (($object = mysql_fetch_object ($result))) {
+				printf ("<th>%s</th>", $object->Descripcion);
+			}
+			
+			mysql_free_result ($result);
+			echo "</tr></thead>\n<tbody>";
+			
+			/* Primero recuperar los alumnos */
+			$query = sprintf ("SELECT G.Alumno, A.Nombre, A.Apellido FROM Grupos AS G INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE Nrc='%s' ORDER BY A.Apellido, A.Nombre", $_GET['nrc']);
+			
+			$result = mysql_query ($query, $mysql_con);
+			
+			$g = 0;
+			
+			while (($alumno = mysql_fetch_object ($result))) {
+				$g++;
+				printf ("<tr><td>%s</td><td>%s</td><td>%s %s</td>", $g, $alumno->Alumno, $alumno->Apellido, $alumno->Nombre);
+				
+				/* Ahora sí, recuperar las calificaciones */
+				$query = sprintf ("SELECT Valor FROM Calificaciones WHERE Alumno = '%s' AND Nrc = '%s' AND Tipo > 0 ORDER BY Tipo", $alumno->Alumno, $_GET['nrc']);
+				
+				$cal_result = mysql_query ($query, $mysql_con);
+				
+				while (($cal = mysql_fetch_object ($cal_result))) {
+					if (is_null ($cal->Valor)) {
+						echo "<td>--</td>";
+					} else { /* FIXME: El valor de los NP es -1 */
+						printf ("<td>%s</td>", $cal->Valor);
+					}
 				}
 				
-				if (is_null ($cal[1])) {
-					echo "<td>--</td>";
-				} else {
-					printf ("<td>%s</td>", $cal[1]);
-				}
+				mysql_free_result ($cal_result);
+				
+				echo "</tr>";
 			}
+			mysql_free_result ($result);
 			
-			if ($extra == 1) {
-				if (is_null ($extra_cal)) {
-					echo "<td>--</td>";
-				} else {
-					printf ("<td>%s</td>", $extra_cal);
-				}
-			}
-			
-			mysql_free_result ($sub_result);
-			
-			echo "</tr>\n";
-			$g++;
+			echo "</tbody></table></div>\n";
 		}
 		
-		mysql_free_result ($result);
+		if ($extra) {
+			echo "<div id=\"extra\">";
+			
+			echo "<table border=\"1\">";
+			
+			echo "<thead><tr><th>No. Lista</th><th>Código</th><th>Alumno</th><th>Extraordinario</th></tr></thead>\n<tbody>";
+			
+			/* Primero recuperar los alumnos */
+			$query = sprintf ("SELECT G.Alumno, A.Nombre, A.Apellido FROM Grupos AS G INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE Nrc='%s' ORDER BY A.Apellido, A.Nombre", $_GET['nrc']);
+			
+			$result = mysql_query ($query, $mysql_con);
+			
+			$g = 0;
+			
+			while (($alumno = mysql_fetch_object ($result))) {
+				$g++;
+				printf ("<tr><td>%s</td><td>%s</td><td>%s %s</td>", $g, $alumno->Alumno, $alumno->Apellido, $alumno->Nombre);
+				
+				/* Ahora sí, recuperar las calificaciones */
+				$query = sprintf ("SELECT Valor FROM Calificaciones WHERE Alumno = '%s' AND Nrc = '%s' AND Tipo = 0 ORDER BY Tipo", $alumno->Alumno, $_GET['nrc']);
+				
+				$cal_result = mysql_query ($query, $mysql_con);
+				
+				while (($cal = mysql_fetch_object ($cal_result))) {
+					if (is_null ($cal->Valor)) {
+						echo "<td>--</td>";
+					} else { /* FIXME: El valor de los NP es -1 */
+						printf ("<td>%s</td>", $cal->Valor);
+					}
+				}
+				
+				mysql_free_result ($cal_result);
+				
+				echo "</tr>";
+			}
+			mysql_free_result ($result);
+			
+			echo "</tbody></table></div>\n";
+		}
 		
-		mysql_close ($mysql_con);
-		echo "</tbody></table>";
-		
+		echo "</div>"; /* Tabs */
 	?>
 </body>
 </html>
