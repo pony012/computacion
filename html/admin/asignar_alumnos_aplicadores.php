@@ -209,7 +209,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 		$result = mysql_query ($query, $mysql_con);
 		
 		while (($object = mysql_fetch_object ($result))) {
-			printf ("<option value=\"%s\">%s %s</option>\n", $object->Alumno, $object->Nombre, $object->Apellido);
+			printf ("<option value=\"%s\">%s %s (%s)</option>\n", $object->Alumno, $object->Apellido, $object->Nombre, $object->Alumno);
 		}
 		echo "</optgroup></select></td>";
 		
