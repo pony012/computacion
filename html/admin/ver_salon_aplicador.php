@@ -14,12 +14,12 @@
 		exit;
 	}
 	
-	settype ($_GET['salon'], 'integer');
+	settype ($_GET['id'], 'integer');
 	
 	require_once '../mysql-con.php';
 	
 	/* Select Materia FROM Aplicadores WHERE Materia = '%s' AND Tipo = '%s' AND Salon = '%s' LIMIT 1 */
-	$query = sprintf ("SELECT Id FROM Salones_Aplicadores WHERE Id = '%s' LIMIT 1", $_GET['salon']);
+	$query = sprintf ("SELECT Id FROM Salones_Aplicadores WHERE Id = '%s' LIMIT 1", $_GET['id']);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -52,7 +52,7 @@
 	/* SELECT A.Materia, M.Descripcion, A.Maestro, MAS.Nombre, MAS.Apellido, A.Tipo, E.Descripcion AS Evaluacion, UNIX_TIMESTAMP (A.FechaHora) AS
 	 FechaHora, A.Salon FROM Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Maestros AS MAS ON A.Maestro = MAS.Codigo
 	  INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Materia = 'CC422' AND A.Tipo = '2' AND A.Salon = 'Salón 2' LIMIT 1*/
-	$query = sprintf ("SELECT A.Materia, M.Descripcion, A.Maestro, A.Tipo, E.Descripcion AS Evaluacion, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Salon FROM Salones_Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Id = '%s' LIMIT 1", $_GET['salon']);
+	$query = sprintf ("SELECT A.Materia, M.Descripcion, A.Maestro, A.Tipo, E.Descripcion AS Evaluacion, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Salon FROM Salones_Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Id = '%s' LIMIT 1", $_GET['id']);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -76,7 +76,7 @@
 	echo "<thead><tr><th>No. Lista</th><th>Código</th><th>Alumno</th></tr></thead>";
 	
 	/* SELECT A.Alumno, AL.Nombre, AL.Apellido FROM Aplicadores as A INNER JOIN Alumnos AS AL ON A.Alumno = AL.Codigo ORDER BY AL.Apellido, AL.Nombre */
-	$query = sprintf ("SELECT A.Alumno, AL.Nombre, AL.Apellido FROM Alumnos_Aplicadores as A INNER JOIN Alumnos AS AL ON A.Alumno = AL.Codigo WHERE A.Id = '%s' ORDER BY AL.Apellido, AL.Nombre", $_GET['salon']);
+	$query = sprintf ("SELECT A.Alumno, AL.Nombre, AL.Apellido FROM Alumnos_Aplicadores as A INNER JOIN Alumnos AS AL ON A.Alumno = AL.Codigo WHERE A.Id = '%s' ORDER BY AL.Apellido, AL.Nombre", $_GET['id']);
 	
 	$result = mysql_query ($query, $mysql_con);
 	

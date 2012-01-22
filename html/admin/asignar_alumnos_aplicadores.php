@@ -157,7 +157,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	?></title>
 </head>
 <body>
-	<h1>Seleccionar alumnos</h1>
+	<h1>Modificar salón aplicador</h1>
 	<form method="POST" action="post_aplicadores.php" onsubmit="return validar()">
 	<?php
 		printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />", $datos->Id);

@@ -66,7 +66,7 @@
 	} else {
 		$num = mysql_insert_id ($mysql_con);
 		
-		header ("Location: asignar_alumnos_aplicadores.php?id=" . $num);
+		header ("Location: asignar_alumnos_aplicadores.php?salon=" . $num);
 	}
 	
 	mysql_close ($mysql_con);

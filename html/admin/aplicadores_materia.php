@@ -46,6 +46,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
+	<script language="javascript" src="../scripts/comun.js" type="text/javascript"></script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
@@ -111,7 +112,7 @@
 		
 		echo "</tbody>";
 	} else {
-		echo "<thead><tr><th>Materia</th><th>Salón</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Maestro</th></tr></thead>\n";
+		echo "<thead><tr><th>Materia</th><th>Salón</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Maestro</th><th>Acciones</th></tr></thead>\n";
 		/* INNER JOIN Maestros AS M ON A.Maestro = M.Codigo */
 		$query = sprintf ("SELECT DISTINCT A.Id, A.Materia, Mat.Descripcion, A.Salon, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Tipo, E.Descripcion AS Evaluacion, A.Maestro FROM Salones_Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Materia = '%s' AND A.Tipo = '%s' ORDER BY A.Salon, FechaHora LIMIT %s, %s", $_GET['materia'], $_GET['tipo'], $offset, $show);
 		$result = mysql_query ($query, $mysql_con);
@@ -120,7 +121,7 @@
 		
 		while (($object = mysql_fetch_object ($result))) {
 			printf ("<tr><td>%s %s</td>", $object->Materia, $object->Descripcion);
-			$link = array ('salon' => $object->Id);
+			$link = array ('id' => $object->Id);
 			printf ("<td><a href=\"ver_salon_aplicador.php?%s\">%s</a></td>", htmlentities (http_build_query ($link)), $object->Salon);
 			printf ("<td>%s</td><td>%s</td>", strftime ("%a %e %h %Y", $object->FechaHora), strftime ("%H:%M", $object->FechaHora));
 			printf ("<td>%s</td>\n", $object->Evaluacion);
@@ -128,11 +129,13 @@
 				$query_m = sprintf ("SELECT Nombre, Apellido FROM Maestros WHERE Codigo = '%s'", $object->Maestro);
 				$result_m = mysql_query ($query_m);
 				$maestro = mysql_fetch_object ($result_m);
-				printf ("<td>%s %s</td></tr>\n", $maestro->Apellido, $maestro->Nombre);
+				printf ("<td>%s %s</td>\n", $maestro->Apellido, $maestro->Nombre);
 				mysql_free_result ($result_m);
 			} else {
-				echo "<td><b>Indefinido</b></td></tr>\n";
+				echo "<td><b>Indefinido</b></td>\n";
 			}
+			printf ("<td><a href=\"asignar_alumnos_aplicadores.php?%s\"><img class=\"icon\" src=\"../img/properties.png\" /></a>", htmlentities (http_build_query ($link)));
+			printf ("<a href=\"eliminar_salon_aplicador.php?%s\" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar el salón %s?')\"><img class=\"icon\" src=\"../img/remove.png\" /></a></td></tr>", htmlentities (http_build_query ($link)), $object->Salon);
 		}
 		echo "</tbody>";
 		
