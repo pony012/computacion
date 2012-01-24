@@ -150,7 +150,7 @@
 			mysql_query ($query, $mysql_con);
 			$id_salon = mysql_insert_id ($mysql_con);
 			
-			$query_aplicadores = "INSERT INTO Salones_Alumnos (Id, Alumno) VALUES";
+			$query_aplicadores = "INSERT INTO Alumnos_Aplicadores (Id, Alumno) VALUES";
 			$query = sprintf ("SELECT Alumno FROM Grupos WHERE Nrc = '%s'", $nrc->Nrc);
 			
 			$res_al = mysql_query ($query);
