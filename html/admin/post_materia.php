@@ -8,24 +8,22 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
 	if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
 	header ("Location: materias.php");
 	
 	if (!isset ($_POST['modo']) || ($_POST['modo'] != 'nuevo' && $_POST['modo'] != 'editar')) {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 'unknown';
+		agrega_mensaje (3, "Ha ocurrido un error desconocido");
 		exit;
 	}
 	
 	if (count ($_POST['evals']) != count ($_POST['porcentajes']) || count ($_POST['evals']) <= 0) {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 'm_wrong';
+		agrega_mensaje (3, "Ha ocurrido un error procesando los datos");
 		exit;
 	}
 	
@@ -44,9 +42,7 @@
 	$suma = 0;
 	foreach ($nuevas as $key => $porcentaje) {
 		if ($porcentaje <= 0 || !isset ($todas [$key])) {
-			$_SESSION['mensaje'] = 1;
-			$_SESSION['m_tipo'] = 3;
-			$_SESSION['m_klass'] = 'unknown';
+			agrega_mensaje (3, "Ha ocurrido un error procesando los datos");
 			exit;
 		}
 		
@@ -55,9 +51,7 @@
 	
 	if ($suma != 100) {
 		/* Suma incorrecta */
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 'm_wrong';
+		agrega_mensaje (3, "Ha ocurrido un error procesando los datos");
 		exit;
 	}
 	
@@ -65,9 +59,7 @@
 	
 	/* Validar la clave la materia */
 	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_POST['clave'])) {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 'm_clave';
+		agrega_mensaje (3, "Materia incorrecta");
 		exit;
 	}
 	
@@ -80,9 +72,7 @@
 		$result = mysql_query ($query, $mysql_con);
 	
 		if (!$result) {
-			$_SESSION['mensaje'] = 1;
-			$_SESSION['m_tipo'] = 3;
-			$_SESSION['m_klass'] = 'unknown';
+			agrega_mensaje (3, "Error desconocido");
 			exit;
 		}
 		
@@ -96,18 +86,14 @@
 		$query = substr_replace ($query, ";", -1);
 		mysql_query ($query, $mysql_con);
 		
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 0;
-		$_SESSION['m_klass'] = 'm_n_ok';
+		agrega_mensaje (0, sprintf ("La materia %s fué creada", $_POST['clave']));
 	} else if ($_POST['modo'] == 'editar') {
 		$query = sprintf ("UPDATE Materias SET Descripcion='%s' WHERE Clave='%s'", mysql_real_escape_string ($_POST['descripcion']), $_POST['clave']);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
 		if (!$result) {
-			$_SESSION['mensaje'] = 1;
-			$_SESSION['m_tipo'] = 3;
-			$_SESSION['m_klass'] = 'unknown';
+			agrega_mensaje (3, "Error desconocido");
 			exit;
 		}
 		
@@ -161,9 +147,7 @@
 			mysql_query ($query_cal, $mysql_con);
 		}
 		
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 0;
-		$_SESSION['m_klass'] = 'm_a_ok';
+		agrega_mensaje (0, sprintf ("La materia %s fué actualizada", $_POST['clave']));
 	}
 	
 	mysql_close ($mysql_con);

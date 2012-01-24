@@ -8,25 +8,23 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
 	header ("Location: materias.php");
 	
 	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['clave'])) {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 'm_clave';
+		agrega_mensaje (3, "Clave de materia incorrecta");
 		exit;
 	}
 	
 	if (!isset ($_GET['confirmado_js']) || $_GET['confirmado_js'] != 1) {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 1;
-		$_SESSION['m_klass'] = 'n_js';
-		header ("Location: materias.php");
+		agrega_mensaje (1, "Su solicitud no puede ser procesada. Por favor intente de nuevo");
 		exit;
 	}
 	
@@ -39,9 +37,7 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) > 0) {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 1;
-		$_SESSION['m_klass'] = 'm_r_uso';
+		agrega_mensaje (1, "La materia no puede ser eliminada porque tiene secciones abiertas");
 		exit;
 	}
 	
@@ -52,9 +48,7 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (!$result) {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 'unknown';
+		agrega_mensaje (3, "Ha ocurrido un error desconocido");
 		exit;
 	}
 	
@@ -62,8 +56,6 @@
 	$query = sprintf ("DELETE FROM Porcentajes WHERE Clave='%s'", $_GET['clave']);
 	mysql_query ($query, $mysql_con);
 	
-	$_SESSION['mensaje'] = 1;
-	$_SESSION['m_tipo'] = 0;
-	$_SESSION['m_klass'] = 'm_r_ok';
+	agrega_mensaje (0, sprintf ("La materia %s ha sido eliminada", $_GET['clave']));
 	mysql_close ($mysql_con);
 ?>
