@@ -8,19 +8,23 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
+	header ("Location: carreras.php");
 	
 	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){3}$/", $_GET['clave'])) {
-		header ("Location: carreras.php?r=null");
+		agrega_mensaje (3, "Clave incorrecta");
 		exit;
 	}
 	
 	if (!isset ($_GET['confirmado_js']) || $_GET['confirmado_js'] != 1) {
-		header ("Location: carreras.php?r=err");
+		agrega_mensaje (1, "Su solicitud no puede ser procesada. Por favor intente de nuevo");
 		exit;
 	}
 	
@@ -35,7 +39,7 @@
 	
 	if (mysql_num_rows ($result) > 0) {
 		mysql_free_result ($result);
-		header ("Location: carreras.php?r=uso");
+		agrega_mensaje (1, "La carrera no puede ser borrada porque tiene alumnos matriculados");
 		exit;
 	}
 	
@@ -46,10 +50,10 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (!$result) {
-		header ("Location: carreras.php?r=no");
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
-	header ("Location: carreras.php?r=ok");
+	agrega_mensaje (0, "La carrera fué eliminada");
 	mysql_close ($mysql_con);
 ?>

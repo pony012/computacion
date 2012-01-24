@@ -8,20 +8,25 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['admin_carreras']) || $_SESSION['permisos']['admin_carreras'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
 	
+	header ("Location: carreras.php");
+	
 	if (!isset ($_POST['modo']) || ($_POST['modo'] != 'nuevo' && $_POST['modo'] != 'editar')) {
-		header ("Location: carreras.php");
+		agrega_mensaje (1, "Su solicitud no puede ser procesada. Por favor intente de nuevo");
 		exit;
 	}
 	
 	/* Validar la clave la carrera */
 	if (!preg_match ("/^([A-Za-z]){3}$/", $_POST['clave'])) {
-		header ("Location: carreras.php?e=clave");
+		agrega_mensaje (3, "Clave de carrera incorrecta");
 		exit;
 	}
 	
@@ -36,22 +41,22 @@
 		$result = mysql_query ($query, $mysql_con);
 	
 		if (!$result) {
-			header ("Location: carreras.php?e=desconocido");
+			agrega_mensaje (3, "Error desconocido");
 			exit;
 		}
 		
-		header ("Location: carreras.php?a=ok");
+		agrega_mensaje (0, sprintf ("La carrera %s fué creada", $_POST['descripcion']));
 	} else if ($_POST['modo'] == 'editar') {
 		$query = sprintf ("UPDATE Carreras SET Descripcion='%s' WHERE Clave='%s'", mysql_real_escape_string ($_POST['descripcion']), $_POST['clave']);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
 		if (!$result) {
-			header ("Location: materias.php?a=desconocido");
+			agrega_mensaje (3, "Error desconocido");
 			exit;
 		}
 		
-		header ("Location: carreras.php?a=ok");
+		agrega_mensaje (0, sprintf ("La carrera %s ha sido actualizada", $_POST['descripcion']));
 	}
 	
 	mysql_close ($mysql_con);

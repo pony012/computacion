@@ -20,7 +20,7 @@
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes ();?>
 	<h1>Carreras</h1>
 	<?php
 		require_once '../mysql-con.php';
