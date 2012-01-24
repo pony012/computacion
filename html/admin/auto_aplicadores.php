@@ -187,6 +187,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 </head>
 <body>
 	<h1>Cálculo de salones automático</h1>
+	<p><b>Advertencia</b>: Si genera salones para una materia y evaluación existente, eliminará todos los salones y alumnos previamente asignados.</p>
 	<form action="post_auto_salones.php" method="post" onsubmit="return validar ()">
 	<?php
 		require_once '../mysql-con.php';

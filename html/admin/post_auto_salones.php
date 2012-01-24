@@ -62,6 +62,18 @@
 	/* Re-indexar el arreglo */
 	$_POST['maestro'] = array_values ($_POST['maestro']);
 	
+	/* Borrar todos los alumnos de esta materia y evaluación */
+	/* DELETE FROM AA USING Alumnos_Aplicadores AS AA INNER JOIN Salones_Aplicadores AS SA ON AA.Id = SA.Id WHERE SA.Materia = 'CC100' AND SA.Tipo = 1 */
+	$query = sprintf ("DELETE FROM AA USING Alumnos_Aplicadores AS AA INNER JOIN Salones_Aplicadores AS SA ON AA.Id = SA.Id WHERE SA.Materia = '%s' AND SA.Tipo = '%s'", $_POST['materia'], $_POST['evaluacion']);
+	
+	mysql_query ($query);
+	
+	/* DELETE FROM Salones_Aplicadores WHERE Materia = 'CC100' AND Tipo =1 */
+	
+	$query = sprintf ("DELETE FROM Salones_Aplicadores WHERE Materia = '%s' AND Tipo = '%s'", $_POST['materia'], $_POST['evaluacion']);
+	
+	mysql_query ($query);
+	
 	if ($_POST['select_order'] == 'order' || $_POST['select_order'] == 'random') {
 		settype ($_POST['no_alumnos'], 'integer');
 		if ($_POST['no_alumnos'] < 10) {
