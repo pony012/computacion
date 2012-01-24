@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `Salones_Aplicadores` (
   `Materia` char(5) NOT NULL,
   `Tipo` int(11) NOT NULL,
   `Salon` char(20) NOT NULL,
-  `FechaHora` timestamp NOT NULL,
+  `FechaHora` datetime NOT NULL,
   `Maestro` int(7) DEFAULT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `Salon` (`Salon`,`FechaHora`),
