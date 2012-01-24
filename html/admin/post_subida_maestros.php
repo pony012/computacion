@@ -17,18 +17,13 @@
 	
 	/* Validar primero el NRC */
 	if (!preg_match ("/^([0-9]){1,5}$/", $_POST['nrc'])) {
-		header ("Location: secciones.php?e=nrc");
+		header ("Location: ver_maestro.php?codigo=" . $_SESSION['codigo']);
 		exit;
 	}
 	
-	if (!isset ($_POST['next'])) {
-		$next = sprintf ("Location: ver_maestro.php?codigo=%s", $_SESSION['codigo']);
-	} else {
-		$next = htmlspecialchars ($_POST['next']);
-	}
+	$next = sprintf ("Location: ver_grupo.php?nrc=%s", $_POST['nrc']);
 	
 	if (count ($_POST['alumno']) == 0 || count ($_POST['alumno']) != count ($_POST['valor'])) {
-		/* TODO: Argumento NEXT */
 		header ($next . "&e=alumnos");
 		exit;
 	}
@@ -43,7 +38,6 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
-		/* TODO: Usar argumento next para regresar a la página anterior */
 		header ($next . "&e=noexiste");
 		exit;
 	}
@@ -75,7 +69,6 @@
 			$calificaciones [$valor] = (int) $_POST['valor'][$index];
 		
 			if ($calificaciones [$valor] < 0 || $calificaciones [$valor] > $datos_eval->Ponderacion) {
-				/* TODO: Argumento Next */
 				header ($next . "&e=valor");
 				exit;
 			}
