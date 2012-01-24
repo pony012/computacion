@@ -77,7 +77,8 @@
 				if ($object->Cierre - $object->Apertura == 0) continue; /* Esta forma de evaluación está deshabilitada */
 				$now = time ();
 				if ($object->Exclusiva == 1 && $now >= $object->Apertura && $now < $object->Cierre) {
-					printf ("Para <a href=\"ningun_lugar.php\">%s</a><br />", $object->Descripcion);
+					$link = array ('nrc' => $_GET['nrc'], 'eval' => $object->Id);
+					printf ("Para <a href=\"subida_calificaciones_maestro.php?%s\">%s</a><br />", htmlentities (http_build_query ($link)), $object->Descripcion);
 				}
 			}
 			echo "</p>";

@@ -59,6 +59,52 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
+	<script language="javascript" type="text/javascript">
+		function validar () {
+			var cadena;
+			var entero;
+			
+			var ponderacion = document.getElementById ('ponderacion').value
+			var cals = document.getElementsByName ("cal[]");
+			var valores = document.getElementsByName ("valor[]");
+			
+			for (g = 0; g < cals.length; g++) {
+				cadena = cals[g].value;
+				
+				if (cadena == null || cadena == "" || cadena == "--") {
+					valores[g].value = "";
+					continue;
+				}
+				
+				/* TODO: ¿Permitir NP a los maestros? */
+				
+				if (cadena.charAt(cadena.length - 1) == '%') {
+					cadena = cadena.substring (0, cadena.length - 1);
+					entero = parseInt (cadena);
+					
+					if (isNaN (entero) || entero > 100 || entero < 0) {
+						/* Poner en color rojo la caja equivocada */
+						alert ("Valor equivocado");
+						cals[g].select ();
+						return false;
+					}
+					
+					valores[g].value = Math.floor ((ponderacion * entero) / 100);
+				} else {
+					entero = parseInt (cadena);
+					
+					if (isNaN (entero) || entero < 0 || entero > ponderacion) {
+						/* Poner en color rojo la caja equivocada */
+						alert ("Valor equivocado");
+						cals[g].select ();
+						return false;
+					}
+					valores[g].value = entero;
+				}
+			}
+			return true;
+		}
+	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
@@ -79,10 +125,10 @@
 		printf ("<p>Nrc: %s</p><p>Materia: %s %s, Sección: %s</p><p>Maestro: %s %s</p><p>Forma de evaluación: <b>%s</b></p>", $_GET['nrc'], $nrc->Materia, $nrc->Descripcion, $nrc->Seccion, $nrc->Apellido, $nrc->Nombre, $datos_eval->Evaluacion);
 		
 		printf ("<p>El valor para esta evaluación es de <b>%s puntos</b>, puede especificar este valor en puntos (del 0 al %s) o en porcentaje (ej, 80%%). En caso de señalar un porcentaje, éste será convertido a su valor en puntos. Puede poner \"--\" para representar una calificación vacía</p>", $datos_eval->Ponderacion, $datos_eval->Ponderacion);
-		echo "<form>";
+		echo "<form action=\"post_subida_maestros.php\" method=\"POST\" onsubmit=\"return validar()\" autocomplete=\"off\">";
 		
 		printf ("<input type=\"hidden\" name=\"nrc\" value=\"%s\" /><input type=\"hidden\" name=\"eval\" value=\"%s\" />", $_GET['nrc'], $_GET['eval']);
-		
+		printf ("<input type=\"hidden\" id=\"ponderacion\" value=\"%s\" />", $datos_eval->Ponderacion);
 		echo "<table border=\"1\"><thead><tr><th>No. Lista</th><th>Alumno</th><th>Calificacion anterior (en puntos)</th><th>Nueva Calificación</th></tr></thead>\n";
 		
 		echo "<tbody>\n";
@@ -98,14 +144,18 @@
 			
 			printf ("<tr><td>%s</td><td>%s %s<input type=\"hidden\" name=\"alumno[]\" value=\"%s\" /></td>\n", $g, $object->Apellido, $object->Nombre, $object->Alumno);
 			if (is_null($object->Valor)) {
-				echo "<td>--</td><td><input type=\"text\" name=\"cal[]\" /></td></tr>\n";
+				echo "<td>--</td><td><input size=\"5\" type=\"text\" name=\"cal[]\" value=\"--\" /></td></tr>\n";
 			} else { /* TODO: El valor del NP es -1 */
-				printf ("<td>%s</td><td><input type=\"text\" name=\"cal[]\" value=\"%s\" /></td></tr>\n", $object->Valor, $object->Valor);
+				printf ("<td>%s</td><td><input size=\"5\" type=\"text\" name=\"cal[]\" value=\"%s\" /></td></tr>\n", $object->Valor, $object->Valor);
 			}
+			echo "<input type=\"hidden\" name=\"valor[]\" />";
 		}
 		mysql_free_result ($result);
 		
 		echo "</tbody></table>\n";
+		
+		echo "<p><input type=\"submit\" value=\"Subir calificaciones\" /></p>";
+		echo "</form>";
 	?>
 </body>
 </html>
