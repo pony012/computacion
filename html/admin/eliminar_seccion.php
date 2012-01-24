@@ -34,11 +34,11 @@
 	require_once '../mysql-con.php';
 	
 	/* Impedir que eliminen la sección si tiene alumnos */
-	$query = sprintf ("SELECT * FROM Grupos WHERE Nrc='%s'", $_GET['nrc']);
+	$query = sprintf ("SELECT * FROM Grupos WHERE Nrc='%s' LIMIT 1", $_GET['nrc']);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
-	if (mysql_num_rows($result) == 0) {
+	if (mysql_num_rows($result) > 0) {
 		agrega_mensaje (1, "La seccion no puede ser eliminada porque tiene alumnos matriculados");
 		exit;
 	}
