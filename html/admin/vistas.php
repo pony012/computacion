@@ -18,7 +18,7 @@
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Acciones para el sistema</h1>
 	<ul>
 	<li><a href="secciones.php">Grupos del departamento</a></li>

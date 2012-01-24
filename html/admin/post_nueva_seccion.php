@@ -8,9 +8,12 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	/* Luego verificar si tiene el permiso de crear grupos */
 	if (!isset ($_SESSION['permisos']['crear_grupos']) || $_SESSION['permisos']['crear_grupos'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
@@ -31,9 +34,7 @@
 	
 	/* Validar primero el NRC */
 	if (!isset ($_POST['nrc']) || !preg_match ("/^([0-9]){1,5}$/", $_POST['nrc'])) {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 's_wrong';
+		agrega_mensaje (3, "Datos incorrectos");
 		exit;
 	}
 	
@@ -42,24 +43,18 @@
 	
 	/* Validar la seccion */
 	if (!isset ($_POST['seccion']) || !preg_match ("/^([Dd])([0-9]){2}$/", $_POST['seccion'])) {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 's_wrong';
+		agrega_mensaje (3, "Datos incorrectos");
 		exit;
 	}
 	
 	if (!isset ($_POST['materia']) || !preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_POST['materia'])) {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 's_materia';
+		agrega_mensaje (3, "Datos incorrectos");
 		exit;
 	}
 	
 	/* Validar el maestro */
 	if (!isset ($_POST['maestro']) || !preg_match ("/^([0-9]){1,7}$/", $_POST['maestro'])) {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 's_maestro';
+		agrega_mensaje (3, "Datos incorrectos");
 		exit;
 	}
 	
@@ -72,9 +67,7 @@
 	if (mysql_num_rows ($result) == 0) {
 		/* La materia no existe */
 		mysql_free_result ($result);
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 's_materia';
+		agrega_mensaje (3, "Materia inexistente");
 		exit;
 	}
 	mysql_free_result ($result);
@@ -86,9 +79,7 @@
 	if (mysql_num_rows ($result) == 0) {
 		/* El maestro no existe */
 		mysql_free_result ($result);
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 's_maestro';
+		agrega_mensaje (3, "Maestro desconocido");
 		exit;
 	}
 	
@@ -101,14 +92,10 @@
 	
 	if (!$result) {
 		/* Error al insertar la materia */
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 1;
-		$_SESSION['m_klass'] = 'unknown';
-	} else {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 0;
-		$_SESSION['m_klass'] = 's_ok';
+		agrega_mensaje (3, "Error desconocido");
 	}
+	
+	agrega_mensaje (0, "Materia creada correctamente");
 	
 	mysql_close ($mysql_con);
 	exit;

@@ -8,9 +8,12 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	/* Luego verificar si tiene el permiso de crear grupos */
 	if (!isset ($_SESSION['permisos']['crear_grupos']) || $_SESSION['permisos']['crear_grupos'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
@@ -23,9 +26,7 @@
 	
 	/* Validar primero el NRC */
 	if (!isset ($_POST['nrc']) || !preg_match ("/^([0-9]){1,5}$/", $_POST['nrc'])) {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 's_nrc';
+		agrega_mensaje (3, "Datos incorrectos");
 		exit;
 	}
 	
@@ -37,9 +38,7 @@
 	
 	if (mysql_num_rows ($result) == 0) {
 		/* El maestro no existe */
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 3;
-		$_SESSION['m_klass'] = 's_maestro';
+		agrega_mensaje (3, "Nrc desconocido");
 		mysql_close ($mysql_con);
 		exit;
 	}
@@ -51,14 +50,10 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (!$result) {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 1;
-		$_SESSION['m_klass'] = 'unknown';
-	} else {
-		$_SESSION['mensaje'] = 1;
-		$_SESSION['m_tipo'] = 1;
-		$_SESSION['m_klass'] = 's_a_ok';
+		agrega_mensaje (3, "Error desconocido");
 	}
+	
+	agrega_mensaje (1, "El nrc fué actualizado");
 	
 	mysql_close ($mysql_con);
 	exit;

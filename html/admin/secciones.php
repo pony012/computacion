@@ -14,12 +14,13 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
+	<script language="javascript" src="../scripts/comun.js" type="text/javascript"></script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body><?php require_once 'mensajes.php' ?>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Grupos</h1>
 	<?php
 		require_once "../mysql-con.php";
@@ -74,7 +75,7 @@
 			if ($_SESSION['permisos']['crear_grupos'] == 1) {
 				echo "<td><a href=\"editar_seccion.php?nrc=" . $object->Nrc . "\"><img class=\"icon\" src=\"../img/properties.png\" /></a></td>\n";
 				echo "<td><a href=\"eliminar_seccion.php?nrc=" . $object->Nrc . "\"";
-				echo " onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar el NRC ".$object->Nrc."?'\">";
+				echo " onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar el NRC ".$object->Nrc."?')\">";
 				echo "<img class=\"icon\" src=\"../img/remove.png\" /></a></td>\n";
 			}
 			echo "</tr>\n";
