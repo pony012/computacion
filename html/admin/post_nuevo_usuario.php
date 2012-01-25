@@ -8,9 +8,12 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	/* Luego verificar si tiene el permiso de gestionar usuarios */
 	if (!isset ($_SESSION['permisos']['aed_usuarios']) || $_SESSION['permisos']['aed_usuarios'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
@@ -23,23 +26,28 @@
 	 * correo: Correo electronico
 	 * md5: La contraseña cifrada
 	 */
+	 
+	header ("Location: usuarios.php");
 	
 	/* Verificar que haya datos POST */
 	if (!isset ($_POST['codigo']) ||
 	    !isset ($_POST['nombre']) ||
 	    !isset ($_POST['md5'])) {
-		header ("Location: usuarios.php");
 		exit;
 	}
 	
 	/* Sanitizado de variables */
-	filter_input (INPUT_POST, 'user', FILTER_SANITIZE_NUMBER_INT);
+	/* Validar el maestro */
+	if (!isset ($_POST['codigo']) || !preg_match ("/^([0-9]){1,7}$/", $_POST['codigo'])) {
+		agrega_mensaje (3, "Datos incorrectos");
+		exit;
+	}
+	
 	filter_input (INPUT_POST, 'correo', FILTER_SANITIZE_EMAIL);
 	
 	require_once '../mysql-con.php';
 	
-	/* Un escapado especial para esta variable por que es utilizada varias veces */
-	$_POST['codigo'] = mysql_real_escape_string ($_POST['codigo']);
+	$_POST['correo'] = mysql_real_escape_string ($_POST['correo']);
 	
 	/* Voy a checar que el codigo no existe */
 	$query = sprintf ("SELECT m.Codigo FROM Maestros AS m WHERE m.Codigo = '%s'", $_POST['codigo']);
@@ -52,8 +60,8 @@
 		 */
 		 mysql_free_result ($result);
 		 mysql_close ($mysql_con);
-		 header ("Location: usuarios.php?m=exist");
-		 exit ();
+		 agrega_mensaje (3, "El maestro ya existe");
+		 exit;
 	}
 	
 	mysql_free_result ($result);
@@ -63,7 +71,7 @@
 	
 	if (!$result) {
 		/* No se ha insertado ningún registro, esto es preocupante */
-		/* TODO: Enviar a mensaje de error */
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
@@ -81,6 +89,6 @@
 	mysql_close ($mysql_con);
 	
 	/* TODO: Enviar un mensaje de correcto */
-	header ("Location: usuarios.php?m=ok");
+	agrega_mensaje (0, "El maestro/usuario fué creado");
 	exit;
 ?>
