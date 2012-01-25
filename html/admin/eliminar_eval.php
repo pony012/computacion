@@ -8,26 +8,28 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['admin_evaluaciones']) || $_SESSION['permisos']['admin_evaluaciones'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
 	
-	if (!isset ($_GET['id'])) {
-		header ("Location: evaluaciones.php");
-		exit;
-	}
+	header ("Location: evaluaciones.php");
+	
+	if (!isset ($_GET['id'])) exit;
 	
 	settype ($_GET['id'], 'integer');
 	
 	if ($_GET['id'] < 1) {
-		header ("Location: evaluaciones.php?r=extra");
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
 	if (!isset ($_GET['confirmado_js']) || $_GET['confirmado_js'] != 1) {
-		header ("Location: evaluaciones.php?r=err");
+		agrega_mensaje (1, "Su solicitud no puede ser procesada, por favor intente otra vez");
 		exit;
 	}
 	
@@ -39,7 +41,7 @@
 	
 	if (mysql_num_rows ($result) > 0) {
 		mysql_free_result ($result);
-		header ("Location: evaluaciones.php?r=uso");
+		agrega_mensaje (1, "La forma de evaluación está actualmente en uso");
 		exit;
 	}
 	
@@ -49,10 +51,10 @@
 	$result = mysql_query ($query);
 	
 	if (!$result) {
-		header ("Location: evaluaciones.php?r=no");
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
-	header ("Location: evaluaciones.php?r=ok");
+	agrega_mensaje (0, "La forma de evaluación fué eliminada");
 	mysql_close ($mysql_con);
 ?>

@@ -8,8 +8,11 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['admin_evaluaciones']) || $_SESSION['permisos']['admin_evaluaciones'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
@@ -22,8 +25,9 @@
 	require_once "../mysql-con.php";
 	
 	if ($_GET['m'] == 'e') {
-		if (!isset ($_GET['id']) || $_GET['id'] < 1) {
+		if (!isset ($_GET['id']) || $_GET['id'] < 0) {
 			header ("Location: evaluaciones.php");
+			agrega_mensaje (1, "Error desconocido");
 			exit;
 		} else {
 			settype ($_GET['id'], 'integer');
@@ -32,7 +36,7 @@
 			$result = mysql_query ($query, $mysql_con);
 			
 			if (mysql_num_rows ($result) == 0) {
-				header ("Location: evaluaciones.php?e=noexiste");
+				agrega_mensaje (1, "La forma de evaluación especificada no existe");
 				exit;
 			}
 			
@@ -148,8 +152,8 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body>
-	<?php if ($_GET['m'] == 'n') { ?>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes ();
+	if ($_GET['m'] == 'n') { ?>
 		<h1>Nueva forma de evaluación</h1>
 		<form action="post_eval.php" method="POST" onsubmit="return validar()"><input type="hidden" name="modo" value="nuevo" />
 		<p>Ingrese el nombre de la forma de evaluación: <input type="text" id="descripcion" name="descripcion" /></p>
