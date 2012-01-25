@@ -8,8 +8,11 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
@@ -104,7 +107,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Nuevo salón para aplicar evaluación</h1>
 	<?php
 		require_once '../mysql-con.php';

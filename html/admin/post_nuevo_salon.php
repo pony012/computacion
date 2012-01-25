@@ -8,19 +8,24 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
 	
+	header ("Location: aplicadores_general.php");
+	
 	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_POST['materia'])) {
-		header ("Location: aplicadores_general.php?e=clave");
+		agrega_mensaje (3, "Clave incorrecta");
 		exit;
 	}
 	
 	if (!preg_match ("/^([0-9]){1,7}$/", $_POST['maestro']) && $_POST['maestro'] != "NULL") {
-		header ("Location: aplicadores_general.php?e=maestro");
+		agrega_mensaje (3, "Maestro desconocido");
 		exit;
 	}
 	
@@ -36,7 +41,7 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
-		header ("Location: aplicadores_general.php?e=noexiste");
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
@@ -48,7 +53,7 @@
 		$result = mysql_query ($query, $mysql_con);
 		
 		if (mysql_num_rows ($result) == 0) {
-			header ("Location: aplicadores_general.php?e=maestro");
+			agrega_mensaje (3, "Maestro desconocido");
 			exit;
 		}
 		
@@ -62,12 +67,13 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (!$result) {
-		header ("Location: aplicadores_general.php?e=unknown");
-	} else {
-		$num = mysql_insert_id ($mysql_con);
-		
-		header ("Location: asignar_alumnos_aplicadores.php?salon=" . $num);
+		agrega_mensaje (3, "Error desconocido");
 	}
+	
+	$num = mysql_insert_id ($mysql_con);
+	header ("Location: asignar_alumnos_aplicadores.php?id=" . $num);
+	
+	agrega_mensaje (1, "Salon creado");
 	
 	mysql_close ($mysql_con);
 ?>

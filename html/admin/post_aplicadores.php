@@ -8,14 +8,18 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) {
 		/* Privilegios insuficientes */
 		header ("Location: vistas.php");
+		agrega_mensaje (3, "Privilegios insuficientes");
 		exit;
 	}
+	header ("Location: aplicadores_general.php");
 	
-	if (!isset ($_POST['id'])) {
-		header ("Location: aplicadores_general.php?e=unknown");
+	if (!isset ($_POST['id']) || !isset ($_POST['maestro'])) {
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
@@ -35,7 +39,7 @@
 		$result = mysql_query ($query, $mysql_con);
 	
 		if (mysql_num_rows ($result) == 0) {
-			header ("Location: aplicadores_general.php?e=maestro");
+			agrega_mensaje (3, "El maestro especificado no existe");
 			exit;
 		}
 	
@@ -48,7 +52,7 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
-		header ("Location: aplicadores_general.php?e=noexiste");
+		agrega_mensaje (3, "Datos incorrectos");
 		exit;
 	}
 	$datos_id = mysql_fetch_object ($result);
@@ -62,7 +66,7 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (!$result) {
-		header ("Location: aplicadores_general.php?e=unknown");
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
@@ -97,10 +101,12 @@
 	$result = mysql_query ($query_aplicadores, $mysql_con);
 	
 	if (!$result) {
-		header ("Location: aplicadores_general.php?e=unknown");
-	} else {
-		header ("Location: aplicadores_general.php?a=ok");
+		agrega_mensaje (3, "Error desconocido");
 	}
+	
+	header ("Location: ver_salon_aplicador.php?id=" . $_POST['id']);
+	agrega_mensaje (0, "Salon actualizado correctamente");
+	agrega_mensaje (0, "Alumnos asignados correctamente");
 	mysql_close ($mysql_con);
 	exit;
 ?>

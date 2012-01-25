@@ -8,25 +8,36 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) {
 		/* Privilegios insuficientes */
 		header ("Location: vistas.php");
+		agrega_mensaje (3, "Privilegios insuficientes");
 		exit;
 	}
 	
+	header ("Location: aplicadores_general.php");
+	
 	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_POST['materia'])) {
-		header ("Location: aplicadores_general.php?e=clave");
+		agrega_mensaje (3, "Clave de materia incorrecta");
 		exit;
 	}
 	
 	if (!isset ($_POST['select_order'])) {
-		header ("Location: aplicadores_general.php?e=unknown");
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
 	settype ($_POST['fecha'], 'integer');
 	$tiempo_fecha = $_POST['fecha'] - ($_POST['fecha'] % 900);
 	settype ($_POST['evaluacion'], 'integer');
+	settype ($_POST['no_alumnos'], 'integer');
+	
+	if (($_POST['select_order'] == 'order' || $_POST['select_order'] == 'random') && $_POST['no_alumnos'] < 10) {
+		agrega_mensaje (3, "El mínimo de alumnos por salón aplicador es de 10");
+		exit;
+	}
 	
 	require_once '../mysql-con.php';
 	
@@ -37,7 +48,7 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
-		header ("Location: aplicadores_general.php?e=noexiste");
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
@@ -75,12 +86,6 @@
 	mysql_query ($query);
 	
 	if ($_POST['select_order'] == 'order' || $_POST['select_order'] == 'random') {
-		settype ($_POST['no_alumnos'], 'integer');
-		if ($_POST['no_alumnos'] < 10) {
-			header ("Location: aplicadores_general.php?e=unknown");
-			mysql_close ($mysql_con);
-			exit;
-		}
 		/* SELECT G.Alumno FROM Grupos AS G INNER JOIN Secciones AS S ON G.Nrc = S.Nrc INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE S.Materia = 'CC100' ORDER BY A.Apellido, A.Nombre */
 		$query = sprintf ("SELECT G.Alumno FROM Grupos AS G INNER JOIN Secciones AS S ON G.Nrc = S.Nrc INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE S.Materia = '%s'", $_POST['materia']);
 		
@@ -135,7 +140,7 @@
 			mysql_query ($query_aplicadores, $mysql_con);
 		}
 		
-		header ("Location: aplicadores_general.php?auto=ok");
+		agrega_mensaje (0, sprintf ("Se han generado %s salones", $salon - 1));
 		exit;
 	} else if ($_POST['select_order'] == 'grupos') {
 		$query = sprintf ("SELECT Nrc, Maestro FROM Secciones WHERE Materia='%s'", $_POST['materia']);
@@ -168,7 +173,7 @@
 		
 		mysql_free_result ($result);
 		
-		header ("Location: aplicadores_general.php?auto=ok");
+		agrega_mensaje (0, "Se ha convertido cada salón de clases en un salon aplicador");
 		exit;
 	}
 ?>

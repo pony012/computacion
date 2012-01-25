@@ -8,14 +8,18 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
 	
 	if (!isset ($_GET['id'])) {
-		header ("Location: aplicadores_general.php?e=unknown");
+		header ("Location: aplicadores_general.php");
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
@@ -29,7 +33,8 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
-		header ("Location: aplicadores_general.php?e=noexiste");
+		header ("Location: aplicadores_general.php");
+		agrega_mensaje (3, "El salon especificado no existe");
 		exit;
 	}
 	
@@ -41,7 +46,8 @@
 		$result = mysql_query ($query, $mysql_con);
 		
 		if (mysql_num_rows ($result) == 0) {
-			header ("Location: aplicadores_general.php?e=maestro");
+			header ("Location: aplicadores_general.php");
+			agrega_mensaje (3, "El maestro especificado no existe");
 			exit;
 		}
 		
@@ -156,7 +162,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Modificar salón aplicador</h1>
 	<form method="POST" action="post_aplicadores.php" onsubmit="return validar()">
 	<?php

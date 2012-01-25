@@ -8,14 +8,18 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
 	
 	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) {
-		header ("Location: aplicadores_general.php?e=clave");
+		agrega_mensaje (1, "La clave especificada es incorrecta");
+		header ("Location: aplicadores_general.php");
 		exit;
 	}
 	
@@ -34,7 +38,8 @@
 	if (mysql_num_rows ($result) == 0) {
 		mysql_free_result ($result);
 		mysql_close ($mysql_con);
-		header ("Location: aplicadores_general.php?e=noexiste");
+		agrega_mensaje (3, "Datos incorrectos");
+		header ("Location: aplicadores_general.php");
 		exit;
 	}
 	
@@ -52,7 +57,7 @@
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 <h1>Salones de aplicación de exámenes</h1>
 <?php
 	setlocale (LC_ALL, "es_MX.UTF-8");
