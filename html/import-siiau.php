@@ -80,11 +80,27 @@
 	if (($archivo = fopen ($argv[1], "r")) !== FALSE) {
 		require_once 'mysql-con.php';
 		
-		/* Verificar que exista el Departamental 1 */
+		/* Verificar que exista el Departamental 1, 2 y puntos del maestro */
 		$result = mysql_query ("SELECT * FROM Evaluaciones WHERE Id = 1", $mysql_con);
 		
 		if (mysql_num_rows ($result) == 0) {
 			mysql_query ("INSERT INTO Evaluaciones (Id, Descripcion, Exclusiva) VALUES (1, 'Departamental 1', 0)", $mysql_con);
+		}
+		
+		mysql_free_result ($result);
+		
+		$result = mysql_query ("SELECT * FROM Evaluaciones WHERE Id = 2", $mysql_con);
+		
+		if (mysql_num_rows ($result) == 0) {
+			mysql_query ("INSERT INTO Evaluaciones (Id, Descripcion, Exclusiva) VALUES (2, 'Departamental 2', 0)", $mysql_con);
+		}
+		
+		mysql_free_result ($result);
+		
+		$result = mysql_query ("SELECT * FROM Evaluaciones WHERE Id = 10", $mysql_con);
+		
+		if (mysql_num_rows ($result) == 0) {
+			mysql_query ("INSERT INTO Evaluaciones (Id, Descripcion, Exclusiva) VALUES (10, 'Puntos del maestro', 1)", $mysql_con);
 		}
 		
 		mysql_free_result ($result);
@@ -110,18 +126,18 @@
 		}
 		
 		/* Crear todas las carreras */
-		$query_car = "INSERT INTO Carreras (Clave, Descripcion) VALUES ";
+		$query_car = "INSERT IGNORE INTO Carreras (Clave, Descripcion) VALUES ";
 		
 		foreach ($carreras as $clave => $descripcion) {
 			$query_car = $query_car . sprintf ("('%s', '%s'),", $clave, $descripcion);
 		}
 		
-		$query_car = substr_replace ($query_car, " ", -1) . " ON DUPLICATE KEY UPDATE 0=0;";
+		$query_car = substr_replace ($query_car, ";", -1);
 		
 		mysql_query ($query_car, $mysql_con);
 		
 		/* Crear todas las materias */
-		$query_mat = "INSERT INTO Materias (Clave, Descripcion) VALUES ";
+		$query_mat = "INSERT IGNORE INTO Materias (Clave, Descripcion) VALUES ";
 		
 		
 		foreach ($materias as $clave => $descripcion) {
@@ -132,13 +148,15 @@
 			
 			if (mysql_num_rows ($result) == 0) {
 				if (!isset ($query_por)) $query_por = "INSERT INTO Porcentajes VALUES ";
-				$query_por = $query_por . sprintf ("('%s', 1, 100),", $clave);
+				$query_por = $query_por . sprintf ("('%s', 1, 30),", $clave);
+				$query_por = $query_por . sprintf ("('%s', 2, 30),", $clave);
+				$query_por = $query_por . sprintf ("('%s', 10, 40),", $clave);
 			}
 			
 			mysql_free_result ($result);
 		}
 		
-		$query_mat = substr_replace ($query_mat, " ", -1) . " ON DUPLICATE KEY UPDATE 0=0;";
+		$query_mat = substr_replace ($query_mat, ";", -1);
 		if (isset ($query_por)) $query_por = substr_replace ($query_por, ";", -1);
 		
 		/* Ejecutar los query extendidos */
