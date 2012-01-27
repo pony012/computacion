@@ -8,16 +8,21 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_GET['nrc']) || !isset ($_GET['eval'])) {
 		header ("Location: vistas.php");
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
 	settype ($_GET['eval'], 'integer');
 	
+	header ("Location: ver_maestro.php?nrc=" . $_SESSION['codigo']);
+	
 	/* Validar primero el NRC */
 	if (!preg_match ("/^([0-9]){1,5}$/", $_GET['nrc'])) {
-		header ("Location: secciones.php?e=nrc");
+		agrega_mensaje (3, "Nrc inválido");
 		exit;
 	}
 	
@@ -32,7 +37,7 @@
 	
 	if (mysql_num_rows ($result) == 0) {
 		/* TODO: Usar argumento next para regresar a la página anterior */
-		header ("Location: vistas.php");
+		agrega_mensaje (3, "Nrc inválido");
 		exit;
 	}
 	
@@ -41,7 +46,7 @@
 	
 	if ($datos_eval->Maestro != $_SESSION['codigo']) {
 		/* Lo siento, pero tu no eres el maestro de este grupo */
-		header ("Location: vistas.php?e=maestro");
+		agrega_mensaje (3, "Privilegios insuficientes");
 		exit;
 	}
 	
@@ -49,7 +54,8 @@
 	$now = time ();
 	if ($datos_eval->Cierre - $datos_eval->Apertura == 0 || ($now < $datos_eval->Apertura || $now >= $datos_eval->Cierre)) {
 		/* Esta evaluación está cerrada */
-		header ("Location: vistas.php?e=cerrada");
+		header ("Location: ver_grupo.php?nrc=" . $_POST['nrc']);
+		agrega_mensaje (1, "La forma de evaluación está cerrada");
 		exit;
 	}
 ?>
@@ -110,7 +116,7 @@
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Subida de calificaciones</h1>
 	<?php
 		/* Recuperar nombre de la materia y del maestro */

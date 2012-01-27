@@ -8,8 +8,11 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_POST['nrc']) || !isset ($_POST['eval'])) {
-		header ("Location: vistas.php");
+		header ("Location: ver_maestro.php?codigo=" . $_SESSION['codigo']);
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
@@ -18,13 +21,14 @@
 	/* Validar primero el NRC */
 	if (!preg_match ("/^([0-9]){1,5}$/", $_POST['nrc'])) {
 		header ("Location: ver_maestro.php?codigo=" . $_SESSION['codigo']);
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
-	$next = sprintf ("Location: ver_grupo.php?nrc=%s", $_POST['nrc']);
+	header (sprintf ("Location: ver_grupo.php?nrc=%s", $_POST['nrc']));
 	
 	if (count ($_POST['alumno']) == 0 || count ($_POST['alumno']) != count ($_POST['valor'])) {
-		header ($next . "&e=alumnos");
+		agrega_mensaje (3, "Datos incorrectos");
 		exit;
 	}
 	
@@ -38,7 +42,7 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
-		header ($next . "&e=noexiste");
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
@@ -47,7 +51,7 @@
 	
 	if ($datos_eval->Maestro != $_SESSION['codigo']) {
 		/* Lo siento, pero tu no eres el maestro de este grupo */
-		header ($next . "&e=maestro");
+		agrega_mensaje (3, "Privilegios insuficientes");
 		exit;
 	}
 	
@@ -55,7 +59,7 @@
 	$now = time ();
 	if ($datos_eval->Cierre - $datos_eval->Apertura == 0 || ($now < $datos_eval->Apertura || $now >= $datos_eval->Cierre)) {
 		/* Esta evaluación está cerrada */
-		header ($next . "&e=cerrada");
+		agrega_mensaje (1, "La forma de evaluación está cerrada");
 		exit;
 	}
 	
@@ -69,7 +73,7 @@
 			$calificaciones [$valor] = (int) $_POST['valor'][$index];
 		
 			if ($calificaciones [$valor] < 0 || $calificaciones [$valor] > $datos_eval->Ponderacion) {
-				header ($next . "&e=valor");
+				agrega_mensaje (3, "Datos incorrectos");
 				exit;
 			}
 		}
@@ -89,5 +93,7 @@
 	
 	mysql_free_result ($result);
 	
-	header ($next . "&cals=ok");
+	agrega_mensaje (0, "Calificaciones subidas exitosamente");
+	
+	mysql_close ($mysql_con);
 ?>
