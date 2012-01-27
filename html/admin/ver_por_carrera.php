@@ -8,14 +8,18 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	/* Validar la clave la materia */
 	if (!isset ($_SESSION['permisos']['grupos_globales']) || $_SESSION['permisos']['grupos_globales'] != 1) {
 		header ("Location: carreras.php");
+		agrega_mensaje (3, "Privilegios insuficientes");
 		exit;
 	}
 	
 	if (!isset ($_GET['carrera']) || !preg_match ("/^([A-Za-z]){3}$/", $_GET['carrera'])) {
 		header ("Location: carreras.php");
+		agrega_mensaje (3, "Carrera inválida");
 		exit;
 	}
 	
@@ -28,6 +32,7 @@
 	
 	if (mysql_num_rows ($result) == 0) {
 		header ("Location: carreras.php");
+		agrega_mensaje (3, "Carrera inválida");
 		mysql_free_result ($result);
 		mysql_close ($mysql_con);
 		exit;
@@ -46,7 +51,7 @@
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Alumnos por carrera</h1>
 	<?php
 		require_once "../mysql-con.php";

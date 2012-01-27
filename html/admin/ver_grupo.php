@@ -8,9 +8,12 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	/* Validar la clave la materia */
 	if (!isset ($_GET['nrc']) || !preg_match ("/^([0-9]){1,5}$/", $_GET['nrc'])) {
-		header ("Location: vistas.php?e=nrcerr");
+		header ("Location: vistas.php");
+		agrega_mensaje (3, "El nrc especificado no existe");
 		exit;
 	}
 	
@@ -20,7 +23,8 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
-		header ("Location: vistas.php?e=noexiste");
+		header ("Location: vistas.php");
+		agrega_mensaje (3, "El nrc especificado no existe");
 		mysql_free_result ($result);
 		mysql_close ($mysql_con);
 		exit;
@@ -30,7 +34,8 @@
 	
 	if ($grupo->Codigo != $_SESSION['codigo'] && (!isset ($_SESSION['permisos']['grupos_globales']) || $_SESSION['permisos']['grupos_globales'] != 1)) {
 		/* No puedes ver el grupo porque no tienes permisos globales */
-		header ("Location: vistas.php?e=noaccess");
+		header ("Location: vistas.php");
+		agrega_mensaje (3, "Privilegios insuficientes");
 		mysql_free_result ($result);
 		mysql_close ($mysql_con);
 		exit;
@@ -57,7 +62,7 @@
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Grupo</h1>
 	<?php
 		printf ("<p>Materia: <a href=\"ver_materia.php?clave=%s\">%s - %s</a></p>", $grupo->Clave, $grupo->Clave, $grupo->Descripcion);

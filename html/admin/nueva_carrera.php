@@ -8,9 +8,12 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['admin_carreras']) || $_SESSION['permisos']['admin_carreras'] != 1) {
 		/* Privilegios insuficientes */
 		header ("Location: vistas.php");
+		agrega_mensaje (3, "Privilegios insuficientes");
 		exit;
 	}
 ?>
@@ -39,7 +42,7 @@
 		}
 	</script>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Nueva carrera</h1>
 	<form action="post_carrera.php" method="POST" onsubmit="return validar()">
 	<input type="hidden" name="modo" value="nuevo" />

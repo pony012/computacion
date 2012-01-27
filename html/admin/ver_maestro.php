@@ -8,9 +8,11 @@
 		exit;
 	}
 	
-	/* Validar la clave la materia */
+	require_once 'mensajes.php';
+	/* Validar el maestro */
 	if (!isset ($_GET['codigo']) || !preg_match ("/^([0-9]){7}$/", $_GET['codigo'])) {
-		header ("Location: usuarios.php?e=codigo");
+		header ("Location: usuarios.php");
+		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
@@ -20,7 +22,8 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
-		header ("Location: usuarios.php?e=noexiste");
+		header ("Location: usuarios.php");
+		agrega_mensaje (3, "Error desconocido");
 		mysql_free_result ($result);
 		mysql_close ($mysql_con);
 		exit;
@@ -41,7 +44,7 @@
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<?php
 		if ($_SESSION['codigo'] == $_GET['codigo']) {
 			echo "<h1>Mis grupos</h1>";

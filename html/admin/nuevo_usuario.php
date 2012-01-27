@@ -8,16 +8,19 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	/* Luego verificar si tiene el permiso de gestionar usuarios */
 	if (!isset ($_SESSION['permisos']['aed_usuarios']) || $_SESSION['permisos']['aed_usuarios'] != 1) {
 		/* Privilegios insuficientes */
 		header ("Location: vistas.php");
+		agrega_mensaje (3, "Privilegios insuficientes");
 		exit;
 	}
 	
 	$tipo = $_GET['t'];
 	if ($tipo != 'u' && $tipo != 'm') {
-		header ("Location: vistas.php");
+		header ("Location: usuarios.php");
 	}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -61,8 +64,8 @@
 		}
 	</script>
 </head>
-<body>
-	<?php
+<body><?php require_once 'mensajes.php'; mostrar_mensajes ();
+
 		if ($tipo == 'm') {
 			echo "<h1>Nuevo maestro</h1>";
 		} else if ($tipo == 'u') {

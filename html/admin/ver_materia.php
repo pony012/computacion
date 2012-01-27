@@ -8,9 +8,12 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	/* Validar la clave la materia */
 	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['clave'])) {
-		header ("Location: materias.php?e=clave");
+		header ("Location: materias.php");
+		agrega_mensaje (3, "Materia inválida");
 		exit;
 	}
 	
@@ -20,7 +23,8 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
-		header ("Location: materias.php?e=noexiste");
+		header ("Location: materias.php");
+		agrega_mensaje (3, "Materia inválida");
 		mysql_free_result ($result);
 		mysql_close ($mysql_con);
 		exit;
@@ -41,7 +45,7 @@
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Detalles de la materia</h1>
 	<?php
 		echo "<p>Materia: " . $object->Clave . "</p>\n";
