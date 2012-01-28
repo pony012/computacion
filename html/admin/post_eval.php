@@ -27,6 +27,7 @@
 		exit;
 	}
 	
+	settype ($_POST['grupo'], 'integer');
 	settype ($_POST['inicio'], 'integer');
 	settype ($_POST['fin'], 'integer');
 	
@@ -44,13 +45,30 @@
 	require_once "../mysql-con.php";
 	
 	if ($_POST['modo'] == 'nuevo') {
-		$query = sprintf ("INSERT INTO Evaluaciones (Descripcion, Exclusiva, Apertura, Cierre) VALUES ('%s', '%s', FROM_UNIXTIME(%s), FROM_UNIXTIME(%s));", mysql_real_escape_string ($_POST['descripcion']), $exclu, $_POST['inicio'], $_POST['fin']);
+		/* Verificar que el grupo de evaluaciones exista */
+		if (!isset ($_POST['grupo']) || $_POST['grupo'] < 0) {
+			agrega_mensaje (3, "Grupo de evaluacion noexistente");
+			exit;
+		}
+	
+		$query = sprintf ("SELECT Id FROM Grupos_Evaluaciones WHERE Id = '%s'", $_POST['grupo']);
+		$result = mysql_query ($query, $mysql_con);
+	
+		if (mysql_num_rows ($result) == 0) {
+			agrega_mensaje (3, "Grupo de evaluacion noexistente");
+			exit;
+		}
+	
+		mysql_free_result ($result);
+		
+		$query = sprintf ("INSERT INTO Evaluaciones (Grupo, Descripcion, Exclusiva, Apertura, Cierre) VALUES ('%s', '%s', '%s', FROM_UNIXTIME(%s), FROM_UNIXTIME(%s));", $_POST['grupo'], mysql_real_escape_string ($_POST['descripcion']), $exclu, $_POST['inicio'], $_POST['fin']);
 		
 		$result = mysql_query ($query);
 		
 		mysql_close ($mysql_con);
 		if (!$result) {
 			agrega_mensaje (3, "Error desconocido");
+			exit;
 		}
 		
 		agrega_mensaje (0, "La forma de evaluación ha sido creada");
@@ -68,6 +86,7 @@
 		mysql_close ($mysql_con);
 		if (!$result) {
 			agrega_mensaje (3, "Error desconocido");
+			exit;
 		}
 		
 		agrega_mensaje (0, "La forma de evaluación ha sido actualizada");

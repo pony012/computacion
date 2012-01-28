@@ -23,11 +23,6 @@
 	
 	settype ($_GET['id'], 'integer');
 	
-	if ($_GET['id'] < 1) {
-		agrega_mensaje (3, "Error desconocido");
-		exit;
-	}
-	
 	if (!isset ($_GET['confirmado_js']) || $_GET['confirmado_js'] != 1) {
 		agrega_mensaje (1, "Su solicitud no puede ser procesada, por favor intente otra vez");
 		exit;

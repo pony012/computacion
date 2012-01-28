@@ -39,10 +39,10 @@
 		echo "<table border=\"1\">";
 		
 		/* Mostrar la cabecera */
-		echo "<thead><tr><th>Nombre</th><th>Exclusiva del maestro</th><th>Tiempo de apertura</th><th>Tiempo de cierre</th><th>Acción</th></tr></thead>";
+		echo "<thead><tr><th>Nombre</th><th>Tipo</th><th>Exclusiva del maestro</th><th>Tiempo de apertura</th><th>Tiempo de cierre</th><th>Acción</th></tr></thead>";
 		
 		/* Empezar la consulta mysql */
-		$query = "SELECT Descripcion, Id, Exclusiva, UNIX_TIMESTAMP (Apertura) AS Apertura, UNIX_TIMESTAMP (Cierre) AS Cierre FROM Evaluaciones";
+		$query = "SELECT E.Descripcion, E.Id, E.Exclusiva, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre, GE.Descripcion AS Grupo FROM Evaluaciones AS E INNER JOIN Grupos_Evaluaciones AS GE ON E.Grupo = GE.Id ORDER BY E.Grupo, E.Id";
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -50,7 +50,7 @@
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
 			
-			printf ("<td>%s</td>", $object->Descripcion);
+			printf ("<td>%s</td><td>%s</td>", $object->Descripcion, $object->Grupo);
 			
 			if ($object->Exclusiva == 1) {
 				printf ("<td>Sí</td>");
@@ -60,19 +60,18 @@
 			
 			printf ("<td>%s</td>", strftime ("%a %e %h %Y a las %H:%M", $object->Apertura));
 			printf ("<td>%s</td>", strftime ("%a %e %h %Y a las %H:%M", $object->Cierre));
-			if ($object->Id != 0) { /* El extraordinario es un caso especial */
-				printf ("<td><a href=\"edit_eval.php?m=e&id=%s\"><img class=\"icon\" src=\"../img/properties.png\" /></a>", $object->Id);
-				
-				printf ("<a href=\"eliminar_eval.php?id=%s\"\n", $object->Id);
-				printf (" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar %s?')\">", $object->Descripcion);
-				printf ("<img class=\"icon\" src=\"../img/remove.png\" /></a></td>");
-			}
+			/* Extraordinario ya *NO* es un caso especial */
+			printf ("<td><a href=\"edit_eval.php?id=%s\"><img class=\"icon\" src=\"../img/properties.png\" /></a>", $object->Id);
+		
+			printf ("<a href=\"eliminar_eval.php?id=%s\"\n", $object->Id);
+			printf (" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar %s?')\">", $object->Descripcion);
+			printf ("<img class=\"icon\" src=\"../img/remove.png\" /></a></td>");
 			
 			echo "</tr>\n";
 		}
 		
 		echo "</tbody></table>\n";
 	?>
-	<ul><li><a href="edit_eval.php?m=n">Nueva forma de evaluación</a></li></ul>
+	<ul><li><a href="nueva_eval.php">Nueva forma de evaluación</a></li></ul>
 </body>
 </html>

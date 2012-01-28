@@ -16,27 +16,6 @@
 		header ("Location: vistas.php");
 		exit;
 	}
-	
-	require_once "../mysql-con.php";
-	
-	if (!isset ($_GET['id']) || $_GET['id'] < 0) {
-		header ("Location: evaluaciones.php");
-		agrega_mensaje (1, "Error desconocido");
-		exit;
-	} else {
-		settype ($_GET['id'], 'integer');
-		$query = sprintf ("SELECT E.Descripcion, E.Id, E.Exclusiva, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre, GE.Descripcion AS Grupo FROM Evaluaciones AS E INNER JOIN Grupos_Evaluaciones AS GE ON E.Grupo = GE.Id WHERE E.Id='%s' LIMIT 1", $_GET['id']);
-		
-		$result = mysql_query ($query, $mysql_con);
-		
-		if (mysql_num_rows ($result) == 0) {
-			agrega_mensaje (1, "La forma de evaluación especificada no existe");
-			exit;
-		}
-		
-		$object = mysql_fetch_object ($result);
-		mysql_free_result ($result);
-	}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -146,33 +125,30 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes ();
-	echo "<h1>Editar forma de evaluación</h1>\n";
+	echo "<h1>Nueva forma de evaluación</h1>\n";
+	echo "<form action=\"post_eval.php\" method=\"POST\" onsubmit=\"return validar()\"><input type=\"hidden\" name=\"modo\" value=\"nuevo\" />\n";
+	echo "<p>Ingrese el nombre de la forma de evaluación: <input type=\"text\" id=\"descripcion\" name=\"descripcion\" /></p>\n";
+	echo "<p>Del grupo:";
 	
-	echo "<form action=\"post_eval.php\" method=\"POST\" onsubmit=\"return validar()\"><input type=\"hidden\" name=\"modo\" value=\"editar\" />\n";
-	printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />", $_GET['id']);
-	printf ("<p>Nombre de la forma de evaluación:<input type=\"text\" id=\"descripcion\" name=\"descripcion\" value=\"%s\" /></p>\n", $object->Descripcion);
-	printf ("<p>Del grupo: <b>%s</b></p>", $object->Grupo);
-		
-	if ($object->Exclusiva == 1) {
-		echo "<input type=\"checkbox\" id=\"exclusiva\" name=\"exclusiva\" value=\"1\" checked=\"checked\" /><label for=\"exclusiva\">Exclusiva para el maestro</label>\n";
-	} else {
-		echo "<input type=\"checkbox\" id=\"exclusiva\" name=\"exclusiva\" value=\"1\" /><label for=\"exclusiva\">Exclusiva para el maestro</label>\n";
+	echo "<select name=\"grupo\" id=\"grupo\" />\n";
+	
+	require_once '../mysql-con.php';
+	
+	$query = "SELECT * FROM Grupos_Evaluaciones";
+	$result = mysql_query ($query, $mysql_con);
+	
+	while (($object = mysql_fetch_object ($result))) {
+		printf ("<option value=\"%s\">%s</option>\n", $object->Id, $object->Descripcion);
 	}
 	
-	echo "<p>Fecha de apertura: <input type=\"text\" id=\"apertura\" /></p><input type=\"hidden\" id=\"inicio\" name=\"inicio\" />\n<p>Fecha de cierre: <input type=\"text\" id=\"cierre\" /></p><input type=\"hidden\" id=\"fin\" name=\"fin\" />\n";
-	
-	echo "<input type=\"submit\" value=\"Actualizar\" /></form>\n";
-	
-	/* Forzar una actualización javascript de las fechas de inicio, fin */
-	echo "<script language=\"javascript\" type=\"text/javascript\">\n$(function() {";
-	printf ("var d1 = new Date (%s);\n", ($object->Apertura * 1000));
-	echo "$('#apertura').datetimepicker('setDate', d1);\n";
-	echo "var start = $('#apertura').datetimepicker('getDate');\n$('#cierre').datetimepicker('option', 'minDate', new Date(start.getTime()));";
-	
-	printf ("var d2 = new Date (%s);\n", ($object->Cierre * 1000));
-	echo "$('#cierre').datetimepicker('setDate', d2);\n";
-	echo "var end = $('#cierre').datetimepicker('getDate');\n$('#apertura').datetimepicker('option', 'maxDate', new Date(end.getTime()) );";
-	echo "});</script>";
-	?>
+	mysql_free_result ($result);
+	echo "</select></p>\n";
+?>
+	<input type="checkbox" id="exclusiva" name="exclusiva" value="1" /><label for="exclusiva">Exclusiva para el maestro</label>
+	<p>Fecha de apertura: <input type="text" id="apertura" /></p>
+	<input type="hidden" id="inicio" name="inicio" />
+	<p>Fecha de cierre: <input type="text" id="cierre" /></p>
+	<input type="hidden" id="fin" name="fin" />
+	<input type="submit" value="Nueva" /></form>
 </body>
 </html>

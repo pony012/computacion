@@ -131,6 +131,18 @@ CREATE TABLE IF NOT EXISTS `Carreras` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `Grupos_Evaluaciones`
+--
+
+CREATE TABLE IF NOT EXISTS `Grupos_Evaluaciones` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Descripcion` varchar(30) NOT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `Evaluaciones`
 --
 
@@ -339,17 +351,26 @@ INSERT INTO `Carreras` (`Clave`, `Descripcion`) VALUES
 ('TOP', 'Ingeniería Topográfica');
 
 --
+-- Volcar la base de datos para la tabla `Grupos_Evaluaciones`
+--
+
+INSERT INTO `Grupos_Evaluaciones` (`Id`, `Descripcion`) VALUES
+(1, 'Ordinario'),
+(2, 'Extraordinario'),
+(3, 'Cursos de verano');
+
+--
 -- Volcar la base de datos para la tabla `Evaluaciones`
 --
 
-INSERT INTO `Evaluaciones` (`Id`, `Descripcion`, `Exclusiva`, `Apertura`, `Cierre`) VALUES
-(0, 'Extraordinario', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(1, 'Departamental 1', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(2, 'Departamental 2', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(3, 'Departamental 3', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(4, 'Departamental 4', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(5, 'Departamental 5', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(10, 'Puntos del maestro', 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(11, 'Moodle', 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(12, 'Proymoodle', 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00');
+INSERT INTO `Evaluaciones` (`Id`, `Grupo`, `Descripcion`, `Exclusiva`, `Apertura`, `Cierre`) VALUES
+(1, 1, 'Departamental 1', 0, NOW(), NOW()),
+(2, 1, 'Departamental 2', 0, NOW(), NOW()),
+(3, 1, 'Departamental 3', 0, NOW(), NOW()),
+(4, 1, 'Departamental 4', 0, NOW(), NOW()),
+(5, 1, 'Departamental 5', 0, NOW(), NOW()),
+(10, 1, 'Puntos del maestro', 1, NOW(), NOW()),
+(11, 1, 'Moodle', 1, NOW(), NOW()),
+(12, 1, 'Proymoodle', 1, NOW(), NOW()),
+(100, 0, 'Extraordinario', 0, NOW(), NOW());
 
