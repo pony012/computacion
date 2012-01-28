@@ -53,7 +53,7 @@
 		agrega_mensaje (3, "Error desconocido");
 	}
 	
-	agrega_mensaje (1, "El nrc fué actualizado");
+	agrega_mensaje (0, "El nrc fué actualizado");
 	
 	mysql_close ($mysql_con);
 	exit;
