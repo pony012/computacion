@@ -64,6 +64,7 @@
 	<h1>Editar materia</h1>
 	<form action="post_materia.php" method="POST" onsubmit="return validar ()" >
 	<input type="hidden" name="modo" value="editar" />
+	<p><b>Advertencia</b>: Cambiar las formas de evaluación de una materia borra todas las calificaciones existentes</p>
 	<?php
 		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" value=\"%s\" readonly=\"readonly\" length=\"5\" /></p>\n", $_POST['clave']);
 		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" value=\"%s\" length=\"100\" /></p>\n", $_POST['descripcion']);

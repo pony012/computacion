@@ -90,6 +90,7 @@
 	<h1>Editar materia</h1>
 	<form action="editar_materia_2.php" method="POST" onsubmit="return validar()">
 	<input type="hidden" name="modo" value="repost" />
+	<p><b>Advertencia</b>: Cambiar las formas de evaluación de una materia borra todas las calificaciones existentes</p>
 	<?php
 		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" length=\"5\" value=\"%s\" readonly=\"readonly\" /></p>", $object->Clave);
 		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" length=\"100\" value=\"%s\"/></p>", $object->Descripcion);

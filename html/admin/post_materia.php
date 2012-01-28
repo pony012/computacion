@@ -15,6 +15,7 @@
 		header ("Location: vistas.php");
 		exit;
 	}
+	
 	header ("Location: materias.php");
 	
 	if (!isset ($_POST['modo']) || ($_POST['modo'] != 'nuevo' && $_POST['modo'] != 'editar')) {
@@ -97,14 +98,6 @@
 			exit;
 		}
 		
-		/* Antes de limpiarlos, sacar las actuales forma de evaluación */
-		$query = sprintf ("SELECT Tipo FROM Porcentajes WHERE Clave='%s'", $_POST['clave']);
-		
-		$result = mysql_query ($query, $mysql_con);
-		$old = array ();
-		while (($object = mysql_fetch_object ($result))) $old [$object->Tipo] = 1;
-		mysql_free_result ($result);
-		
 		/* Limpiar los porcentajes anteriores */
 		$query = sprintf ("DELETE FROM Porcentajes WHERE Clave='%s'", $_POST['clave']);
 		mysql_query ($query, $mysql_con);
@@ -119,31 +112,24 @@
 		$query = substr_replace ($query, ";", -1);
 		mysql_query ($query, $mysql_con);
 		
-		/* Luego, corregir la tabla de calificaciones */
-		foreach ($old as $key => $value) {
-			if (!isset ($nuevas[$key])) {
-				/* Eliminar este de la tabla de calificaciones
-				 * DELETE FROM C USING Calificaciones AS C INNER JOIN Secciones AS S ON C.Nrc = S.Nrc WHERE S.Materia='CC204' AND C.Tipo='7' */
-				$query = sprintf ("DELETE FROM C USING Calificaciones AS C INNER JOIN Secciones AS S ON C.Nrc = S.Nrc WHERE S.Materia='%s' AND C.Tipo='%s'", $_POST['clave'], $key);
-				mysql_query ($query, $mysql_con);
-			} else {
-				unset ($nuevas [$key]);
-			}
-		}
+		/* Borrar todas las calificaciones de esa materia */
+		$query = sprintf ("DELETE FROM C USING Calificaciones AS C INNER JOIN Secciones AS S ON C.Nrc = S.Nrc WHERE S.Materia='%s'", $_POST['clave']);
 		
-		/* Las nuevas calificaciones */
-		foreach ($nuevas as $key => $value) {
-			$query = sprintf ("SELECT G.* FROM Grupos AS G INNER JOIN Secciones AS Sec ON G.Nrc = Sec.Nrc WHERE Sec.Materia = '%s'", $_POST['clave']);
-			$result = mysql_query ($query, $mysql_con);
+		mysql_query ($query);
+		
+		/* Re-ingresar las calificaciones */
+		$query = sprintf ("SELECT Alumno, Nrc FROM Grupos AS G INNER JOIN Secciones AS S ON G.Nrc = S.Nrc WHERE S.Materia = '%s'", $_POST['clave']);
+		
+		$result = mysql_query ($query);
+		
+		while (($object = mysql_fetch_object ($result))) {
+			$query_cal = "INSERT DELAYED INTO Calificaciones VALUES (Alumno, Nrc, Tipo, Valor)";
 			
-			$query_cal = "INSERT INTO Calificaciones (Alumno, Nrc, Tipo, Valor) VALUES ";
-			while (($object = mysql_fetch_object ($result))) {
-				$query_cal = $query_cal . sprintf ("('%s', '%s', '%s', NULL),", $object->Alumno, $object->Nrc, $key);
+			foreach ($nuevas as $key => $porcentaje) {
+				$query_cal = $query_cal . sprintf (" ('%s', '%s', '%s', NULL),", $object->Alumno, $object->Nrc, $key);
 			}
-			mysql_free_result ($result);
 			
 			$query_cal = substr_replace ($query_cal, ";", -1);
-			
 			mysql_query ($query_cal, $mysql_con);
 		}
 		
