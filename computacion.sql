@@ -234,6 +234,27 @@ CREATE TABLE IF NOT EXISTS `Porcentajes` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `Promedios`
+--
+
+CREATE TABLE IF NOT EXISTS `Promedios` (
+  `Nrc` int(5) unsigned zerofill NOT NULL,
+  `Tipo` int(11) NOT NULL,
+  `Promedio` decimal(5,2) NOT NULL,
+  PRIMARY KEY (`Nrc`,`Tipo`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- RELACIONES PARA LA TABLA `Promedios`:
+--   `Nrc`
+--       `Secciones` -> `Nrc`
+--   `Tipo`
+--       `Evaluaciones` -> `Id`
+--
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `Secciones`
 --
 

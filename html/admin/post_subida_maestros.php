@@ -1,3 +1,4 @@
+<html></html>
 <?php
 	session_start ();
 	
@@ -80,18 +81,35 @@
 	}
 	
 	/* SELECT C.Alumno, C.Valor, A.Apellido, A.Nombre FROM Calificaciones AS C INNER JOIN Alumnos AS A ON C.Alumno = A.Codigo WHERE C.Nrc ='%s' AND C.Tipo = '%s' ORDER BY A.Apellido, A.Nombre */
-	$query = sprintf ("SELECT Alumno FROM Calificaciones WHERE Nrc = '%s' AND Tipo = '%s'", $_POST['nrc'], $_POST['eval']);
+	$query = sprintf ("SELECT Alumno, Valor FROM Calificaciones WHERE Nrc = '%s' AND Tipo = '%s'", $_POST['nrc'], $_POST['eval']);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
+	$suma = 0;
+	$g = 0;
 	while (($object = mysql_fetch_object ($result))) {
 		if (isset ($calificaciones [$object->Alumno])) {
 			$query_cals = sprintf ("UPDATE Calificaciones SET Valor = %s WHERE Alumno = '%s' AND Nrc = '%s' AND Tipo = '%s'; ", $calificaciones[$object->Alumno], $object->Alumno, $_POST['nrc'], $_POST['eval']);
 			mysql_query ($query_cals, $mysql_con);
+			if ($calificaciones[$object->Alumno] !== "NULL") {
+				$suma = $suma + $calificaciones[$object->Alumno];
+				$g++;
+			}
+		} else {
+			if (!is_null ($object->Valor)) {
+				$suma = $suma + $object->Valor;
+				$g++;
+			}
 		}
 	}
 	
 	mysql_free_result ($result);
+	
+	if ($g > 0) {
+		$query = sprintf ("INSERT INTO Promedios (Nrc, Tipo, Promedio) VALUES ('%s', '%s', %s) ON DUPLICATE KEY UPDATE Promedio = Values (Promedio)", $_POST['nrc'], $_POST['eval'], ($suma / $g));
+		
+		mysql_query ($query, $mysql_con);
+	}
 	
 	agrega_mensaje (0, "Calificaciones subidas exitosamente");
 	
