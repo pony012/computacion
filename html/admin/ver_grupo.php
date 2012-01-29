@@ -146,6 +146,28 @@
 				echo "</tr>";
 			}
 			mysql_free_result ($result); /* El resultado de los alumnos */
+			
+			/* Ahora, mostrar los promedios al final de la tabla */
+			echo "<tr><td colspan=\"3\">Promedios</td>";
+			$query = sprintf ("SELECT P.Tipo FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE Clave = '%s' AND E.Grupo = '%s'", $grupo->Clave, $object_ge->Grupo);
+			
+			$result = mysql_query ($query, $mysql_con);
+			while (($object = mysql_fetch_object ($result))) {
+				$query = sprintf ("SELECT Promedio FROM Promedios WHERE Nrc = '%s' AND Tipo = '%s'", $_GET['nrc'], $object->Tipo);
+				
+				$result_promedio = mysql_query ($query, $mysql_con);
+				if (mysql_num_rows ($result_promedio) == 0) {
+					echo "<td>--</td>";
+				} else {
+					$promedio = mysql_fetch_object ($result_promedio);
+					printf ("<td>%s</td>", $promedio->Promedio);
+				}
+				
+				mysql_free_result ($result_promedio);
+			}
+			
+			mysql_free_result ($result);
+			
 			echo "</tbody></table></div>\n";
 		} /* While de los grupos de evaluaciones */
 		

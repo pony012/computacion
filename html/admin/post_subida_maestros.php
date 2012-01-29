@@ -105,9 +105,13 @@
 	
 	mysql_free_result ($result);
 	
+	/* Actualizar los promedios */
 	if ($g > 0) {
 		$query = sprintf ("INSERT INTO Promedios (Nrc, Tipo, Promedio) VALUES ('%s', '%s', %s) ON DUPLICATE KEY UPDATE Promedio = Values (Promedio)", $_POST['nrc'], $_POST['eval'], ($suma / $g));
 		
+		mysql_query ($query, $mysql_con);
+	} else {
+		$query = sprintf ("DELETE FROM Promedios WHERE Tipo = '%s' AND Nrc = '%s'", $_POST['eval'], $_POST['nrc']);
 		mysql_query ($query, $mysql_con);
 	}
 	
