@@ -31,17 +31,15 @@
 	}
 	
 	$grupo = mysql_fetch_object ($result);
+	mysql_free_result ($result);
 	
 	if ($grupo->Codigo != $_SESSION['codigo'] && (!isset ($_SESSION['permisos']['grupos_globales']) || $_SESSION['permisos']['grupos_globales'] != 1)) {
 		/* No puedes ver el grupo porque no tienes permisos globales */
 		header ("Location: vistas.php");
 		agrega_mensaje (3, "Privilegios insuficientes");
-		mysql_free_result ($result);
 		mysql_close ($mysql_con);
 		exit;
 	}
-	
-	mysql_free_result ($result);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -89,60 +87,49 @@
 			echo "</p>";
 		}/* No es el maestro, o no hay permiso de subida */
 		
-		echo "<div id=\"cal_tabs\"><ul>\n";
-		
-		mysql_data_seek ($result, 0);
-		
-		$extra = false; $ordinario = false;
-		while (($object = mysql_fetch_object ($result))) {
-			if ($object->Id == 0) {
-				$extra = true;
-				continue;
-			}
-			if ($object->Id > 0) {
-				$ordinario = true;
-				break;
-			}
-		}
-		
 		mysql_free_result ($result);
 		
-		if ($ordinario) echo "<li><a href=\"#ordinario\">Ordinario</a></li>";
-		if ($extra) echo "<li><a href=\"#extra\">Extraordinario</a></li>";
+		echo "<div id=\"cal_tabs\"><ul>\n";
 		
+		/* Recuperar los grupos de evaluaciones, mostrar las tabs */
+		$query = sprintf ("SELECT DISTINCT E.Grupo, GE.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Grupos_Evaluaciones AS GE ON E.Grupo = GE.Id WHERE P.Clave = '%s'", $grupo->Clave);
+		
+		$result_ge = mysql_query ($query, $mysql_con);
+		
+		while (($object_ge = mysql_fetch_object ($result_ge))) printf ("<li><a href=\"#%s\">%s</a></li>", $object_ge->Descripcion, $object_ge->Descripcion);
+		
+		/* No free_result, con este mismo resultado voy a iterar */
 		echo "</ul>";
 		
-		if ($ordinario) {
-			echo "<div id=\"ordinario\">";
+		mysql_data_seek ($result_ge, 0);
+		
+		/* Iterar por cada grupo de evaluaciones, Ordinario, extra, etc... */
+		while (($object_ge = mysql_fetch_object ($result_ge))) {
+			printf ("<div id=\"%s\">", $object_ge->Descripcion);
 			
-			echo "<table border=\"1\">";
+			echo "<table border=\"1\"><thead><tr><th>No. Lista</th><th>Código</th><th>Alumno</th>";
 			
-			echo "<thead><tr><th>No. Lista</th><th>Código</th><th>Alumno</th>";
-			
-			$query = sprintf ("SELECT E.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave='%s' AND E.Id > 0 ORDER BY E.Id", $grupo->Clave);
+			/* Recuperar las formas de evaluacion de este grupo (ej, Depa 1, Depa 2, etc...) */
+			$query = sprintf ("SELECT E.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave='%s' AND E.Grupo = '%s' ORDER BY E.Id", $grupo->Clave, $object_ge->Grupo);
 			
 			$result = mysql_query ($query, $mysql_con);
 			
-			while (($object = mysql_fetch_object ($result))) {
-				printf ("<th>%s</th>", $object->Descripcion);
-			}
-			
+			while (($object = mysql_fetch_object ($result))) printf ("<th>%s</th>", $object->Descripcion);
 			mysql_free_result ($result);
 			echo "</tr></thead>\n<tbody>";
 			
-			/* Primero recuperar los alumnos */
+			/* Primero recuperar los alumnos de este grupo */
 			$query = sprintf ("SELECT G.Alumno, A.Nombre, A.Apellido FROM Grupos AS G INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE Nrc='%s' ORDER BY A.Apellido, A.Nombre", $_GET['nrc']);
 			
 			$result = mysql_query ($query, $mysql_con);
 			
-			$g = 0;
-			
+			$g = 0; /* Para mostrar el número de lista */
 			while (($alumno = mysql_fetch_object ($result))) {
 				$g++;
 				printf ("<tr><td>%s</td><td>%s</td><td>%s %s</td>", $g, $alumno->Alumno, $alumno->Apellido, $alumno->Nombre);
 				
-				/* Ahora sí, recuperar las calificaciones */
-				$query = sprintf ("SELECT Valor FROM Calificaciones WHERE Alumno = '%s' AND Nrc = '%s' AND Tipo > 0 ORDER BY Tipo", $alumno->Alumno, $_GET['nrc']);
+				/* Ahora sí, recuperar las calificaciones de este, todas las formas de evaluacion de este grupo */
+				$query = sprintf ("SELECT C.Valor FROM Calificaciones AS C INNER JOIN Evaluaciones AS E ON C.Tipo = E.Id WHERE C.Alumno = '%s' AND C.Nrc = '%s' AND E.Grupo = '%s' ORDER BY C.Tipo", $alumno->Alumno, $_GET['nrc'], $object_ge->Grupo);
 				
 				$cal_result = mysql_query ($query, $mysql_con);
 				
@@ -154,55 +141,15 @@
 					}
 				}
 				
-				mysql_free_result ($cal_result);
+				mysql_free_result ($cal_result); /* Las calificaciones de este alumno */
 				
 				echo "</tr>";
 			}
-			mysql_free_result ($result);
-			
+			mysql_free_result ($result); /* El resultado de los alumnos */
 			echo "</tbody></table></div>\n";
-		}
+		} /* While de los grupos de evaluaciones */
 		
-		if ($extra) {
-			echo "<div id=\"extra\">";
-			
-			echo "<table border=\"1\">";
-			
-			echo "<thead><tr><th>No. Lista</th><th>Código</th><th>Alumno</th><th>Extraordinario</th></tr></thead>\n<tbody>";
-			
-			/* Primero recuperar los alumnos */
-			$query = sprintf ("SELECT G.Alumno, A.Nombre, A.Apellido FROM Grupos AS G INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE Nrc='%s' ORDER BY A.Apellido, A.Nombre", $_GET['nrc']);
-			
-			$result = mysql_query ($query, $mysql_con);
-			
-			$g = 0;
-			
-			while (($alumno = mysql_fetch_object ($result))) {
-				$g++;
-				printf ("<tr><td>%s</td><td>%s</td><td>%s %s</td>", $g, $alumno->Alumno, $alumno->Apellido, $alumno->Nombre);
-				
-				/* Ahora sí, recuperar las calificaciones */
-				$query = sprintf ("SELECT Valor FROM Calificaciones WHERE Alumno = '%s' AND Nrc = '%s' AND Tipo = 0 ORDER BY Tipo", $alumno->Alumno, $_GET['nrc']);
-				
-				$cal_result = mysql_query ($query, $mysql_con);
-				
-				while (($cal = mysql_fetch_object ($cal_result))) {
-					if (is_null ($cal->Valor)) {
-						echo "<td>--</td>";
-					} else { /* FIXME: El valor de los NP es -1 */
-						printf ("<td>%s</td>", $cal->Valor);
-					}
-				}
-				
-				mysql_free_result ($cal_result);
-				
-				echo "</tr>";
-			}
-			mysql_free_result ($result);
-			
-			echo "</tbody></table></div>\n";
-		}
-		
+		mysql_free_result ($result_ge);
 		echo "</div>"; /* Tabs */
 	?>
 </body>
