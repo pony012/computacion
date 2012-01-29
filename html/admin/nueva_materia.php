@@ -27,7 +27,6 @@
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
 	?></title>
-	<?php if (!isset($_POST['modo']) || $_POST['modo'] != 'repost') { ?>
 	<script language="javascript" type="text/javascript">
 		function validar () {
 			var clave = document.getElementById ("clave").value;
@@ -75,54 +74,36 @@
 			agregados.remove (agregados.selectedIndex);
 		}
 	</script>
-	<?php } else if ($_POST['modo'] == 'repost') { ?>
-	<script language="javascript" type="text/javascript">
-		function validar () {
-			var porcen = document.getElementsByName("porcentajes[]");
-			var suma = 0, n;
-			
-			for (g = 0; g < porcen.length; g++) {
-				n = parseInt (porcen[g].value);
-				if (n <= 0 || isNaN (n)) {
-					/* Mandar mensaje de error */
-					alert ("Porcentaje no válido");
-					return false;
-				}
-				
-				suma += n;
-			}
-			
-			if (suma != 100) {
-				alert ("Suma de porcentajes no válido");
-				return false;
-			}
-			
-			return true;
-		}
-	</script>
-	<?php } ?>
 </head>
 <body>
 	<h1>Nueva materia</h1>
-	<?php if (!isset($_POST['modo']) || $_POST['modo'] != 'repost') { ?>
-	<form action="nueva_materia.php" method="POST" onsubmit="return validar()">
-	<input type="hidden" name="modo" value="repost" />
+	<form action="nueva_materia_2.php" method="POST" onsubmit="return validar()">
 	<p>Clave de la materia: <input type="text" name="clave" id="clave" length="5" /></p>
 	<p>Descripción: <input type="text" name="descripcion" id="descripcion" length="100" /></p>
 	<p>Formas de evaluación disponibles: <br />
-	<select id="disponibles"><optgroup label="Extraordinario"><option value="0">Extraordinario</option></optgroup>
 	<?php
 		require_once '../mysql-con.php';
-		$result = mysql_query ("SELECT * FROM Evaluaciones WHERE Id > 0", $mysql_con);
 		
-		echo "<optgroup label=\"Ordinario\">\n";
+		echo "<select id=\"disponibles\">";
+		$result = mysql_query ("SELECT * FROM Grupos_Evaluaciones", $mysql_con);
 		
-		while (($object = mysql_fetch_object ($result))) {
-			printf ("<option value=\"%s\">%s</option>\n", $object->Id, $object->Descripcion);
+		while (($grupo_e = mysql_fetch_object ($result))) {
+			printf ("<optgroup label=\"%s\">", $grupo_e->Descripcion);
+			
+			$query = sprintf ("SELECT Id, Descripcion FROM Evaluaciones WHERE Grupo = '%s' ORDER BY Id", $grupo_e->Id);
+			$result_evals = mysql_query ($query, $mysql_con);
+			
+			while (($object = mysql_fetch_object ($result_evals))) {
+				printf ("<option value=\"%s\">%s</option>", $object->Id, $object->Descripcion);
+			}
+			
+			mysql_free_result ($result_evals);
+			echo "</optgroup>";
 		}
-		mysql_free_result ($result);
 		
-		echo "</optgroup>";
+		mysql_free_result ($result); /* Posiblemente lo utilice después */
+		
+		echo "</select>";
 	?>
 	</select><img class="icon" src="../img/add2.png" onclick="return agregar ()" /></p>
 	<p>Formas de evaluación seleccionadas: <br />
@@ -130,38 +111,5 @@
 	<span id="evals"></span>
 	<input type="submit" value="Siguiente" />
 	</form>
-	<?php } else if ($_POST['modo'] == 'repost') {
-		echo "<form action=\"post_materia.php\" method=\"POST\" onsubmit=\"return validar ()\" >\n";
-		echo "<input type=\"hidden\" name=\"modo\" value=\"nuevo\" />\n";
-		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" value=\"%s\" readonly=\"readonly\" length=\"5\" /></p>\n", $_POST['clave']);
-		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" value=\"%s\" length=\"100\" /></p>\n", $_POST['descripcion']);
-		
-		echo "<h2>Asignar porcentajes:</h2>\n";
-		
-		sort ($_POST['evals'], SORT_NUMERIC);
-		
-		require_once '../mysql-con.php';
-		
-		/* Recuperar las formas de evaluación */
-		$result = mysql_query ("SELECT * FROM Evaluaciones WHERE id > 0", $mysql_con);
-		$ev_total = mysql_num_rows ($result);
-		while (($row = mysql_fetch_row ($result)) != FALSE) $ev[$row[0]] = $row[1];
-		mysql_free_result ($result);
-		
-		if ($_POST['evals'][0] == 0) {
-			/* Significa que esta materia lleva extraordinario */
-			echo "<p>La materia tiene extraordinario<input type=\"hidden\" name=\"tiene_extra\" value=\"1\" /><hr /></p>";
-			unset ($_POST['evals'][0]);
-		}
-		
-		foreach ($_POST['evals'] as $g) {
-			if (!isset ($ev[$g])) continue;
-			printf ("<p>%s:<br /><input type=\"hidden\" name=\"evals[]\" value=\"%s\" />Porcentaje: <input type=\"text\" value=\"0%%\" name=\"porcentajes[]\" /><hr /></p>\n", $ev[$g], $g);
-			unset ($ev[$g]);
-		}
-		
-		echo "<input type=\"submit\" value=\"Agregar materia\" />\n";
-		echo "</form>\n";
-	} ?>
 </body>
 </html>

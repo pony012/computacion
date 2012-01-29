@@ -23,41 +23,6 @@
 		exit;
 	}
 	
-	if (count ($_POST['evals']) != count ($_POST['porcentajes']) || count ($_POST['evals']) <= 0) {
-		agrega_mensaje (3, "Ha ocurrido un error procesando los datos");
-		exit;
-	}
-	
-	require_once '../mysql-con.php';
-	
-	/* Recuperar las formas de evaluación */
-	$result = mysql_query ("SELECT Id FROM Evaluaciones", $mysql_con);
-	while (($row = mysql_fetch_row ($result)) != FALSE) $todas[$row[0]] = 1;
-	mysql_free_result ($result);
-	
-	$nuevas = array ();
-	for ($g = 0; $g < count ($_POST['evals']); $g++) {
-		$nuevas [((int) $_POST['evals'][$g])] = (int) $_POST['porcentajes'][$g];
-	}
-	
-	$suma = 0;
-	foreach ($nuevas as $key => $porcentaje) {
-		if ($porcentaje <= 0 || !isset ($todas [$key])) {
-			agrega_mensaje (3, "Ha ocurrido un error procesando los datos");
-			exit;
-		}
-		
-		$suma += $porcentaje;
-	}
-	
-	if ($suma != 100) {
-		/* Suma incorrecta */
-		agrega_mensaje (3, "Ha ocurrido un error procesando los datos");
-		exit;
-	}
-	
-	if (isset ($_POST['tiene_extra']) && $_POST['tiene_extra'] == 1) $nuevas[0] = 100;
-	
 	/* Validar la clave la materia */
 	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_POST['clave'])) {
 		agrega_mensaje (3, "Materia incorrecta");
@@ -65,6 +30,56 @@
 	}
 	
 	$_POST['clave'] = strtoupper ($_POST['clave']);
+	
+	if (!isset ($_POST['grupo'])) {
+		agrega_mensaje (3, "Ha ocurrido un error procesando los datos");
+		exit;
+	}
+	
+	require_once '../mysql-con.php';
+	
+	/* Recuperar las formas de evaluación */
+	$todas = array ();
+	$result = mysql_query ("SELECT Id, Grupo FROM Evaluaciones", $mysql_con);
+	while (($object = mysql_fetch_object ($result))) $todas[$object->Id] = $object->Grupo;
+	mysql_free_result ($result);
+	
+	$nuevas = array ();
+	/* Recorrer cada grupo; y dentro de cada grupo, recorrer su formas de evaluación
+	 * Si no existen o no están el grupo correcto salir
+	 * Si la suma por cada grupo es diferente de 100 salir */
+	foreach ($_POST['grupo'] as $id_grupo) {
+		if (!isset ($_POST['eval_' . $id_grupo]) || !isset ($_POST['p_' . $id_grupo]) || count ($_POST['eval_' . $id_grupo]) != count ($_POST['p_' . $id_grupo])) {
+			agrega_mensaje (3, "Error desconocido");
+			exit;
+		}
+		
+		$suma = 0;
+		
+		foreach ($_POST['eval_' . $id_grupo] as $index => $eval) {
+			if (!isset ($todas[$eval]) || $todas[$eval] != $id_grupo) {
+				/* No existe la evaluación, o no pertenece a este grupo */
+				agrega_mensaje (3, "Error desconocido");
+				exit;
+			}
+			$porcentaje = $_POST['p_' . $id_grupo][$index];
+			settype ($porcentaje, 'integer');
+			
+			if ($porcentaje <= 0) {
+				agrega_mensaje (3, "Error desconocido");
+				exit;
+			}
+			$suma = $suma + $porcentaje;
+			$nuevas[$eval] = $porcentaje;
+			
+			unset ($todas[$eval]); /* La quito de "todas" para que si se repite marque error */
+		}
+		
+		if ($suma != 100) {
+			agrega_mensaje (3, "Error al procesador los datos");
+			exit;
+		}
+	}
 	
 	if ($_POST['modo'] == 'nuevo') {
 		/* INSERT INTO `computacion`.`Materias` (`Clave`, `Descripcion`) VALUES ('as123', 'sadfgh'); */
