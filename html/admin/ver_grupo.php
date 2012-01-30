@@ -107,7 +107,7 @@
 		while (($object_ge = mysql_fetch_object ($result_ge))) {
 			printf ("<div id=\"%s\">", $object_ge->Descripcion);
 			
-			echo "<table border=\"1\"><thead><tr><th>No. Lista</th><th>Código</th><th>Alumno</th>";
+			echo "<table border=\"1\"><thead><tr><th>No. Lista</th><th>Código</th><th>Alumno</th>\n";
 			
 			/* Recuperar las formas de evaluacion de este grupo (ej, Depa 1, Depa 2, etc...) */
 			$query = sprintf ("SELECT E.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave='%s' AND E.Grupo = '%s' ORDER BY E.Id", $grupo->Clave, $object_ge->Grupo);
@@ -116,7 +116,7 @@
 			
 			while (($object = mysql_fetch_object ($result))) printf ("<th>%s</th>", $object->Descripcion);
 			mysql_free_result ($result);
-			echo "</tr></thead>\n<tbody>";
+			echo "<th>Promedio</th></tr></thead>\n<tbody>\n";
 			
 			/* Primero recuperar los alumnos de este grupo */
 			$query = sprintf ("SELECT G.Alumno, A.Nombre, A.Apellido FROM Grupos AS G INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE Nrc='%s' ORDER BY A.Apellido, A.Nombre", $_GET['nrc']);
@@ -132,18 +132,22 @@
 				$query = sprintf ("SELECT C.Valor FROM Calificaciones AS C INNER JOIN Evaluaciones AS E ON C.Tipo = E.Id WHERE C.Alumno = '%s' AND C.Nrc = '%s' AND E.Grupo = '%s' ORDER BY C.Tipo", $alumno->Alumno, $_GET['nrc'], $object_ge->Grupo);
 				
 				$cal_result = mysql_query ($query, $mysql_con);
+				$promedio = 0;
 				
 				while (($cal = mysql_fetch_object ($cal_result))) {
 					if (is_null ($cal->Valor)) {
 						echo "<td>--</td>";
 					} else { /* FIXME: El valor de los NP es -1 */
 						printf ("<td>%s</td>", $cal->Valor);
+						$promedio += $cal->Valor;
 					}
 				}
 				
+				printf ("<td>%s</td>", $promedio);
+				
 				mysql_free_result ($cal_result); /* Las calificaciones de este alumno */
 				
-				echo "</tr>";
+				echo "</tr>\n";
 			}
 			mysql_free_result ($result); /* El resultado de los alumnos */
 			
@@ -152,6 +156,7 @@
 			$query = sprintf ("SELECT P.Tipo FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE Clave = '%s' AND E.Grupo = '%s'", $grupo->Clave, $object_ge->Grupo);
 			
 			$result = mysql_query ($query, $mysql_con);
+			$total = 0;
 			while (($object = mysql_fetch_object ($result))) {
 				$query = sprintf ("SELECT Promedio FROM Promedios WHERE Nrc = '%s' AND Tipo = '%s'", $_GET['nrc'], $object->Tipo);
 				
@@ -161,11 +166,12 @@
 				} else {
 					$promedio = mysql_fetch_object ($result_promedio);
 					printf ("<td>%s</td>", $promedio->Promedio);
+					$total += $promedio->Promedio;
 				}
 				
 				mysql_free_result ($result_promedio);
 			}
-			
+			printf ("<td>%s</td></tr>\n", $total);
 			mysql_free_result ($result);
 			
 			echo "</tbody></table></div>\n";
