@@ -170,7 +170,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 		printf ("<p>Materia: %s %s</p><input type=\"hidden\" id=\"j_materia\" value=\"%s\" />\n", $datos->Clave, $datos->Descripcion, $datos->Clave);
 		printf ("<p>Evaluación: %s</p>\n", $datos->Evaluacion);
 		
-		echo "<p>Fecha y hora seleccionada: <input type=\"text\" id=\"SFecha\" /><input type=\"hidden\" id=\"fecha\" /></p>";
+		echo "<p>Fecha y hora seleccionada: <input type=\"text\" id=\"SFecha\" /><input type=\"hidden\" id=\"fecha\" name=\"fecha\" /></p>";
 		/* Forzar una actualizacion del selector de fechas */
 		echo "<script language=\"javascript\" type=\"text/javascript\">\n$(function() {";
 		printf ("var d1 = new Date (%s);\n", ($datos->FechaHora * 1000));
