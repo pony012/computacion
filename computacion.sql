@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 10-11-2011 a las 23:07:27
+-- Tiempo de generación: 01-02-2012 a las 08:11:05
 -- Versión del servidor: 5.1.49
 -- Versión de PHP: 5.3.3-7+squeeze3
 
@@ -18,6 +18,19 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 --
 -- Base de datos: `computacion`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `Academias`
+--
+
+CREATE TABLE IF NOT EXISTS `Academias` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Nombre` varchar(100) NOT NULL,
+  `Maestro` int(9) unsigned zerofill DEFAULT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -64,35 +77,6 @@ CREATE TABLE IF NOT EXISTS `Alumnos_Aplicadores` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `Salones_Aplicadores`
---
-
-CREATE TABLE IF NOT EXISTS `Salones_Aplicadores` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
-  `Materia` char(5) NOT NULL,
-  `Tipo` int(11) NOT NULL,
-  `Salon` char(20) NOT NULL,
-  `FechaHora` datetime NOT NULL,
-  `Maestro` int(7) DEFAULT NULL,
-  PRIMARY KEY (`Id`),
-  UNIQUE KEY `Salon` (`Salon`,`FechaHora`),
-  KEY `Materia` (`Materia`),
-  KEY `Evaluacion` (`Materia`,`Tipo`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- RELACIONES PARA LA TABLA `Salones_Aplicadores`:
---   `Maestro`
---       `Maestros` -> `Codigo`
---   `Materia`
---       `Materias` -> `Clave`
---   `Tipo`
---       `Evaluaciones` -> `Id`
---
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `Calificaciones`
 --
 
@@ -108,13 +92,12 @@ CREATE TABLE IF NOT EXISTS `Calificaciones` (
 --
 -- RELACIONES PARA LA TABLA `Calificaciones`:
 --   `Alumno`
---       `Grupos` -> `Alumno`
+--       `Alumnos` -> `Codigo`
 --   `Nrc`
---       `Grupos` -> `Nrc`
+--       `Secciones` -> `Nrc`
 --   `Tipo`
 --       `Evaluaciones` -> `Id`
 --
-
 
 -- --------------------------------------------------------
 
@@ -131,29 +114,24 @@ CREATE TABLE IF NOT EXISTS `Carreras` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `Grupos_Evaluaciones`
---
-
-CREATE TABLE IF NOT EXISTS `Grupos_Evaluaciones` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
-  `Descripcion` varchar(30) NOT NULL,
-  PRIMARY KEY (`Id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `Evaluaciones`
 --
 
 CREATE TABLE IF NOT EXISTS `Evaluaciones` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Grupo` int(11) NOT NULL,
   `Descripcion` varchar(100) NOT NULL,
   `Exclusiva` tinyint(1) NOT NULL,
   `Apertura` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `Cierre` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`Id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- RELACIONES PARA LA TABLA `Evaluaciones`:
+--   `Grupo`
+--       `Grupos_Evaluaciones` -> `Id`
+--
 
 -- --------------------------------------------------------
 
@@ -174,6 +152,18 @@ CREATE TABLE IF NOT EXISTS `Grupos` (
 --   `Nrc`
 --       `Secciones` -> `Nrc`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `Grupos_Evaluaciones`
+--
+
+CREATE TABLE IF NOT EXISTS `Grupos_Evaluaciones` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Descripcion` varchar(30) NOT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -199,9 +189,15 @@ CREATE TABLE IF NOT EXISTS `Maestros` (
 CREATE TABLE IF NOT EXISTS `Materias` (
   `Clave` char(5) NOT NULL,
   `Descripcion` varchar(100) NOT NULL,
+  `Academia` int(11) DEFAULT NULL,
   PRIMARY KEY (`Clave`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+--
+-- RELACIONES PARA LA TABLA `Materias`:
+--   `Academia`
+--       `Academias` -> `Id`
+--
 
 -- --------------------------------------------------------
 
@@ -214,10 +210,11 @@ CREATE TABLE IF NOT EXISTS `Permisos` (
   `aed_usuarios` tinyint(1) NOT NULL DEFAULT '0',
   `crear_grupos` tinyint(1) NOT NULL DEFAULT '0',
   `asignar_aplicadores` tinyint(1) NOT NULL DEFAULT '0',
-  `grupos_globales` tinyint(1) NOT NULL DEFAULT '0',
+  `grupos_globales` tinyint(1) NOT NULL DEFAULT '1',
   `crear_materias` tinyint(1) NOT NULL DEFAULT '0',
   `admin_carreras` tinyint(1) NOT NULL DEFAULT '0',
   `admin_evaluaciones` tinyint(1) NOT NULL DEFAULT '0',
+  `admin_academias` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -260,6 +257,35 @@ CREATE TABLE IF NOT EXISTS `Promedios` (
 -- RELACIONES PARA LA TABLA `Promedios`:
 --   `Nrc`
 --       `Secciones` -> `Nrc`
+--   `Tipo`
+--       `Evaluaciones` -> `Id`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `Salones_Aplicadores`
+--
+
+CREATE TABLE IF NOT EXISTS `Salones_Aplicadores` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Materia` char(5) NOT NULL,
+  `Tipo` int(11) NOT NULL,
+  `Salon` char(20) NOT NULL,
+  `FechaHora` datetime NOT NULL,
+  `Maestro` int(7) DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Salon` (`Salon`,`FechaHora`),
+  KEY `Materia` (`Materia`),
+  KEY `Evaluacion` (`Materia`,`Tipo`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- RELACIONES PARA LA TABLA `Salones_Aplicadores`:
+--   `Maestro`
+--       `Maestros` -> `Codigo`
+--   `Materia`
+--       `Materias` -> `Clave`
 --   `Tipo`
 --       `Evaluaciones` -> `Id`
 --
