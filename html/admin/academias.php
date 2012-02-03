@@ -22,6 +22,7 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
+	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
@@ -39,7 +40,7 @@
 		echo "<table border=\"1\"><thead><tr><th>Nombre</th><th>Presidente</th><th>Acciones</th></tr></thead><tbody>";
 		
 		while (($object = mysql_fetch_object ($result))) {
-			printf ("<tr><td>%s</td>", $object->Nombre);
+			printf ("<tr><td><a href=\"ver_academia.php?id=%s\">%s</a></td>", $object->Id, $object->Nombre);
 			
 			if (is_null ($object->Maestro)) {
 				echo "<td><b>Indefinido</b></td></tr>\n";
