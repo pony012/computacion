@@ -48,10 +48,13 @@
 				mysql_free_result ($result_maestro);
 			}
 		}
+		mysql_free_result ($result);
 		
 		echo "</tbody></table>";
 		
-		mysql_free_result ($result);
+		if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
+			echo "<ul><li><a href=\"editar_academia.php?tipo=n\">Nueva academia</a></li></ul>\n";
+		}
 	?>
 </body>
 </html>
