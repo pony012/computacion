@@ -10,13 +10,6 @@
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_SESSION['permisos']['admin_academias']) || $_SESSION['permisos']['admin_academias'] != 1) {
-		/* Privilegios insuficientes */
-		header ("Location: vistas.php");
-		agrega_mensaje (3, "Privilegios insuficientes");
-		exit;
-	}
-	
 	if (!isset ($_GET['id']) || $_GET['id'] < 0) {
 		header ("Location: academias.php");
 		exit;
@@ -69,30 +62,37 @@
 	
 	$result = mysql_query ($query, $mysql_con);
 	
-	echo "<table border=\"1\"><thead><tr><th>Clave</th><th>Materia</th><th>Acciones</th></tr></thead><tbody>";
+	echo "<table border=\"1\"><thead><tr><th>Clave</th><th>Materia</th>";
+	
+	if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
+		echo "<th>Acciones</th>";
+	}
+	
+	echo "</tr></thead><tbody>";
 	
 	while (($object = mysql_fetch_object ($result))) {
 		printf ("<tr><td>%s</td><td>%s</td>", $object->Clave, $object->Descripcion);
 		/* TODO: Eliminar una materia */
+		if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
+			/* Acciones */
+		}
 	}
 	
 	echo "</tbody></table>";
-	?>
-	<form method="POST" action="post_materia_academia.php">
-	<p>Agregar una materia a esta academia:</p><p>
-	<?php
+	
+	/* Mostrar Agregar sólo si tiene permisos */
+	if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
+		echo "<form method=\"POST\" action=\"post_materia_academia.php\">\n<p>Agregar una materia a esta academia:</p><p>\n";
 		printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />\n", $academia->Id);
 		echo "<select name=\"materia\"><option selected=\"selected\" value=\"NULL\">Seleccione una materia</option>";
-	
+		
 		$query = "SELECT Clave, Descripcion FROM Materias WHERE Academia IS NULL";
 		$result = mysql_query ($query, $mysql_con);
-	
+		
 		while (($object = mysql_fetch_object ($result))) {
 			printf ("<option value=\"%s\">%s - %s</option>\n", $object->Clave, $object->Clave, $object->Descripcion);
 		}
-		echo "</select>";
-	?>
-	<input type="image" src="../img/add2.png" class="icon" />
-	</form>
+		echo "</select>\n<input type=\"image\" src=\"../img/add2.png\" class=\"icon\" /></form>\n";
+	} ?>
 </body>
 </html>

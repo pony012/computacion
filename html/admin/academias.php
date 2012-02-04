@@ -7,15 +7,6 @@
 		header ("Location: login.php");
 		exit;
 	}
-	
-	require_once 'mensajes.php';
-	
-	if (!isset ($_SESSION['permisos']['admin_academias']) || $_SESSION['permisos']['admin_academias'] != 1) {
-		/* Privilegios insuficientes */
-		header ("Location: vistas.php");
-		agrega_mensaje (3, "Privilegios insuficientes");
-		exit;
-	}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -37,8 +28,13 @@
 		
 		$result = mysql_query ($query, $mysql_con);
 		
-		echo "<table border=\"1\"><thead><tr><th>Nombre</th><th>Presidente</th><th>Acciones</th></tr></thead><tbody>";
+		echo "<table border=\"1\"><thead><tr><th>Nombre</th><th>Presidente</th>";
 		
+		if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
+			echo "<th>Acciones</th>";
+		}
+		
+		echo "</tr></thead><tbody>";
 		while (($object = mysql_fetch_object ($result))) {
 			printf ("<tr><td><a href=\"ver_academia.php?id=%s\">%s</a></td>", $object->Id, $object->Nombre);
 			
