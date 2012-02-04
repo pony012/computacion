@@ -36,6 +36,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
+	<script language="javascript" src="../scripts/comun.js" type="text/javascript"></script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
@@ -72,9 +73,11 @@
 	
 	while (($object = mysql_fetch_object ($result))) {
 		printf ("<tr><td>%s</td><td>%s</td>", $object->Clave, $object->Descripcion);
-		/* TODO: Eliminar una materia */
+		
 		if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
 			/* Acciones */
+			$link = array ('materia' => $object->Clave, 'id' => $academia->Id);
+			printf ("<td><a href=\"eliminar_materia_academia.php?%s\"\n onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la materia %s de la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" /></a></td>", htmlentities (http_build_query ($link)), $object->Clave, $academia->Nombre);
 		}
 	}
 	
