@@ -60,7 +60,7 @@
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes ();
 	if ($_GET['tipo'] == 'e') {
-		echo "<h1>Editar academia</h1>\n<form method=\"POST\" action=\"http://alanturing.cucei.udg.mx/comp/server.php\"><input type=\"hidden\" name=\"modo\" value=\"editar\" />\n";
+		echo "<h1>Editar academia</h1>\n<form method=\"POST\" action=\"post_academia.php\"><input type=\"hidden\" name=\"modo\" value=\"editar\" />\n";
 		
 		printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />\n", $_GET['id']);
 		printf ("<p>Nombre de la academia: <input type=\"text\" name=\"nombre\" value=\"%s\" /></p>\n", $academia->Nombre);
@@ -92,7 +92,7 @@
 		echo "</select></p><p><input type=\"submit\" value=\"Actualizar\" /></p></form>";
 	} else { ?>
 	<h1>Nueva Academia</h1>
-	<form method="POST" action="http://alanturing.cucei.udg.mx/comp/server.php">
+	<form method="POST" action="post_academia.php">
 	<input type="hidden" name="modo" value="nuevo" />
 	<p>Nombre de la academia: <input type="text" name="nombre" /></p>
 	<p>Presidente de academia: <select name="maestro"><option value="NULL" selected="selected">Indefinido</option>
