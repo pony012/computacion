@@ -85,35 +85,28 @@
 	
 	$result = mysql_query ($query, $mysql_con);
 	
-	$suma = 0;
-	$g = 0;
 	while (($object = mysql_fetch_object ($result))) {
 		if (isset ($calificaciones [$object->Alumno])) {
 			$query_cals = sprintf ("UPDATE Calificaciones SET Valor = %s WHERE Alumno = '%s' AND Nrc = '%s' AND Tipo = '%s'; ", $calificaciones[$object->Alumno], $object->Alumno, $_POST['nrc'], $_POST['eval']);
 			mysql_query ($query_cals, $mysql_con);
-			if ($calificaciones[$object->Alumno] !== "NULL") {
-				$suma = $suma + $calificaciones[$object->Alumno];
-				$g++;
-			}
-		} else {
-			if (!is_null ($object->Valor)) {
-				$suma = $suma + $object->Valor;
-				$g++;
-			}
 		}
 	}
 	
 	mysql_free_result ($result);
 	
 	/* Actualizar los promedios */
-	if ($g > 0) {
-		$query = sprintf ("INSERT INTO Promedios (Nrc, Tipo, Promedio) VALUES ('%s', '%s', %s) ON DUPLICATE KEY UPDATE Promedio = Values (Promedio)", $_POST['nrc'], $_POST['eval'], ($suma / $g));
-		
-		mysql_query ($query, $mysql_con);
-	} else {
+	$query = sprintf ("SELECT AVG (Valor) AS AVG FROM Calificaciones WHERE Nrc = '%s' AND Tipo = '%s' AND Valor IS NOT NULL", $_POST['nrc'], $_POST['eval']);
+	$result = mysql_query ($query, $mysql_con);
+	$promedio = mysql_fetch_object ($result);
+	mysql_free_result ($result);
+	
+	if (is_null ($promedio->AVG)) {
 		$query = sprintf ("DELETE FROM Promedios WHERE Tipo = '%s' AND Nrc = '%s'", $_POST['eval'], $_POST['nrc']);
-		mysql_query ($query, $mysql_con);
+	} else {
+		$query = sprintf ("INSERT INTO Promedios (Nrc, Tipo, Promedio) VALUES ('%s', '%s', %s) ON DUPLICATE KEY UPDATE Promedio = Values (Promedio)", $_POST['nrc'], $_POST['eval'], $promedio->AVG);
 	}
+	
+	mysql_query ($query, $mysql_con);
 	
 	agrega_mensaje (0, "Calificaciones subidas exitosamente");
 	
