@@ -39,14 +39,20 @@
 			printf ("<tr><td><a href=\"ver_academia.php?id=%s\">%s</a></td>", $object->Id, $object->Nombre);
 			
 			if (is_null ($object->Maestro)) {
-				echo "<td><b>Indefinido</b></td></tr>\n";
+				echo "<td><b>Indefinido</b></td>\n";
 			} else {
 				$query = sprintf ("SELECT Nombre, Apellido FROM Maestros WHERE Codigo = '%s'", $object->Maestro);
 				$result_maestro = mysql_query ($query, $mysql_con);
 				$maestro = mysql_fetch_object ($result_maestro);
-				printf ("<td>%s %s</td></tr>\n", $maestro->Apellido, $maestro->Nombre);
+				printf ("<td>%s %s</td>\n", $maestro->Apellido, $maestro->Nombre);
 				mysql_free_result ($result_maestro);
 			}
+			
+			if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
+				$link = array ('tipo' => 'e', 'id' => $object->Id);
+				printf ("<td><a href=\"editar_academia.php?%s\"><img class=\"icon\" src=\"../img/properties.png\" /></a></td>", htmlentities (http_build_query ($link)));
+			}
+			echo "</tr>";
 		}
 		mysql_free_result ($result);
 		
