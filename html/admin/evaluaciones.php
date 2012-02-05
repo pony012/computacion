@@ -39,10 +39,10 @@
 		echo "<table border=\"1\">";
 		
 		/* Mostrar la cabecera */
-		echo "<thead><tr><th>Nombre</th><th>Tipo</th><th>Exclusiva del maestro</th><th>Tiempo de apertura</th><th>Tiempo de cierre</th><th>Acción</th></tr></thead>";
+		echo "<thead><tr><th>Nombre</th><th>Tipo</th><th>Evaluación para uso del maestro</th><th>Subida</th><th>Tiempo de apertura</th><th>Tiempo de cierre</th><th>Acción</th></tr></thead>";
 		
 		/* Empezar la consulta mysql */
-		$query = "SELECT E.Descripcion, E.Id, E.Exclusiva, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre, GE.Descripcion AS Grupo FROM Evaluaciones AS E INNER JOIN Grupos_Evaluaciones AS GE ON E.Grupo = GE.Id ORDER BY E.Grupo, E.Id";
+		$query = "SELECT E.Descripcion, E.Id, E.Exclusiva, E.Estado, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre, GE.Descripcion AS Grupo FROM Evaluaciones AS E INNER JOIN Grupos_Evaluaciones AS GE ON E.Grupo = GE.Id ORDER BY E.Grupo, E.Id";
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -55,11 +55,22 @@
 			if ($object->Exclusiva == 1) {
 				printf ("<td>Sí</td>");
 			} else {
-				printf ("<td>No</td");
+				printf ("<td>No</td>");
 			}
 			
-			printf ("<td>%s</td>", strftime ("%a %e %h %Y a las %H:%M", $object->Apertura));
-			printf ("<td>%s</td>", strftime ("%a %e %h %Y a las %H:%M", $object->Cierre));
+			if ($object->Estado == 'time') {
+				echo "<td>Por fechas</td>";
+				printf ("<td>%s</td>", strftime ("%a %e %h %Y a las %H:%M", $object->Apertura));
+				printf ("<td>%s</td>\n", strftime ("%a %e %h %Y a las %H:%M", $object->Cierre));
+			} else {
+				if ($object->Estado == 'open') {
+					echo "<td>Abierta</td>";
+				} else {
+					echo "<td>Cerrada</td>";
+				}
+				echo "<td>No aplica</td><td>No aplica</td>\n";
+			}
+			
 			/* Extraordinario ya *NO* es un caso especial */
 			printf ("<td><a href=\"edit_eval.php?id=%s\"><img class=\"icon\" src=\"../img/properties.png\" /></a>", $object->Id);
 		

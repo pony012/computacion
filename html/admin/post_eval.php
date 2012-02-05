@@ -27,13 +27,21 @@
 		exit;
 	}
 	
+	/* El campo select del estado */
+	if (!isset ($_POST['estado']) || ($_POST['estado'] != 'open' && $_POST['estado'] != 'closed' && $_POST['estado'] != 'time')) {
+		agrega_mensaje (3, "Datos incorrectos");
+		exit;
+	}
+	
 	settype ($_POST['grupo'], 'integer');
 	settype ($_POST['inicio'], 'integer');
 	settype ($_POST['fin'], 'integer');
 	
-	if ($_POST['inicio'] >= $_POST['fin'] || $_POST['inicio'] < 0 || $_POST['fin'] < 0) {
-		agrega_mensaje (3, "Datos incorrectos");
-		exit;
+	if ($_POST['estado'] == 'time') {
+		if ($_POST['inicio'] >= $_POST['fin'] || $_POST['inicio'] < 0 || $_POST['fin'] < 0) {
+			agrega_mensaje (3, "Datos incorrectos");
+			exit;
+		}
 	}
 	
 	if (isset ($_POST['exclusiva']) && $_POST['exclusiva'] == 1) {
@@ -55,13 +63,13 @@
 		$result = mysql_query ($query, $mysql_con);
 	
 		if (mysql_num_rows ($result) == 0) {
-			agrega_mensaje (3, "Grupo de evaluacion noexistente");
+			agrega_mensaje (3, "Grupo de evaluacion no existente");
 			exit;
 		}
 	
 		mysql_free_result ($result);
 		
-		$query = sprintf ("INSERT INTO Evaluaciones (Grupo, Descripcion, Exclusiva, Apertura, Cierre) VALUES ('%s', '%s', '%s', FROM_UNIXTIME(%s), FROM_UNIXTIME(%s));", $_POST['grupo'], mysql_real_escape_string ($_POST['descripcion']), $exclu, $_POST['inicio'], $_POST['fin']);
+		$query = sprintf ("INSERT INTO Evaluaciones (Grupo, Descripcion, Estado, Exclusiva, Apertura, Cierre) VALUES ('%s', '%s', '%s', FROM_UNIXTIME(%s), FROM_UNIXTIME(%s));", $_POST['grupo'], mysql_real_escape_string ($_POST['descripcion']), $_POST['estado'], $exclu, $_POST['inicio'], $_POST['fin']);
 		
 		$result = mysql_query ($query);
 		
@@ -79,7 +87,7 @@
 			exit;
 		}
 		/* UPDATE `computacion`.`Evaluaciones` SET `Exclusiva` = '1', `Apertura` = '2012-02-02 01:40:00', `Cierre` = '2012-02-05 23:59:00' WHERE `Evaluaciones`.`Id` = 4; */
-		$query = sprintf ("UPDATE Evaluaciones SET Descripcion = '%s', Exclusiva = '%s', Apertura = FROM_UNIXTIME (%s), Cierre = FROM_UNIXTIME (%s) WHERE Id = '%s'", mysql_real_escape_string ($_POST['descripcion']), $exclu, $_POST['inicio'], $_POST['fin'], $_POST['id']);
+		$query = sprintf ("UPDATE Evaluaciones SET Descripcion = '%s', Exclusiva = '%s', Estado = '%s', Apertura = FROM_UNIXTIME (%s), Cierre = FROM_UNIXTIME (%s) WHERE Id = '%s'", mysql_real_escape_string ($_POST['descripcion']), $exclu, $_POST['estado'], $_POST['inicio'], $_POST['fin'], $_POST['id']);
 		
 		$result = mysql_query ($query);
 		

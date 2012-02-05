@@ -96,27 +96,45 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 			
 			var ap = $('#apertura').datetimepicker('getDate');
 			var ci = $('#cierre').datetimepicker('getDate');
+			var estado = document.getElementById ("estado");
 			
-			if (ap == null || ci == null) {
-				alert ("Alguna de las fechas está vacía");
-				return false;
+			if (estado.value == "time") {
+				if (ap == null || ci == null) {
+					alert ("Alguna de las fechas está vacía");
+					return false;
+				}
+		
+				var t1 = ap.getTime () / 1000;
+				var t2 = ci.getTime () / 1000;
+		
+				if (t2 < t1) {
+					/* El lapso es negativo */
+					alert ("Se ha especificado un intervalo negativo");
+					return false;
+				} else if (t1 == t2) {
+					alert ("Se ha especificado un intervalo vacio");
+					return false;
+				}
+				
+				document.getElementById ("inicio").value = t1;
+				document.getElementById ("fin").value = t2;
 			}
 			
-			var t1 = ap.getTime () / 1000;
-			var t2 = ci.getTime () / 1000;
-			
-			if (t2 < t1) {
-				/* El lapso es negativo */
-				alert ("Se ha especificado un intervalo negativo");
-				return false;
-			} else if (t1 == t2) {
-				alert ("Se ha especificado un intervalo vacio");
-				return false;
-			}
-			
-			document.getElementById ("inicio").value = t1;
-			document.getElementById ("fin").value = t2;
 			return true;
+		}
+		
+		function actualizar_cajas () {
+			var estado = document.getElementById ("estado");
+			var apertura = document.getElementById ("apertura");
+			var cierre = document.getElementById ("cierre");
+			
+			if (estado.value == "time") {
+				apertura.disabled = false;
+				cierre.disabled = false;
+			} else {
+				apertura.disabled = true;
+				cierre.disabled = true;
+			}
 		}
 	</script>
 	<title><?php
@@ -128,7 +146,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	echo "<h1>Nueva forma de evaluación</h1>\n";
 	echo "<form action=\"post_eval.php\" method=\"POST\" onsubmit=\"return validar()\"><input type=\"hidden\" name=\"modo\" value=\"nuevo\" />\n";
 	echo "<p>Ingrese el nombre de la forma de evaluación: <input type=\"text\" id=\"descripcion\" name=\"descripcion\" /></p>\n";
-	echo "<p>Del grupo:";
+	echo "<p>Del tipo:";
 	
 	echo "<select name=\"grupo\" id=\"grupo\" />\n";
 	
@@ -144,7 +162,13 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	mysql_free_result ($result);
 	echo "</select></p>\n";
 ?>
-	<input type="checkbox" id="exclusiva" name="exclusiva" value="1" /><label for="exclusiva">Exclusiva para el maestro</label>
+	<p><b>Subida de calificaciones</b></p><p>Abierta: Las calificaciones pueden ser subidas en cualquier momento.<br />Cerrada: Nadie puede subir calificaciones para esta evaluación.<br />Basada en fechas: El tiempo de subida se define por el rango de fechas</p>
+	<p>Subida: <select name="estado" id="estado" onchange="actualizar_cajas ()">
+		<option value="open">Abierta</option>
+		<option value="closed">Cerrada</option>
+		<option value="time" selected="selected">Basada en fechas</option>
+	</select></p>
+	<p><input type="checkbox" id="exclusiva" name="exclusiva" value="1" /><label for="exclusiva">Para uso del maestro</label><br />Indica si esta forma de evaluación es para subida del maestro.</p>
 	<p>Fecha de apertura: <input type="text" id="apertura" /></p>
 	<input type="hidden" id="inicio" name="inicio" />
 	<p>Fecha de cierre: <input type="text" id="cierre" /></p>

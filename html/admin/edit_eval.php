@@ -25,7 +25,7 @@
 		exit;
 	} else {
 		settype ($_GET['id'], 'integer');
-		$query = sprintf ("SELECT E.Descripcion, E.Id, E.Exclusiva, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre, GE.Descripcion AS Grupo FROM Evaluaciones AS E INNER JOIN Grupos_Evaluaciones AS GE ON E.Grupo = GE.Id WHERE E.Id='%s' LIMIT 1", $_GET['id']);
+		$query = sprintf ("SELECT E.Descripcion, E.Id, E.Exclusiva, E.Estado, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre, GE.Descripcion AS Grupo FROM Evaluaciones AS E INNER JOIN Grupos_Evaluaciones AS GE ON E.Grupo = GE.Id WHERE E.Id='%s' LIMIT 1", $_GET['id']);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -117,27 +117,45 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 			
 			var ap = $('#apertura').datetimepicker('getDate');
 			var ci = $('#cierre').datetimepicker('getDate');
+			var estado = document.getElementById ("estado");
 			
-			if (ap == null || ci == null) {
-				alert ("Alguna de las fechas está vacía");
-				return false;
+			if (estado.value == "time") {
+				if (ap == null || ci == null) {
+					alert ("Alguna de las fechas está vacía");
+					return false;
+				}
+		
+				var t1 = ap.getTime () / 1000;
+				var t2 = ci.getTime () / 1000;
+		
+				if (t2 < t1) {
+					/* El lapso es negativo */
+					alert ("Se ha especificado un intervalo negativo");
+					return false;
+				} else if (t1 == t2) {
+					alert ("Se ha especificado un intervalo vacio");
+					return false;
+				}
+				
+				document.getElementById ("inicio").value = t1;
+				document.getElementById ("fin").value = t2;
 			}
 			
-			var t1 = ap.getTime () / 1000;
-			var t2 = ci.getTime () / 1000;
-			
-			if (t2 < t1) {
-				/* El lapso es negativo */
-				alert ("Se ha especificado un intervalo negativo");
-				return false;
-			} else if (t1 == t2) {
-				alert ("Se ha especificado un intervalo vacio");
-				return false;
-			}
-			
-			document.getElementById ("inicio").value = t1;
-			document.getElementById ("fin").value = t2;
 			return true;
+		}
+		
+		function actualizar_cajas () {
+			var estado = document.getElementById ("estado");
+			var apertura = document.getElementById ("apertura");
+			var cierre = document.getElementById ("cierre");
+			
+			if (estado.value == "time") {
+				apertura.disabled = false;
+				cierre.disabled = false;
+			} else {
+				apertura.disabled = true;
+				cierre.disabled = true;
+			}
 		}
 	</script>
 	<title><?php
@@ -151,13 +169,25 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	echo "<form action=\"post_eval.php\" method=\"POST\" onsubmit=\"return validar()\"><input type=\"hidden\" name=\"modo\" value=\"editar\" />\n";
 	printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />", $_GET['id']);
 	printf ("<p>Nombre de la forma de evaluación:<input type=\"text\" id=\"descripcion\" name=\"descripcion\" value=\"%s\" /></p>\n", $object->Descripcion);
-	printf ("<p>Del grupo: <b>%s</b></p>", $object->Grupo);
+	printf ("<p>Del tipo: <b>%s</b></p>", $object->Grupo);
 		
 	if ($object->Exclusiva == 1) {
 		echo "<input type=\"checkbox\" id=\"exclusiva\" name=\"exclusiva\" value=\"1\" checked=\"checked\" /><label for=\"exclusiva\">Exclusiva para el maestro</label>\n";
 	} else {
 		echo "<input type=\"checkbox\" id=\"exclusiva\" name=\"exclusiva\" value=\"1\" /><label for=\"exclusiva\">Exclusiva para el maestro</label>\n";
 	}
+	
+	/* El estado de la evaluacion */
+	echo "<p><b>Estado de la evaluación</b></p><p>Abierta: Las calificaciones pueden ser subidas en cualquier momento.<br />Cerrada: Nadie puede subir calificaciones para esta evaluación.<br />Basada en fechas: El tiempo de subida se define por el rango de fechas</p><p>Estado: <select name=\"estado\" id=\"estado\" onchange=\"actualizar_cajas ()\">";
+	
+	foreach (array ('open' => 'Abierta', 'closed' => 'Cerrada', 'time' => 'Basada en fechas') as $valor => $descr) {
+		if ($object->Estado == $valor) {
+			printf ("<option value=\"%s\" selected=\"selected\">%s</option>\n", $valor, $descr);
+		} else {
+			printf ("<option value=\"%s\">%s</option>\n", $valor, $descr);
+		}
+	}
+	echo "</select></p>\n";
 	
 	echo "<p>Fecha de apertura: <input type=\"text\" id=\"apertura\" /></p><input type=\"hidden\" id=\"inicio\" name=\"inicio\" />\n<p>Fecha de cierre: <input type=\"text\" id=\"cierre\" /></p><input type=\"hidden\" id=\"fin\" name=\"fin\" />\n";
 	

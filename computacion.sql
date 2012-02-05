@@ -122,6 +122,7 @@ CREATE TABLE IF NOT EXISTS `Evaluaciones` (
   `Grupo` int(11) NOT NULL,
   `Descripcion` varchar(100) NOT NULL,
   `Exclusiva` tinyint(1) NOT NULL,
+  `Estado` enum('open','closed','time') NOT NULL DEFAULT 'open',
   `Apertura` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `Cierre` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`Id`)
