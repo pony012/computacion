@@ -14,6 +14,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
+	<script language="javascript" src="../scripts/comun.js" type="text/javascript"></script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
@@ -50,7 +51,8 @@
 			
 			if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
 				$link = array ('tipo' => 'e', 'id' => $object->Id);
-				printf ("<td><a href=\"editar_academia.php?%s\"><img class=\"icon\" src=\"../img/properties.png\" /></a></td>", htmlentities (http_build_query ($link)));
+				printf ("<td><a href=\"editar_academia.php?%s\"><img class=\"icon\" src=\"../img/properties.png\" /></a>", htmlentities (http_build_query ($link)));
+				printf ("<a href=\"eliminar_academia.php?id=%s\" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" /></a></td>", $object->Id, $object->Nombre);
 			}
 			echo "</tr>";
 		}
