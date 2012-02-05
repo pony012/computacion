@@ -69,7 +69,7 @@
 	
 		mysql_free_result ($result);
 		
-		$query = sprintf ("INSERT INTO Evaluaciones (Grupo, Descripcion, Estado, Exclusiva, Apertura, Cierre) VALUES ('%s', '%s', '%s', FROM_UNIXTIME(%s), FROM_UNIXTIME(%s));", $_POST['grupo'], mysql_real_escape_string ($_POST['descripcion']), $_POST['estado'], $exclu, $_POST['inicio'], $_POST['fin']);
+		$query = sprintf ("INSERT INTO Evaluaciones (Grupo, Descripcion, Estado, Exclusiva, Apertura, Cierre) VALUES ('%s', '%s', '%s', '%s', FROM_UNIXTIME(%s), FROM_UNIXTIME(%s));", $_POST['grupo'], mysql_real_escape_string ($_POST['descripcion']), $_POST['estado'], $exclu, $_POST['inicio'], $_POST['fin']);
 		
 		$result = mysql_query ($query);
 		

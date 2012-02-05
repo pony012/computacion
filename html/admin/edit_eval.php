@@ -66,20 +66,21 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				timeFormat: 'hh:mm',
 				separator: ' a las ',
 				onClose: function(dateText, inst) {
+					if (dateText == '') {
+						var testStartDate = new Date ();
+						$(this).datetimepicker('setDate', testStartDate);
+					} else {
+						var testStartDate = $(this).datetimepicker('getDate');
+					}
+					
 					var endDateTextBox = $('#cierre');
-					if (endDateTextBox.val() != '') {
-						var testStartDate = new Date(dateText);
-						var testEndDate = new Date(endDateTextBox.val());
-						if (testStartDate > testEndDate)
-						    endDateTextBox.val(dateText);
+					
+					if (endDateTextBox.val() == '') {
+						endDateTextBox.datetimepicker('setDate', testStartDate);
+					} else {
+						var testEndDate = endDateTextBox.datetimepicker('getDate');
+						if (testStartDate > testEndDate) endDateTextBox.datetimepicker('setDate', dateText);
 					}
-					else {
-						endDateTextBox.val(dateText);
-					}
-				},
-				onSelect: function (selectedDateTime){
-					var start = $(this).datetimepicker('getDate');
-					$('#cierre').datetimepicker('option', 'minDate', new Date(start.getTime()));
 				}
 			});
 			$('#cierre').datetimepicker({
@@ -87,20 +88,21 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				timeFormat: 'hh:mm',
 				separator: ' a las ',
 				onClose: function(dateText, inst) {
+					if (dateText == '') {
+						var testEndDate = new Date ();
+						$(this).datetimepicker('setDate', testEndDate);
+					} else {
+						var testEndDate = $(this).datetimepicker('getDate');
+					}
+					
 					var startDateTextBox = $('#apertura');
-					if (startDateTextBox.val() != '') {
-						var testStartDate = new Date(startDateTextBox.val());
-						var testEndDate = new Date(dateText);
-						if (testStartDate > testEndDate)
-						    startDateTextBox.val(dateText);
+					
+					if (startDateTextBox.val() == '') {
+						startDateTextBox.datetimepicker('setDate', testEndDate);
+					} else {
+						var testStartDate = startDateTextBox.datetimepicker('getDate');
+						if (testStartDate > testEndDate) startDateTextBox.datetimepicker('setDate', dateText);
 					}
-					else {
-						startDateTextBox.val(dateText);
-					}
-				},
-				onSelect: function (selectedDateTime){
-					var end = $(this).datetimepicker('getDate');
-					$('#apertura').datetimepicker('option', 'maxDate', new Date(end.getTime()) );
 				}
 			});
 		});
@@ -163,11 +165,10 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body><?php require_once 'mensajes.php'; mostrar_mensajes ();
-	echo "<h1>Editar forma de evaluación</h1>\n";
-	
-	echo "<form action=\"post_eval.php\" method=\"POST\" onsubmit=\"return validar()\"><input type=\"hidden\" name=\"modo\" value=\"editar\" />\n";
-	printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />", $_GET['id']);
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
+	<h1>Editar forma de evaluación</h1>
+	<form action="post_eval.php" method="POST" onsubmit="return validar()"><input type="hidden" name="modo" value="editar" />
+	<?php printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />", $_GET['id']);
 	printf ("<p>Nombre de la forma de evaluación:<input type=\"text\" id=\"descripcion\" name=\"descripcion\" value=\"%s\" /></p>\n", $object->Descripcion);
 	printf ("<p>Del tipo: <b>%s</b></p>", $object->Grupo);
 		
@@ -189,20 +190,20 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	}
 	echo "</select></p>\n";
 	
-	echo "<p>Fecha de apertura: <input type=\"text\" id=\"apertura\" /></p><input type=\"hidden\" id=\"inicio\" name=\"inicio\" />\n<p>Fecha de cierre: <input type=\"text\" id=\"cierre\" /></p><input type=\"hidden\" id=\"fin\" name=\"fin\" />\n";
-	
-	echo "<input type=\"submit\" value=\"Actualizar\" /></form>\n";
-	
-	/* Forzar una actualización javascript de las fechas de inicio, fin */
-	echo "<script language=\"javascript\" type=\"text/javascript\">\n$(function() {";
-	printf ("var d1 = new Date (%s);\n", ($object->Apertura * 1000));
-	echo "$('#apertura').datetimepicker('setDate', d1);\n";
-	echo "var start = $('#apertura').datetimepicker('getDate');\n$('#cierre').datetimepicker('option', 'minDate', new Date(start.getTime()));";
-	
-	printf ("var d2 = new Date (%s);\n", ($object->Cierre * 1000));
-	echo "$('#cierre').datetimepicker('setDate', d2);\n";
-	echo "var end = $('#cierre').datetimepicker('getDate');\n$('#apertura').datetimepicker('option', 'maxDate', new Date(end.getTime()) );";
-	echo "});</script>";
-	?>
+	if ($object->Estado == "time") {
+		echo "<p>Fecha de apertura: <input type=\"text\" id=\"apertura\" /></p><input type=\"hidden\" id=\"inicio\" name=\"inicio\" />\n<p>Fecha de cierre: <input type=\"text\" id=\"cierre\" /></p><input type=\"hidden\" id=\"fin\" name=\"fin\" />\n";
+		
+		/* Forzar una actualización javascript de las fechas de inicio, fin */
+		echo "<script language=\"javascript\" type=\"text/javascript\">\n$(function() {";
+		printf ("var d1 = new Date (%s);\n", ($object->Apertura * 1000));
+		echo "$('#apertura').datetimepicker('setDate', d1);\n";
+				
+		printf ("var d2 = new Date (%s);\n", ($object->Cierre * 1000));
+		echo "$('#cierre').datetimepicker('setDate', d2);\n";
+		echo "});</script>";
+	} else {
+		echo "<p>Fecha de apertura: <input type=\"text\" id=\"apertura\" disabled=\"disabled\" /></p><input type=\"hidden\" id=\"inicio\" name=\"inicio\" />\n<p>Fecha de cierre: <input type=\"text\" id=\"cierre\" disabled=\"disabled\" /></p><input type=\"hidden\" id=\"fin\" name=\"fin\" />\n";
+	} ?>
+	<input type="submit" value="Actualizar" /></form>
 </body>
 </html>

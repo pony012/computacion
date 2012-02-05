@@ -45,20 +45,21 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				timeFormat: 'hh:mm',
 				separator: ' a las ',
 				onClose: function(dateText, inst) {
+					if (dateText == '') {
+						var testStartDate = new Date ();
+						$(this).datetimepicker('setDate', testStartDate);
+					} else {
+						var testStartDate = $(this).datetimepicker('getDate');
+					}
+					
 					var endDateTextBox = $('#cierre');
-					if (endDateTextBox.val() != '') {
-						var testStartDate = new Date(dateText);
-						var testEndDate = new Date(endDateTextBox.val());
-						if (testStartDate > testEndDate)
-						    endDateTextBox.val(dateText);
+					
+					if (endDateTextBox.val() == '') {
+						endDateTextBox.datetimepicker('setDate', testStartDate);
+					} else {
+						var testEndDate = endDateTextBox.datetimepicker('getDate');
+						if (testStartDate > testEndDate) endDateTextBox.datetimepicker('setDate', dateText);
 					}
-					else {
-						endDateTextBox.val(dateText);
-					}
-				},
-				onSelect: function (selectedDateTime){
-					var start = $(this).datetimepicker('getDate');
-					$('#cierre').datetimepicker('option', 'minDate', new Date(start.getTime()));
 				}
 			});
 			$('#cierre').datetimepicker({
@@ -66,20 +67,21 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				timeFormat: 'hh:mm',
 				separator: ' a las ',
 				onClose: function(dateText, inst) {
+					if (dateText == '') {
+						var testEndDate = new Date ();
+						$(this).datetimepicker('setDate', testEndDate);
+					} else {
+						var testEndDate = $(this).datetimepicker('getDate');
+					}
+					
 					var startDateTextBox = $('#apertura');
-					if (startDateTextBox.val() != '') {
-						var testStartDate = new Date(startDateTextBox.val());
-						var testEndDate = new Date(dateText);
-						if (testStartDate > testEndDate)
-						    startDateTextBox.val(dateText);
+					
+					if (startDateTextBox.val() == '') {
+						startDateTextBox.datetimepicker('setDate', testEndDate);
+					} else {
+						var testStartDate = startDateTextBox.datetimepicker('getDate');
+						if (testStartDate > testEndDate) startDateTextBox.datetimepicker('setDate', dateText);
 					}
-					else {
-						startDateTextBox.val(dateText);
-					}
-				},
-				onSelect: function (selectedDateTime){
-					var end = $(this).datetimepicker('getDate');
-					$('#apertura').datetimepicker('option', 'maxDate', new Date(end.getTime()) );
 				}
 			});
 		});
@@ -118,6 +120,9 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				
 				document.getElementById ("inicio").value = t1;
 				document.getElementById ("fin").value = t2;
+			} else {
+				document.getElementById ("inicio").value = "0";
+				document.getElementById ("fin").value = "0";
 			}
 			
 			return true;
@@ -142,12 +147,11 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	echo $cfg['nombre'];
 	?></title>
 </head>
-<body><?php require_once 'mensajes.php'; mostrar_mensajes ();
-	echo "<h1>Nueva forma de evaluación</h1>\n";
-	echo "<form action=\"post_eval.php\" method=\"POST\" onsubmit=\"return validar()\"><input type=\"hidden\" name=\"modo\" value=\"nuevo\" />\n";
-	echo "<p>Ingrese el nombre de la forma de evaluación: <input type=\"text\" id=\"descripcion\" name=\"descripcion\" /></p>\n";
-	echo "<p>Del tipo:";
-	
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
+	<h1>Nueva forma de evaluación</h1>
+	<form action="post_eval.php" method="POST" onsubmit="return validar()"><input type="hidden" name="modo" value="nuevo" />
+	<p>Ingrese el nombre de la forma de evaluación: <input type="text" id="descripcion" name="descripcion" /></p>
+	<p>Del tipo:<?php
 	echo "<select name=\"grupo\" id=\"grupo\" />\n";
 	
 	require_once '../mysql-con.php';
@@ -161,7 +165,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	
 	mysql_free_result ($result);
 	echo "</select></p>\n";
-?>
+	?>
 	<p><b>Subida de calificaciones</b></p><p>Abierta: Las calificaciones pueden ser subidas en cualquier momento.<br />Cerrada: Nadie puede subir calificaciones para esta evaluación.<br />Basada en fechas: El tiempo de subida se define por el rango de fechas</p>
 	<p>Subida: <select name="estado" id="estado" onchange="actualizar_cajas ()">
 		<option value="open">Abierta</option>
