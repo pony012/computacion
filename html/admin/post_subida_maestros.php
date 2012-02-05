@@ -38,7 +38,7 @@
 	/* Primero verificar que esté abierta la materia para subida de calificaciones */
 	/* SELECT * FROM Secciones AS S INNER JOIN Porcentajes AS P ON S.Materia = P.Clave INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE S.Nrc = '1758' AND P.Tipo = '1' AND EXCLUSIVA = 1 */
 	/* Esta query descarta nrc inexistente, tipo de evaluacion inexistente para esa materia, y que la forma de evaluación no sea exclusiva del maestro */
-	$query = sprintf ("SELECT S.Maestro, UNIX_TIMESTAMP(E.Apertura) AS Apertura, UNIX_TIMESTAMP(E.Cierre) AS Cierre, P.Ponderacion FROM Secciones AS S INNER JOIN Porcentajes AS P ON S.Materia = P.Clave INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE S.Nrc = '%s' AND P.Tipo = '%s' AND E.Exclusiva = 1", $_POST['nrc'], $_POST['eval']);
+	$query = sprintf ("SELECT S.Maestro, E.Estado, UNIX_TIMESTAMP(E.Apertura) AS Apertura, UNIX_TIMESTAMP(E.Cierre) AS Cierre, P.Ponderacion FROM Secciones AS S INNER JOIN Porcentajes AS P ON S.Materia = P.Clave INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE S.Nrc = '%s' AND P.Tipo = '%s' AND E.Exclusiva = 1", $_POST['nrc'], $_POST['eval']);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -57,11 +57,17 @@
 	}
 	
 	/* Verificar que los tiempos estén abiertos */
-	$now = time ();
-	if ($datos_eval->Cierre - $datos_eval->Apertura == 0 || ($now < $datos_eval->Apertura || $now >= $datos_eval->Cierre)) {
-		/* Esta evaluación está cerrada */
+	if ($datos_eval->Estado == 'closed') { /* Esta forma de evaluación está deshabilitada */
 		agrega_mensaje (1, "La forma de evaluación está cerrada");
 		exit;
+	}
+	
+	if ($datos_eval->Estado == 'time') {
+		$now = time ();
+		if ($now < $object->Apertura || $now >= $object->Cierre) {
+			agrega_mensaje (1, "Fuera de tiempo para subida de calificaciones");
+			exit;
+		}
 	}
 	
 	/* Ahora verificar las calificaciones */

@@ -18,10 +18,9 @@
 	
 	settype ($_GET['eval'], 'integer');
 	
-	header ("Location: ver_maestro.php?nrc=" . $_SESSION['codigo']);
-	
 	/* Validar primero el NRC */
 	if (!preg_match ("/^([0-9]){1,5}$/", $_GET['nrc'])) {
+		header ("Location: ver_maestro.php?codigo=" . $_SESSION['codigo']);
 		agrega_mensaje (3, "Nrc inválido");
 		exit;
 	}
@@ -31,12 +30,13 @@
 	/* Primero verificar que esté abierta la materia para subida de calificaciones */
 	/* SELECT * FROM Secciones AS S INNER JOIN Porcentajes AS P ON S.Materia = P.Clave INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE S.Nrc = '1758' AND P.Tipo = '1' AND EXCLUSIVA = 1 */
 	/* Esta query descarta nrc inexistente, tipo de evaluacion inexistente para esa materia, y que la forma de evaluación no sea exclusiva del maestro */
-	$query = sprintf ("SELECT S.Maestro, UNIX_TIMESTAMP(E.Apertura) AS Apertura, UNIX_TIMESTAMP(E.Cierre) AS Cierre, E.Descripcion AS Evaluacion, P.Ponderacion FROM Secciones AS S INNER JOIN Porcentajes AS P ON S.Materia = P.Clave INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE S.Nrc = '%s' AND P.Tipo = '%s' AND E.Exclusiva = 1", $_GET['nrc'], $_GET['eval']);
+	$query = sprintf ("SELECT S.Maestro, E.Estado, UNIX_TIMESTAMP(E.Apertura) AS Apertura, UNIX_TIMESTAMP(E.Cierre) AS Cierre, E.Descripcion AS Evaluacion, P.Ponderacion FROM Secciones AS S INNER JOIN Porcentajes AS P ON S.Materia = P.Clave INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE S.Nrc = '%s' AND P.Tipo = '%s' AND E.Exclusiva = 1", $_GET['nrc'], $_GET['eval']);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
 		/* TODO: Usar argumento next para regresar a la página anterior */
+		header ("Location: ver_maestro.php?codigo=" . $_SESSION['codigo']);
 		agrega_mensaje (3, "Nrc inválido");
 		exit;
 	}
@@ -46,19 +46,26 @@
 	
 	if ($datos_eval->Maestro != $_SESSION['codigo']) {
 		/* Lo siento, pero tu no eres el maestro de este grupo */
+		header ("Location: ver_grupo.php?nrc=" . $_GET['nrc']);
 		agrega_mensaje (3, "Privilegios insuficientes");
 		exit;
 	}
 	
 	/* Verificar que los tiempos estén abiertos */
-	$now = time ();
-	if ($datos_eval->Cierre - $datos_eval->Apertura == 0 || ($now < $datos_eval->Apertura || $now >= $datos_eval->Cierre)) {
-		/* Esta evaluación está cerrada */
-		header ("Location: ver_grupo.php?nrc=" . $_POST['nrc']);
+	if ($datos_eval->Estado == 'closed') { /* Esta forma de evaluación está deshabilitada */
+		header ("Location: ver_grupo.php?nrc=" . $_GET['nrc']);
 		agrega_mensaje (1, "La forma de evaluación está cerrada");
 		exit;
 	}
-?>
+	
+	if ($datos_eval->Estado == 'time') {
+		$now = time ();
+		if ($now < $object->Apertura || $now >= $object->Cierre) {
+			header ("Location: ver_grupo.php?nrc=" . $_GET['nrc']);
+			agrega_mensaje (1, "Fuera de tiempo para subida de calificaciones");
+			exit;
+		}
+	} ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>

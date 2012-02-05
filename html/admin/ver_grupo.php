@@ -69,7 +69,7 @@
 		
 		require_once '../mysql-con.php';
 		
-		$query = sprintf ("SELECT E.Id, E.Descripcion, E.Exclusiva, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave='%s' ORDER BY E.Id", $grupo->Clave);
+		$query = sprintf ("SELECT E.Id, E.Descripcion, E.Estado, E.Exclusiva, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave='%s' AND E.Exclusiva = 1 ORDER BY E.Grupo, E.Id", $grupo->Clave);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -77,12 +77,14 @@
 			echo "<p>Subida de calificaciones:</p><p>";
 			
 			while (($object = mysql_fetch_object ($result))) {
-				if ($object->Cierre - $object->Apertura == 0) continue; /* Esta forma de evaluación está deshabilitada */
-				$now = time ();
-				if ($object->Exclusiva == 1 && $now >= $object->Apertura && $now < $object->Cierre) {
-					$link = array ('nrc' => $_GET['nrc'], 'eval' => $object->Id);
-					printf ("Para <a href=\"subida_calificaciones_maestro.php?%s\">%s</a><br />", htmlentities (http_build_query ($link)), $object->Descripcion);
+				if ($object->Estado == 'closed') continue; /* Esta forma de evaluación está deshabilitada */
+				if ($object->Estado == 'time') {
+					$now = time ();
+					if ($now < $object->Apertura || $now >= $object->Cierre) continue; /* Fuera de tiempo */
 				}
+				
+				$link = array ('nrc' => $_GET['nrc'], 'eval' => $object->Id);
+				printf ("Para <a href=\"subida_calificaciones_maestro.php?%s\">%s</a><br />", htmlentities (http_build_query ($link)), $object->Descripcion);
 			}
 			echo "</p>";
 		}/* No es el maestro, o no hay permiso de subida */
