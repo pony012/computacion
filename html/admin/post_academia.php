@@ -30,7 +30,7 @@
 	}
 	
 	/* Validar al maestro */
-	if (!isset ($_POST['maestro']) || !preg_match ("/^([0-9]){1,7}$/", $_POST['maestro'])) {
+	if (!isset ($_POST['maestro']) || (!preg_match ("/^([0-9]){1,7}$/", $_POST['maestro']) && $_POST['maestro'] !== "NULL")) {
 		agrega_mensaje (3, "Error al procesar los datos");
 		exit;
 	}
@@ -38,13 +38,16 @@
 	require_once '../mysql-con.php';
 	
 	/* Validar el maestro contra mysql */
+	if ($_POST['maestro'] != "NULL") {
+		$query = sprintf ("SELECT Codigo FROM Maestros WHERE Codigo = '%s'", $_POST['maestro']);
 	
-	$query = sprintf ("SELECT Codigo FROM Maestros WHERE Codigo = '%s'", $_POST['maestro']);
-	
-	$result = mysql_query ($query, $mysql_con);
-	if (mysql_num_rows ($result) == 0) {
-		agrega_mensaje (3, "Error al procesar los datos");
-		exit;
+		$result = mysql_query ($query, $mysql_con);
+		if (mysql_num_rows ($result) == 0) {
+			agrega_mensaje (3, "Error al procesar los datos");
+			exit;
+		}
+		
+		mysql_free_result ($result);
 	}
 	
 	if ($_POST['modo'] == 'editar') {
@@ -64,7 +67,7 @@
 		
 		mysql_free_result ($result);
 		
-		$query = sprintf ("UPDATE Academias SET Nombre = '%s', Maestro = '%s' WHERE Id = '%s'", mysql_real_escape_string ($_POST['nombre']), $_POST['maestro'], $_POST['id']);
+		$query = sprintf ("UPDATE Academias SET Nombre = '%s', Maestro = %s WHERE Id = '%s'", mysql_real_escape_string ($_POST['nombre']), $_POST['maestro'], $_POST['id']);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -78,7 +81,7 @@
 		exit;
 	} else if ($_POST['modo'] == 'nuevo') {
 		/* Insertar una nueva Academia */
-		$query = sprintf ("INSERT INTO Academias (Nombre, Maestro) VALUES ('%s', '%s')", mysql_real_escape_string ($_POST['nombre']), $_POST['maestro']);
+		$query = sprintf ("INSERT INTO Academias (Nombre, Maestro) VALUES ('%s', %s)", mysql_real_escape_string ($_POST['nombre']), $_POST['maestro']);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
