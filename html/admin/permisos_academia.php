@@ -92,7 +92,7 @@
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes ();?>
 	<h1>Permisos de academia</h1>
-	<form><p>Permisos de academia para: <br />
+	<form method="POST" action="post_permisos_academia.php" ><p>Permisos de academia para: <br />
 	<?php
 		foreach ($id_limpio as $academia) {
 			printf ("Academia %s, Presidente: %s %s", $academia->Academia, $academia->Apellido, $academia->Nombre);
