@@ -29,7 +29,7 @@
 		$id_limpio = array ();
 		$id_limpio[0] = strval (intval ($_GET['id']));
 	} else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-		if (!isset ($_POST['id'])) {
+		if (!isset ($_POST['id']) || !is_array ($_POST['id'])) {
 			header ("Location: academias.php");
 			agrega_mensaje (3, "Peticion desconocida");
 			exit;
@@ -100,8 +100,8 @@
 		}
 	?></p>
 	<p>Permisos:</p>
-	<p><input type="checkbox" name="materias" id="materias" /><label for="materias">Modificar materias de la academia</label><br />
-	<input type="checkbox" name="subida" id="subida" /><label for="subida">Subir calificaciones de esta academia (departamentales y métodos de evaluación varias)</label><br /></p>
+	<p><input type="checkbox" name="materias" id="materias" value="1" /><label for="materias">Modificar materias de la academia</label><br />
+	<input type="checkbox" name="subida" id="subida" value="1" /><label for="subida">Subir calificaciones de esta academia (departamentales y métodos de evaluación varias)</label><br /></p>
 	<input type="submit" value="Actualizar permisos" />
 	</form>
 </body>
