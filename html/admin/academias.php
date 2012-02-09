@@ -31,7 +31,7 @@
 		$result = mysql_query ($query, $mysql_con);
 		
 		if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
-			echo "<table border=\"1\"><thead><tr><th></th><th>Nombre</th><th>Presidente</th><th>Acciones</th></tr></thead><tbody>";
+			echo "<table border=\"1\"><thead><tr><th></th><th>Nombre</th><th>Presidente</th><th>Subida de calificaciones</th><th>Editar materias</th><th>Acciones</th></tr></thead><tbody>";
 		} else {
 			echo "<table border=\"1\"><thead><tr><th>Nombre</th><th>Presidente</th></tr></thead><tbody>";
 		}
@@ -54,6 +54,19 @@
 			}
 			
 			if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
+				/* Si tiene los permisos de subida */
+				if ($object->Subida == 1) {
+					echo "<td><img src=\"../img/day.png\" /></td>";
+				} else {
+					echo "<td><img src=\"../img/night.png\" /></td>";
+				}
+				/* Si tiene edición de materias */
+				if ($object->Materias == 1) {
+					echo "<td><img src=\"../img/day.png\" /></td>";
+				} else {
+					echo "<td><img src=\"../img/night.png\" /></td>";
+				}
+				
 				$link = array ('tipo' => 'e', 'id' => $object->Id);
 				printf ("<td><a href=\"editar_academia.php?%s\"><img class=\"icon\" src=\"../img/properties.png\" /></a>", htmlentities (http_build_query ($link)));
 				printf ("<a href=\"eliminar_academia.php?id=%s\" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" /></a></td>", $object->Id, $object->Nombre);
