@@ -138,7 +138,7 @@
 		$result = mysql_query ($query);
 		
 		while (($object = mysql_fetch_object ($result))) {
-			$query_cal = "INSERT DELAYED INTO Calificaciones VALUES (Alumno, Nrc, Tipo, Valor)";
+			$query_cal = "INSERT DELAYED INTO Calificaciones (Alumno, Nrc, Tipo, Valor) VALUES ";
 			
 			foreach ($nuevas as $key => $porcentaje) {
 				$query_cal = $query_cal . sprintf (" ('%s', '%s', '%s', NULL),", $object->Alumno, $object->Nrc, $key);
