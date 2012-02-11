@@ -69,7 +69,8 @@
 				
 				$link = array ('tipo' => 'e', 'id' => $object->Id);
 				printf ("<td><a href=\"editar_academia.php?%s\"><img class=\"icon\" src=\"../img/properties.png\" /></a>", htmlentities (http_build_query ($link)));
-				printf ("<a href=\"eliminar_academia.php?id=%s\" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" /></a></td>", $object->Id, $object->Nombre);
+				printf ("<a href=\"eliminar_academia.php?id=%s\" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" /></a>", $object->Id, $object->Nombre);
+				printf ("<a href=\"permisos_academia.php?id=%s\"><img class=\"icon\" src=\"../img/subida.png\" /></a></td>", $object->Id);
 			}
 			echo "</tr>";
 		}
@@ -78,6 +79,5 @@
 		<?php if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
 			echo "<ul><li><a href=\"editar_academia.php?tipo=n\">Nueva academia</a></li></ul>\n";
 		} ?>
-	
 </body>
 </html>

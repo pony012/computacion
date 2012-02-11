@@ -61,7 +61,7 @@
 				agrega_mensaje (1, sprintf ("No se pueden establecer los permisos porque la academia %s no tiene presidente", $academia->Academia));
 				unset ($id_limpio[$index]);
 			} else { /* Sí tengo, recuperar todos los datos, y dejarlos en el arreglo */
-				$query = sprintf ("SELECT A.Id, A.Nombre AS Academia, M.Nombre, M.Apellido FROM Academias AS A INNER JOIN Maestros AS M ON A.Maestro = M.Codigo WHERE A.Id = '%s'", $value);
+				$query = sprintf ("SELECT A.Id, A.Nombre AS Academia, A.Subida, A.Materias, M.Nombre, M.Apellido FROM Academias AS A INNER JOIN Maestros AS M ON A.Maestro = M.Codigo WHERE A.Id = '%s'", $value);
 				
 				$sub_result = mysql_query ($query, $mysql_con);
 				
@@ -100,8 +100,19 @@
 		}
 	?></p>
 	<p>Permisos:</p>
-	<p><input type="checkbox" name="materias" id="materias" value="1" /><label for="materias">Modificar materias de la academia</label><br />
-	<input type="checkbox" name="subida" id="subida" value="1" /><label for="subida">Subir calificaciones de esta academia (departamentales y métodos de evaluación varias)</label><br /></p>
+	<p><input type="checkbox" name="subida" id="subida" value="1" /><label for="subida">Subir calificaciones de esta academia (departamentales y métodos de evaluación varias)</label><br />
+	<input type="checkbox" name="materias" id="materias" value="1" /><label for="materias">Modificar materias de la academia</label><br /></p>
+	<?php if ($_SERVER['REQUEST_METHOD'] == 'GET') { /* En caso de que sea una única forma de evaluación, actualizar las casillas de verificación */
+			echo "<script language=\"javascript\" type=\"text/javascript\">";
+			if ($id_limpio[0]->Subida == 1) {
+				echo "document.getElementById (\"subida\").checked = true;";
+			}
+			/* Si tiene edición de materias */
+			if ($id_limpio[0]->Materias == 1) {
+				echo "document.getElementById (\"materias\").checked = true;";
+			}
+			echo "</script>";
+		} ?>
 	<input type="submit" value="Actualizar permisos" />
 	</form>
 </body>
