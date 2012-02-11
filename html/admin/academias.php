@@ -29,15 +29,18 @@
 		
 		$result = mysql_query ($query, $mysql_con);
 		
-		echo "<table border=\"1\"><thead><tr><th>Nombre</th><th>Presidente</th>";
-		
 		if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
-			echo "<th>Acciones</th>";
+			echo "<form method=\"post\" action=\"permisos_academia.php\"><table border=\"1\"><thead><tr><th></th><th>Nombre</th><th>Presidente</th><th>Subida de calificaciones</th><th>Editar materias</th><th>Acciones</th></tr></thead><tbody>";
+		} else {
+			echo "<table border=\"1\"><thead><tr><th>Nombre</th><th>Presidente</th></tr></thead><tbody>";
 		}
 		
-		echo "</tr></thead><tbody>";
 		while (($object = mysql_fetch_object ($result))) {
-			printf ("<tr><td><a href=\"ver_academia.php?id=%s\">%s</a></td>", $object->Id, $object->Nombre);
+			echo "<tr>";
+			if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
+				printf ("<td><input type=\"checkbox\" name=\"id[]\" value=\"%s\" /></td>", $object->Id);
+			}
+			printf ("<td><a href=\"ver_academia.php?id=%s\">%s</a></td>", $object->Id, $object->Nombre);
 			
 			if (is_null ($object->Maestro)) {
 				echo "<td><b>Indefinido</b></td>\n";
@@ -50,19 +53,31 @@
 			}
 			
 			if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
+				/* Si tiene los permisos de subida */
+				if ($object->Subida == 1) {
+					echo "<td><img src=\"../img/day.png\" alt=\"activo\" /></td>";
+				} else {
+					echo "<td><img src=\"../img/night.png\" alt=\"inactivo\" /></td>";
+				}
+				/* Si tiene edición de materias */
+				if ($object->Materias == 1) {
+					echo "<td><img src=\"../img/day.png\" alt=\"activo\" /></td>";
+				} else {
+					echo "<td><img src=\"../img/night.png\" alt=\"inactivo\" /></td>";
+				}
+				
 				$link = array ('tipo' => 'e', 'id' => $object->Id);
-				printf ("<td><a href=\"editar_academia.php?%s\"><img class=\"icon\" src=\"../img/properties.png\" /></a>", htmlentities (http_build_query ($link)));
-				printf ("<a href=\"eliminar_academia.php?id=%s\" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" /></a></td>", $object->Id, $object->Nombre);
+				printf ("<td><a href=\"editar_academia.php?%s\"><img class=\"icon\" src=\"../img/properties.png\" alt=\"editar\" /></a>", htmlentities (http_build_query ($link)));
+				printf ("<a href=\"eliminar_academia.php?id=%s\" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" alt=\"eliminar\" /></a>", $object->Id, $object->Nombre);
+				printf ("<a href=\"permisos_academia.php?id=%s\"><img class=\"icon\" src=\"../img/subida.png\" alt=\"permisos\" /></a></td>", $object->Id);
 			}
 			echo "</tr>";
 		}
-		mysql_free_result ($result);
-		
-		echo "</tbody></table>";
-		
-		if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
+		mysql_free_result ($result);?>
+		</tbody></table>
+		<?php if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
+			echo "<input type=\"submit\" value=\"Modificar múltiples\" /></form>"; /* Botón editar y cerrar el formulario */
 			echo "<ul><li><a href=\"editar_academia.php?tipo=n\">Nueva academia</a></li></ul>\n";
-		}
-	?>
+		} ?>
 </body>
 </html>
