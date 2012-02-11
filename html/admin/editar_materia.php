@@ -8,15 +8,19 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
 		/* Privilegios insuficientes */
+		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
 		exit;
 	}
 	
 	/* Validar la clave la materia */
 	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['clave'])) {
-		header ("Location: materias.php?e=clave");
+		header ("Location: materias.php");
+		agrega_mensaje (3, "Clave incorrecta");
 		exit;
 	}
 	
@@ -27,7 +31,8 @@
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
-		header ("Location: materias.php?e=noexiste");
+		header ("Location: materias.php");
+		agrega_mensaje (3, "Materia desconocida");
 		mysql_free_result ($result);
 		mysql_close ($mysql_con);
 		exit;
@@ -87,7 +92,7 @@
 		// ]]>
 	</script>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Editar materia</h1>
 	<form action="editar_materia_2.php" method="post" onsubmit="return validar()">
 	<input type="hidden" name="modo" value="repost" />

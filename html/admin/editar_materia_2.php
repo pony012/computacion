@@ -8,9 +8,12 @@
 		exit;
 	}
 	
+	require_once 'mensajes.php';
+	
 	if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
 		/* Privilegios insuficientes */
 		header ("Location: vistas.php");
+		agrega_mensaje (3, "Privilegios insuficientes");
 		exit;
 	}
 	
@@ -70,7 +73,7 @@
 		// ]]>
 	</script>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Editar materia</h1>
 	<form action="post_materia.php" method="post" onsubmit="return validar ()" >
 	<input type="hidden" name="modo" value="editar" />
