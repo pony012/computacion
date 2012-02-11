@@ -63,22 +63,23 @@
 	
 	$result = mysql_query ($query, $mysql_con);
 	
-	echo "<table border=\"1\"><thead><tr><th>Clave</th><th>Materia</th>";
-	
-	if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
-		echo "<th>Acciones</th>";
-	}
-	
-	echo "</tr></thead><tbody>";
+	echo "<table border=\"1\"><thead><tr><th>Clave</th><th>Materia</th><th>Acciones</th></tr></thead><tbody>";
 	
 	while (($object = mysql_fetch_object ($result))) {
 		printf ("<tr><td>%s</td><td>%s</td>", $object->Clave, $object->Descripcion);
 		
+		echo "<td>";
 		if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
 			/* Acciones */
 			$link = array ('materia' => $object->Clave, 'id' => $academia->Id);
-			printf ("<td><a href=\"eliminar_materia_academia.php?%s\"\n onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la materia %s de la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" /></a></td>", htmlentities (http_build_query ($link)), $object->Clave, $academia->Nombre);
+			printf ("<a href=\"eliminar_materia_academia.php?%s\"\n onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la materia %s de la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" /></a>", htmlentities (http_build_query ($link)), $object->Clave, $academia->Nombre);
 		}
+		
+		if ($academia->Maestro == $_SESSION['codigo']) { /* El presidente de la academia */
+			
+		}
+		
+		echo "</td>";
 	}
 	
 	echo "</tbody></table>";
