@@ -34,6 +34,7 @@
 	?></title>
 	<script language="javascript" src="../scripts/md5.js" type="text/javascript"></script>
 	<script language="javascript" type="text/javascript">
+		// <![CDATA[
 		function valida_form () {
 			var cod = document.getElementById("codigo").value;
 			var pass1 = document.getElementById("pass1").value;
@@ -62,6 +63,7 @@
 			
 			return true;
 		}
+		// ]]>
 	</script>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes ();

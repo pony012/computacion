@@ -60,6 +60,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	<script type="text/javascript" src="../scripts/jquery-ui-timepicker-addon.js"></script>
 	<script type="text/javascript" src="../scripts/ui-timepicker-es.js"></script>
 	<script language="javascript" type="text/javascript">
+		// <![CDATA[
 		$(document).ready(function(){
 			$('#apertura').datetimepicker({
 				dateFormat: 'D dd M yy',
@@ -106,8 +107,10 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				}
 			});
 		});
+		// ]]>
 	</script>
 	<script language="javascript" type="text/javascript">
+		// <![CDATA[
 		function validar () {
 			var x = document.getElementById ("descripcion").value;
 			
@@ -159,6 +162,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				cierre.disabled = true;
 			}
 		}
+		// ]]>
 	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
@@ -194,13 +198,13 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 		echo "<p>Fecha de apertura: <input type=\"text\" id=\"apertura\" /></p><input type=\"hidden\" id=\"inicio\" name=\"inicio\" />\n<p>Fecha de cierre: <input type=\"text\" id=\"cierre\" /></p><input type=\"hidden\" id=\"fin\" name=\"fin\" />\n";
 		
 		/* Forzar una actualización javascript de las fechas de inicio, fin */
-		echo "<script language=\"javascript\" type=\"text/javascript\">\n$(function() {";
+		echo "<script language=\"javascript\" type=\"text/javascript\">\n// <![CDATA[\n$(function() {";
 		printf ("var d1 = new Date (%s);\n", ($object->Apertura * 1000));
 		echo "$('#apertura').datetimepicker('setDate', d1);\n";
 				
 		printf ("var d2 = new Date (%s);\n", ($object->Cierre * 1000));
 		echo "$('#cierre').datetimepicker('setDate', d2);\n";
-		echo "});</script>";
+		echo "});\n// ]]>\n</script>";
 	} else {
 		echo "<p>Fecha de apertura: <input type=\"text\" id=\"apertura\" disabled=\"disabled\" /></p><input type=\"hidden\" id=\"inicio\" name=\"inicio\" />\n<p>Fecha de cierre: <input type=\"text\" id=\"cierre\" disabled=\"disabled\" /></p><input type=\"hidden\" id=\"fin\" name=\"fin\" />\n";
 	} ?>

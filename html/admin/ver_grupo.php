@@ -51,9 +51,11 @@
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 	<script language="javascript" type="text/javascript">
+		// <![CDATA[
 		$(document).ready(function(){
 			$('#cal_tabs').tabs ();
 		});
+		// ]]>
 	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'

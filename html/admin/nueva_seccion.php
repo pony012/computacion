@@ -25,6 +25,7 @@
 	echo $cfg['nombre'];
 	?></title>
 	<script language="javascript" type="text/javascript">
+		// <![CDATA[
 		function validar () {
 			/* Hay que validar varias cosas
 			 * Primero, que el nrc sean sólo numeros y de longitud 5 */
@@ -48,6 +49,7 @@
 			
 			return true;
 		}
+		// ]]>
 	</script>
 </head>
 <body>

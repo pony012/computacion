@@ -36,6 +36,7 @@
 	echo $cfg['nombre'];
 	?></title>
 	<script language="javascript" type="text/javascript">
+		// <![CDATA[
 		function validar () {
 			var grupos = document.getElementsByName("grupo[]");
 			var suma, n;
@@ -66,6 +67,7 @@
 			
 			return true;
 		}
+		// ]]>
 	</script>
 </head>
 <body>

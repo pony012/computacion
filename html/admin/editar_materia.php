@@ -46,6 +46,7 @@
 	echo $cfg['nombre'];
 	?></title>
 	<script language="javascript" type="text/javascript">
+		// <![CDATA[
 		function validar () {
 			var evals = document.getElementById ("evals");
 			var agregados = document.getElementById ("agregados");
@@ -56,12 +57,11 @@
 			}
 			
 			for (i = 0; i < agregados.length; i++) {
-				evals.innerHTML += "<input type=\"hidden\" name=\"evals[]\" value=\"" + agregados.options[i].value + "\"/>";
+				evals.innerHTML += "<input type=\"hidden\" name=\"evals[]\" value=\"" + agregados.options[i].value + "\"/\>";
 			}
 			return true;
 		}
-	</script>
-	<script language="javascript" type="text/javascript">
+		
 		function agregar () {
 			var agregados = document.getElementById ("agregados");
 			var disponibles = document.getElementById ("disponibles");
@@ -84,6 +84,7 @@
 			if (agregados.options.length == 0) return;
 			agregados.remove (agregados.selectedIndex);
 		}
+		// ]]>
 	</script>
 </head>
 <body>

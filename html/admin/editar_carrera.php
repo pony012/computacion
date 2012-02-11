@@ -46,16 +46,27 @@
 	echo $cfg['nombre'];
 	?></title>
 	<script language="javascript" type="text/javascript">
-		/* Validar */
+		// <![CDATA[
+		function validar () {
+			var desc = document.getElementById ("descripcion").value;
+			
+			if (desc == null || desc == "") {
+				alert ("Descripción vacia");
+				return false;
+			}
+			
+			return true;
+		}
+		// ]]>
 	</script>
 </head>
 <body>
 	<h1>Editar Carrera</h1>
-	<form action="post_carrera.php" method="post">
+	<form action="post_carrera.php" method="post" onsubmit="return validar ()">
 	<input type="hidden" name="modo" value="editar" />
 	<?php
 		printf ("<p>Clave de la carrera: <input type=\"text\" name=\"clave\" id=\"clave\" maxlength=\"3\" readonly=\"readonly\" value=\"%s\" /></p>", $object->Clave);
-		printf ("<p>Descripción de la carrera: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" length=\"100\" value=\"%s\" /></p>\n", $object->Descripcion);
+		printf ("<p>Descripción de la carrera: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" maxlength=\"99\" value=\"%s\" /></p>\n", $object->Descripcion);
 	?>
 	<input type="submit" value="Actualizar carrera" />
 	</form>

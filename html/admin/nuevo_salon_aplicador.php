@@ -26,19 +26,22 @@
 	<link rel="stylesheet" media="all" type="text/css" href="../css/smoothness/jquery-ui-1.8.16.custom.css" />
 	<style type="text/css">
 	/* css for timepicker */
-.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
-.ui-timepicker-div dl { text-align: left; }
-.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
-.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
-.ui-timepicker-div td { font-size: 90%; }
-.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
-ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
+	/* <![CDATA[ */
+		.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+		.ui-timepicker-div dl { text-align: left; }
+		.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+		.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+		.ui-timepicker-div td { font-size: 90%; }
+		.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+		ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
+	/* ]]> */
 	</style>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="../scripts/jquery-ui-timepicker-addon.js"></script>
 	<script type="text/javascript" src="../scripts/ui-timepicker-es.js"></script>
 	<script language="javascript" type="text/javascript">
+		// <![CDATA[
 		$(document).ready(function(){
 			$('#SFecha').datetimepicker({
 				dateFormat: 'D dd M yy',
@@ -68,8 +71,10 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				});
 			});
 		});
+		// ]]>
 	</script>
 	<script language="javascript" type="text/javascript">
+		// <![CDATA[
 		function actualizar_cajas () {
 			if (document.getElementById ("pre_salon_1").checked) {
 				document.getElementById ("sel_salon").disabled = false;
@@ -80,8 +85,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				document.getElementById ("txt_salon").disabled = false;
 			}
 		}
-	</script>
-	<script language="javascript" type="text/javascript">
+		
 		function validar () {
 			if (document.getElementById ("materia").value == "NULL" || document.getElementById ("evaluacion").value == "NULL") {
 				alert ("No ha seleccionado una materia");
@@ -101,6 +105,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 			
 			return true;
 		}
+		// ]]>
 	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'

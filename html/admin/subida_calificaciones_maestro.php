@@ -73,6 +73,7 @@
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<script language="javascript" type="text/javascript">
+		// <![CDATA[
 		function validar () {
 			var cadena;
 			var entero;
@@ -117,6 +118,7 @@
 			}
 			return true;
 		}
+		// ]]>
 	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'

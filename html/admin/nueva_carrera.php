@@ -28,6 +28,7 @@
 	echo $cfg['nombre'];
 	?></title>
 	<script language="javascript" type="text/javascript">
+		// <![CDATA[
 		function validar () {
 			var clave = document.getElementById ("clave").value;
 			
@@ -40,6 +41,7 @@
 			
 			return true;
 		}
+		// ]]>
 	</script>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
@@ -47,7 +49,7 @@
 	<form action="post_carrera.php" method="POST" onsubmit="return validar()">
 	<input type="hidden" name="modo" value="nuevo" />
 	<p>Clave de la carrera: <input type="text" name="clave" id="clave" maxlength="3" /></p>
-	<p>Descripción de la carrera: <input type="text" name="descripcion" id="descripcion" length="100" /></p>
+	<p>Descripción de la carrera: <input type="text" name="descripcion" id="descripcion" maxlength="99" /></p>
 	<input type="submit" value="Agregar carrera" />
 	</form>
 </body>

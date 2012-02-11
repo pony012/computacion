@@ -64,19 +64,22 @@
 	<link rel="stylesheet" media="all" type="text/css" href="../css/smoothness/jquery-ui-1.8.16.custom.css" />
 	<style type="text/css">
 	/* css for timepicker */
-.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
-.ui-timepicker-div dl { text-align: left; }
-.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
-.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
-.ui-timepicker-div td { font-size: 90%; }
-.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
-ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
+	/* <![CDATA[ */
+		.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
+		.ui-timepicker-div dl { text-align: left; }
+		.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
+		.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
+		.ui-timepicker-div td { font-size: 90%; }
+		.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
+		ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
+	/* ]]> */
 	</style>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="../scripts/jquery-ui-timepicker-addon.js"></script>
 	<script type="text/javascript" src="../scripts/ui-timepicker-es.js"></script>
 	<script language="javascript" type="text/javascript">
+		// <![CDATA[
 		$(document).ready(function(){
 			$('#SFecha').datetimepicker({
 				dateFormat: 'D dd M yy',
@@ -109,8 +112,10 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 				});
 			});
 		});
+		// ]]>
 	</script>
 	<script language="javascript" type="text/javascript">
+		// <![CDATA[
 		function agregar () {
 			var disponibles = document.getElementById ("disponibles");
 			var alumnos = document.getElementById ("alumnos");
@@ -156,6 +161,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 			
 			return true;
 		}
+		// ]]>
 	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
@@ -172,9 +178,9 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 		
 		echo "<p>Fecha y hora seleccionada: <input type=\"text\" id=\"SFecha\" /><input type=\"hidden\" id=\"fecha\" name=\"fecha\" /></p>";
 		/* Forzar una actualizacion del selector de fechas */
-		echo "<script language=\"javascript\" type=\"text/javascript\">\n$(function() {";
+		echo "<script language=\"javascript\" type=\"text/javascript\">\n// <![CDATA[\n$(function() {";
 		printf ("var d1 = new Date (%s);\n", ($datos->FechaHora * 1000));
-		echo "$('#SFecha').datetimepicker('setDate', d1);\n});</script>";
+		echo "$('#SFecha').datetimepicker('setDate', d1);\n});\n// ]]>\n</script>";
 		
 		printf ("<p>Salón: <input type=\"text\" name=\"salon\" value=\"%s\" /></p>\n", $datos->Salon);
 		
