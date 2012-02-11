@@ -52,7 +52,7 @@
 <body>
 	<h1>Editar una sección</h1>
 	<p>Por motivos de seguridad, sólo se puede modificar el maestro que imparte esta sección</p>
-	<form action="post_editar_seccion.php" method="POST">
+	<form action="post_editar_seccion.php" method="post">
 	<?php
 		echo "<p>Nrc: ".$object->Nrc."</p>";
 		echo "<input type=\"hidden\" value=\"".$object->Nrc."\" name=\"nrc\" />";

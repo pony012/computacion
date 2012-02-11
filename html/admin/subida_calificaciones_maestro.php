@@ -138,7 +138,7 @@
 		printf ("<p>Nrc: %s</p><p>Materia: %s %s, Sección: %s</p><p>Maestro: %s %s</p><p>Forma de evaluación: <b>%s</b></p>", $_GET['nrc'], $nrc->Materia, $nrc->Descripcion, $nrc->Seccion, $nrc->Apellido, $nrc->Nombre, $datos_eval->Evaluacion);
 		
 		printf ("<p>El valor para esta evaluación es de <b>%s puntos</b>, puede especificar este valor en puntos (del 0 al %s) o en porcentaje (ej, 80%%). En caso de señalar un porcentaje, éste será convertido a su valor en puntos. Puede poner \"--\" para representar una calificación vacía</p>", $datos_eval->Ponderacion, $datos_eval->Ponderacion);
-		echo "<form action=\"post_subida_maestros.php\" method=\"POST\" onsubmit=\"return validar()\" autocomplete=\"off\">";
+		echo "<form action=\"post_subida_maestros.php\" method=\"post\" onsubmit=\"return validar()\" autocomplete=\"off\">";
 		
 		printf ("<input type=\"hidden\" name=\"nrc\" value=\"%s\" /><input type=\"hidden\" name=\"eval\" value=\"%s\" />", $_GET['nrc'], $_GET['eval']);
 		printf ("<input type=\"hidden\" id=\"ponderacion\" value=\"%s\" />", $datos_eval->Ponderacion);
@@ -157,11 +157,11 @@
 			
 			printf ("<tr><td>%s</td><td>%s %s<input type=\"hidden\" name=\"alumno[]\" value=\"%s\" /></td>\n", $g, $object->Apellido, $object->Nombre, $object->Alumno);
 			if (is_null($object->Valor)) {
-				echo "<td>--</td><td><input size=\"5\" type=\"text\" name=\"cal[]\" value=\"--\" /></td></tr>\n";
+				echo "<td>--</td><td><input size=\"5\" type=\"text\" name=\"cal[]\" value=\"--\" />";
 			} else { /* TODO: El valor del NP es -1 */
-				printf ("<td>%s</td><td><input size=\"5\" type=\"text\" name=\"cal[]\" value=\"%s\" /></td></tr>\n", $object->Valor, $object->Valor);
+				printf ("<td>%s</td><td><input size=\"5\" type=\"text\" name=\"cal[]\" value=\"%s\" />", $object->Valor, $object->Valor);
 			}
-			echo "<input type=\"hidden\" name=\"valor[]\" />";
+			echo "<input type=\"hidden\" name=\"valor[]\" /></td></tr>\n";
 		}
 		mysql_free_result ($result);
 		

@@ -62,9 +62,9 @@
 			echo "<td>".$object->Apellido." ".$object->nombre."</td>";
 			if ($_SESSION['permisos']['aed_usuarios'] == 1) {
 				if ($object->activo == 1) {
-					echo "<td><img src=\"../img/day.png\" /></td>";
+					echo "<td><img src=\"../img/day.png\" alt=\"activo\" /></td>";
 				} else {
-					echo "<td><img src=\"../img/night.png\" /></td>";
+					echo "<td><img src=\"../img/night.png\" alt=\"desactivado\" /></td>";
 				}
 			}
 			echo "</tr>\n";
@@ -82,13 +82,14 @@
 		if ($prev < 0) $prev = 0;
 		
 		/* Mostrar las flechas de dezplamiento */
+		$link = $_GET;
 		if ($offset > 0) {
-			printf ("<a href=\"%s?off=0\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n", $_SERVER['SCRIPT_NAME']);
-			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/prev.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $prev);
+			printf ("<a href=\"%s?%s\"><img class=\"icon\" src=\"../img/first.png\" alt=\"primero\" /></a>\n", $_SERVER['SCRIPT_NAME'], htmlentities (http_build_query (Array ('off' => 0) + $link)));
+			printf ("<a href=\"%s?%s\"><img class=\"icon\" src=\"../img/prev.png\" alt=\"anterior\"/></a>\n", $_SERVER['SCRIPT_NAME'], htmlentities (http_build_query (Array ('off' => $prev) + $link)));
 		}
 		if ($offset + $show < $total) { 
-			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $next);
-			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/last.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $ultimo);
+			printf ("<a href=\"%s?%s\"><img class=\"icon\" src=\"../img/next.png\" alt=\"siguiente\"/></a>\n", $_SERVER['SCRIPT_NAME'], htmlentities (http_build_query (Array ('off' => $next) + $link)));
+			printf ("<a href=\"%s?%s\"><img class=\"icon\" src=\"../img/last.png\" alt=\"ultimo\" /></a>\n", $_SERVER['SCRIPT_NAME'], htmlentities (http_build_query (Array ('off' => $ultimo) + $link)));
 		}
 		
 		echo "</p>\n";

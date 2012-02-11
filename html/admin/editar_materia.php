@@ -88,12 +88,12 @@
 </head>
 <body>
 	<h1>Editar materia</h1>
-	<form action="editar_materia_2.php" method="POST" onsubmit="return validar()">
+	<form action="editar_materia_2.php" method="post" onsubmit="return validar()">
 	<input type="hidden" name="modo" value="repost" />
 	<p><b>Advertencia</b>: Cambiar las formas de evaluación de una materia borra todas las calificaciones existentes</p>
 	<?php
-		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" length=\"5\" value=\"%s\" readonly=\"readonly\" /></p>", $object->Clave);
-		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" length=\"100\" value=\"%s\"/></p>", $object->Descripcion);
+		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" maxlength=\"5\" value=\"%s\" readonly=\"readonly\" /></p>", $object->Clave);
+		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" maxlength=\"99\" value=\"%s\"/></p>", $object->Descripcion);
 		echo "<p>Formas de evaluación disponibles: <br />";
 		require_once '../mysql-con.php';
 		
@@ -116,7 +116,7 @@
 		
 		mysql_free_result ($result); /* Posiblemente lo utilice después */
 		
-		echo "</select><img class=\"icon\" src=\"../img/add2.png\" onclick=\"return agregar ()\" /></p>";
+		echo "</select><img class=\"icon\" src=\"../img/add2.png\" onclick=\"return agregar ()\" alt=\"agregar\"/></p>";
 		echo "<p>Formas de evaluación seleccionadas: <br />";
 		echo "<select size=\"10\" id=\"agregados\">";
 		
@@ -132,7 +132,7 @@
 		
 		echo "</select>";
 	?>
-	<img class="icon" src="../img/remove2.png" onclick="return eliminar ()" /></p>
+	<img class="icon" src="../img/remove2.png" onclick="return eliminar ()" alt="eliminar" /></p>
 	<span id="evals"></span>
 	<input type="submit" value="Siguiente" />
 	</form>

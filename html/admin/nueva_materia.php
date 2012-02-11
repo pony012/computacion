@@ -77,24 +77,23 @@
 </head>
 <body>
 	<h1>Nueva materia</h1>
-	<form action="nueva_materia_2.php" method="POST" onsubmit="return validar()">
-	<p>Clave de la materia: <input type="text" name="clave" id="clave" length="5" /></p>
-	<p>Descripción: <input type="text" name="descripcion" id="descripcion" length="100" /></p>
-	<p>Formas de evaluación disponibles: <br />
+	<form action="nueva_materia_2.php" method="post" onsubmit="return validar()">
+	<p>Clave de la materia: <input type="text" name="clave" id="clave" maxlength="5" /></p>
+	<p>Descripción: <input type="text" name="descripcion" id="descripcion" maxlength="99" /></p>
+	<p>Formas de evaluación disponibles: <br /><select id="disponibles">
 	<?php
 		require_once '../mysql-con.php';
 		
-		echo "<select id=\"disponibles\">";
 		$result = mysql_query ("SELECT * FROM Grupos_Evaluaciones", $mysql_con);
 		
 		while (($grupo_e = mysql_fetch_object ($result))) {
-			printf ("<optgroup label=\"%s\">", $grupo_e->Descripcion);
+			printf ("<optgroup label=\"%s\">\n", $grupo_e->Descripcion);
 			
 			$query = sprintf ("SELECT Id, Descripcion FROM Evaluaciones WHERE Grupo = '%s' ORDER BY Id", $grupo_e->Id);
 			$result_evals = mysql_query ($query, $mysql_con);
 			
 			while (($object = mysql_fetch_object ($result_evals))) {
-				printf ("<option value=\"%s\">%s</option>", $object->Id, $object->Descripcion);
+				printf ("<option value=\"%s\">%s</option>\n", $object->Id, $object->Descripcion);
 			}
 			
 			mysql_free_result ($result_evals);
@@ -102,12 +101,10 @@
 		}
 		
 		mysql_free_result ($result); /* Posiblemente lo utilice después */
-		
-		echo "</select>";
 	?>
-	</select><img class="icon" src="../img/add2.png" onclick="return agregar ()" /></p>
+	</select><img class="icon" src="../img/add2.png" onclick="return agregar ()" alt="agregar" /></p>
 	<p>Formas de evaluación seleccionadas: <br />
-	<select size="10" id="agregados"></select><img class="icon" src="../img/remove2.png" onclick="return eliminar ()" /></p>
+	<select size="10" id="agregados"></select><img class="icon" src="../img/remove2.png" onclick="return eliminar ()" alt="eliminar" /></p>
 	<span id="evals"></span>
 	<input type="submit" value="Siguiente" />
 	</form>

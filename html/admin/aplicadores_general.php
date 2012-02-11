@@ -65,7 +65,8 @@
 	echo "<tbody>";
 	while (($object = mysql_fetch_object ($result))) {
 		printf ("<tr><td><a href=\"aplicadores_materia.php?materia=%s\">%s %s</a></td>", $object->Materia, $object->Materia, $object->Descripcion);
-		printf ("<td><a href=\"aplicadores_materia.php?materia=%s&tipo=%s\">%s</a></td></tr>\n", $object->Materia, $object->Tipo, $object->Evaluacion);
+		$link = array ('materia' => $object->Materia, 'tipo' => $object->Tipo);
+		printf ("<td><a href=\"aplicadores_materia.php?%s\">%s</a></td></tr>\n", htmlentities (http_build_query ($link)), $object->Evaluacion);
 	}
 	
 	mysql_free_result ($result);

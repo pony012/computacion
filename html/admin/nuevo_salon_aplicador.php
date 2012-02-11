@@ -112,7 +112,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	<?php
 		require_once '../mysql-con.php';
 		
-		echo "<form method=\"POST\" action=\"post_nuevo_salon.php\" onsubmit=\"return validar ();\" ><p>Materia:";
+		echo "<form method=\"post\" action=\"post_nuevo_salon.php\" onsubmit=\"return validar ();\" ><p>Materia:";
 		
 		/* SELECT DISTINCT P.Clave, M.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave WHERE E.Exclusiva = 0 */
 		$query = "SELECT DISTINCT P.Clave, M.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave WHERE E.Exclusiva = 0";

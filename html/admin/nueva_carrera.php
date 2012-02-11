@@ -46,7 +46,7 @@
 	<h1>Nueva carrera</h1>
 	<form action="post_carrera.php" method="POST" onsubmit="return validar()">
 	<input type="hidden" name="modo" value="nuevo" />
-	<p>Clave de la carrera: <input type="text" name="clave" id="clave" length="3" /></p>
+	<p>Clave de la carrera: <input type="text" name="clave" id="clave" maxlength="3" /></p>
 	<p>Descripción de la carrera: <input type="text" name="descripcion" id="descripcion" length="100" /></p>
 	<input type="submit" value="Agregar carrera" />
 	</form>

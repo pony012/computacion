@@ -73,10 +73,10 @@
 			printf ("<td>%s</td>", $object->Seccion);
 			printf ("<td><a href=\"ver_maestro.php?codigo=%s\">%s %s</a></td>", $object->Codigo, $object->Apellido, $object->Nombre);
 			if ($_SESSION['permisos']['crear_grupos'] == 1) {
-				echo "<td><a href=\"editar_seccion.php?nrc=" . $object->Nrc . "\"><img class=\"icon\" src=\"../img/properties.png\" /></a></td>\n";
-				echo "<td><a href=\"eliminar_seccion.php?nrc=" . $object->Nrc . "\"";
-				echo " onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar el NRC ".$object->Nrc."?')\">";
-				echo "<img class=\"icon\" src=\"../img/remove.png\" /></a></td>\n";
+				printf ("<td><a href=\"editar_seccion.php?nrc=%s\"><img class=\"icon\" src=\"../img/properties.png\" alt=\"editar\"/></a></td>\n", $object->Nrc);
+				printf ("<td><a href=\"eliminar_seccion.php?nrc=%s\"", $object->Nrc);
+				printf (" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar el NRC %s?')\">", $object->Nrc);
+				echo "<img class=\"icon\" src=\"../img/remove.png\" alt=\"eliminar\" /></a></td>\n";
 			}
 			echo "</tr>\n";
 		}
@@ -92,13 +92,14 @@
 		if ($prev < 0) $prev = 0;
 		
 		/* Mostrar las flechas de dezplamiento */
+		$link = $_GET;
 		if ($offset > 0) {
-			printf ("<a href=\"%s?off=0\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n", $_SERVER['SCRIPT_NAME']);
-			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/prev.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $prev);
+			printf ("<a href=\"%s?%s\"><img class=\"icon\" src=\"../img/first.png\" alt=\"primero\" /></a>\n", $_SERVER['SCRIPT_NAME'], htmlentities (http_build_query (Array ('off' => 0) + $link)));
+			printf ("<a href=\"%s?%s\"><img class=\"icon\" src=\"../img/prev.png\" alt=\"anterior\"/></a>\n", $_SERVER['SCRIPT_NAME'], htmlentities (http_build_query (Array ('off' => $prev) + $link)));
 		}
 		if ($offset + $show < $total) { 
-			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $next);
-			printf ("<a href=\"%s?off=%s\"><img class=\"icon\" src=\"../img/last.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $ultimo);
+			printf ("<a href=\"%s?%s\"><img class=\"icon\" src=\"../img/next.png\" alt=\"siguiente\"/></a>\n", $_SERVER['SCRIPT_NAME'], htmlentities (http_build_query (Array ('off' => $next) + $link)));
+			printf ("<a href=\"%s?%s\"><img class=\"icon\" src=\"../img/last.png\" alt=\"ultimo\" /></a>\n", $_SERVER['SCRIPT_NAME'], htmlentities (http_build_query (Array ('off' => $ultimo) + $link)));
 		}
 		
 		echo "</p>\n";

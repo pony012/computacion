@@ -51,10 +51,10 @@
 </head>
 <body>
 	<h1>Editar Carrera</h1>
-	<form action="post_carrera.php" method="POST">
+	<form action="post_carrera.php" method="post">
 	<input type="hidden" name="modo" value="editar" />
 	<?php
-		printf ("<p>Clave de la carrera: <input type=\"text\" name=\"clave\" id=\"clave\" length=\"3\" readonly=\"readonly\" value=\"%s\" /></p>", $object->Clave);
+		printf ("<p>Clave de la carrera: <input type=\"text\" name=\"clave\" id=\"clave\" maxlength=\"3\" readonly=\"readonly\" value=\"%s\" /></p>", $object->Clave);
 		printf ("<p>Descripción de la carrera: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" length=\"100\" value=\"%s\" /></p>\n", $object->Descripcion);
 	?>
 	<input type="submit" value="Actualizar carrera" />

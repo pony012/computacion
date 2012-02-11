@@ -73,10 +73,8 @@
 		}
 	?>
 	<form action="post_nuevo_usuario.php" method="post" onsubmit="return valida_form()">
+		<?php printf ("<input name=\"tipo\" id=\"tipo\" type=\"hidden\" value=\"%s\" />", $tipo); ?>
 		<table border="0">
-		<?php
-			echo "<input name=\"tipo\" id=\"tipo\" type=\"hidden\" value=\"" . $tipo . "\" />";
-		?>
 		<tr><td>Código:</td>
 		<td><input name="codigo" id="codigo" type="text" /></td></tr>
 		<tr><td>Nombre:</td>

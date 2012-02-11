@@ -72,11 +72,11 @@
 			}
 			
 			/* Extraordinario ya *NO* es un caso especial */
-			printf ("<td><a href=\"edit_eval.php?id=%s\"><img class=\"icon\" src=\"../img/properties.png\" /></a>", $object->Id);
+			printf ("<td><a href=\"edit_eval.php?id=%s\"><img class=\"icon\" src=\"../img/properties.png\" alt=\"editar\" /></a>", $object->Id);
 		
 			printf ("<a href=\"eliminar_eval.php?id=%s\"\n", $object->Id);
 			printf (" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar %s?')\">", $object->Descripcion);
-			printf ("<img class=\"icon\" src=\"../img/remove.png\" /></a></td>");
+			printf ("<img class=\"icon\" src=\"../img/remove.png\" alt=\"eliminar\" /></a></td>");
 			
 			echo "</tr>\n";
 		}

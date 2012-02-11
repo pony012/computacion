@@ -234,3 +234,5 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 	<p><input type="submit" value="Generar salones" />
 	<input type="submit" value="Generar salones y editar" /></p>
 	</form>
+</body>
+</html>

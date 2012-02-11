@@ -167,7 +167,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Editar forma de evaluación</h1>
-	<form action="post_eval.php" method="POST" onsubmit="return validar()"><input type="hidden" name="modo" value="editar" />
+	<form action="post_eval.php" method="post" onsubmit="return validar()"><input type="hidden" name="modo" value="editar" />
 	<?php printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />", $_GET['id']);
 	printf ("<p>Nombre de la forma de evaluación:<input type=\"text\" id=\"descripcion\" name=\"descripcion\" value=\"%s\" /></p>\n", $object->Descripcion);
 	printf ("<p>Del tipo: <b>%s</b></p>", $object->Grupo);

@@ -63,10 +63,10 @@
 			
 			echo "<td>";
 			if ($_SESSION['permisos']['admin_carreras'] == 1) {
-				echo "<a href=\"editar_carrera.php?clave=" . $object->Clave . "\"><img class=\"icon\" src=\"../img/properties.png\" /></a>";
-				echo "<a href=\"eliminar_carrera.php?clave=" . $object->Clave . "\"\n";
-				echo " onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la carrera ".$object->Clave."?')\">";
-				echo "<img class=\"icon\" src=\"../img/remove.png\" /></a>";
+				printf ("<a href=\"editar_carrera.php?clave=%s\"><img class=\"icon\" src=\"../img/properties.png\" alt=\"editar\"/></a>", $object->Clave);
+				printf ("<a href=\"eliminar_carrera.php?clave=%s\"\n", $object->Clave);
+				printf (" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la carrera %s?')\">", $object->Descripcion);
+				echo "<img class=\"icon\" src=\"../img/remove.png\" alt=\"eliminar\"/></a>";
 			}
 			echo "</td></tr>";
 		}

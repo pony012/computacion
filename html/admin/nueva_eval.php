@@ -149,10 +149,10 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Nueva forma de evaluación</h1>
-	<form action="post_eval.php" method="POST" onsubmit="return validar()"><input type="hidden" name="modo" value="nuevo" />
+	<form action="post_eval.php" method="post" onsubmit="return validar()"><input type="hidden" name="modo" value="nuevo" />
 	<p>Ingrese el nombre de la forma de evaluación: <input type="text" id="descripcion" name="descripcion" /></p>
 	<p>Del tipo:<?php
-	echo "<select name=\"grupo\" id=\"grupo\" />\n";
+	echo "<select name=\"grupo\" id=\"grupo\" >\n";
 	
 	require_once '../mysql-con.php';
 	

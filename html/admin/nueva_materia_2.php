@@ -62,11 +62,11 @@
 </head>
 <body>
 	<h1>Nueva materia</h1>
-	<form action="post_materia.php" method="POST" onsubmit="return validar ()" >
+	<form action="post_materia.php" method="post" onsubmit="return validar ()" >
 	<input type="hidden" name="modo" value="nuevo" />
 	<?php
-		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" value=\"%s\" readonly=\"readonly\" length=\"5\" /></p>\n", $_POST['clave']);
-		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" value=\"%s\" length=\"100\" /></p>\n", $_POST['descripcion']);
+		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" value=\"%s\" readonly=\"readonly\" maxlength=\"5\" /></p>\n", $_POST['clave']);
+		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" value=\"%s\" maxlength=\"99\" /></p>\n", $_POST['descripcion']);
 		
 		echo "<h2>Asignar porcentajes:</h2>\n";
 		

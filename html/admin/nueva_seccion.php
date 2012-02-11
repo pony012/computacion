@@ -52,7 +52,7 @@
 </head>
 <body>
 	<h1>Agregar una nueva sección</h1>
-	<form action="post_nueva_seccion.php" method="POST" onsubmit="return validar()">
+	<form action="post_nueva_seccion.php" method="post" onsubmit="return validar()">
 	<p>Nrc:<input name="nrc" id="nrc" type="text" /></p>
 	<?php
 		require_once "../mysql-con.php";

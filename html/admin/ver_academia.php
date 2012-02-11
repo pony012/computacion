@@ -77,15 +77,16 @@
 		if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
 			/* Acciones */
 			$link = array ('materia' => $object->Clave, 'id' => $academia->Id);
-			printf ("<td><a href=\"eliminar_materia_academia.php?%s\"\n onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la materia %s de la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" /></a></td>", htmlentities (http_build_query ($link)), $object->Clave, $academia->Nombre);
+			printf ("<td><a href=\"eliminar_materia_academia.php?%s\"\n onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la materia %s de la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" alt=\"eliminar\" /></a></td>", htmlentities (http_build_query ($link)), $object->Clave, $academia->Nombre);
 		}
+		echo "</tr>\n";
 	}
 	
 	echo "</tbody></table>";
 	
 	/* Mostrar Agregar sólo si tiene permisos */
 	if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
-		echo "<form method=\"POST\" action=\"post_materia_academia.php\">\n<p>Agregar una materia a esta academia:</p><p>\n";
+		echo "<form method=\"post\" action=\"post_materia_academia.php\">\n<p>Agregar una materia a esta academia:</p><p>\n";
 		printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />\n", $academia->Id);
 		echo "<select name=\"materia\"><option selected=\"selected\" value=\"NULL\">Seleccione una materia</option>";
 		
@@ -95,7 +96,7 @@
 		while (($object = mysql_fetch_object ($result))) {
 			printf ("<option value=\"%s\">%s - %s</option>\n", $object->Clave, $object->Clave, $object->Descripcion);
 		}
-		echo "</select>\n<input type=\"image\" src=\"../img/add2.png\" class=\"icon\" /></form>\n";
+		echo "</select>\n<input type=\"image\" src=\"../img/add2.png\" class=\"icon\" alt=\"agregar\" /></p></form>\n";
 	} ?>
 </body>
 </html>

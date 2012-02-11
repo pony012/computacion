@@ -164,7 +164,7 @@ ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Modificar salón aplicador</h1>
-	<form method="POST" action="post_aplicadores.php" onsubmit="return validar()">
+	<form method="post" action="post_aplicadores.php" onsubmit="return validar()">
 	<?php
 		printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />", $datos->Id);
 		printf ("<p>Materia: %s %s</p><input type=\"hidden\" id=\"j_materia\" value=\"%s\" />\n", $datos->Clave, $datos->Descripcion, $datos->Clave);

@@ -87,12 +87,12 @@
 	$g = 0;
 	while (($object = mysql_fetch_object ($result))) {
 		$g++;
-		printf ("<tr><td>%s</td><td>%s</td><td>%s %s</td></tr>", $g, $object->Alumno, $object->Apellido, $object->Nombre);
+		printf ("<tr><td>%s</td><td>%s</td><td>%s %s</td></tr>\n", $g, $object->Alumno, $object->Apellido, $object->Nombre);
 	}
 	echo "</tbody>";
 	mysql_free_result ($result);
 	
 	echo "</table>";
 ?>
-</html>
 </body>
+</html>

@@ -110,7 +110,8 @@
 		
 		while (($object = mysql_fetch_object ($result))) {
 			printf ("<tr><td>%s %s</td>", $object->Materia, $object->Descripcion);
-			printf ("<td><a href=\"aplicadores_materia.php?materia=%s&tipo=%s\">%s</a></td></tr>\n", $object->Materia, $object->Tipo, $object->Evaluacion);
+			$link = array ('materia' => $object->Materia, 'tipo' => $object->Tipo);
+			printf ("<td><a href=\"aplicadores_materia.php?%s\">%s</a></td></tr>\n", htmlentities (http_build_query ($link)), $object->Evaluacion);
 		}
 		
 		mysql_free_result ($result);
@@ -139,8 +140,8 @@
 			} else {
 				echo "<td><b>Indefinido</b></td>\n";
 			}
-			printf ("<td><a href=\"asignar_alumnos_aplicadores.php?%s\"><img class=\"icon\" src=\"../img/properties.png\" /></a>", htmlentities (http_build_query ($link)));
-			printf ("<a href=\"eliminar_salon_aplicador.php?%s\" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar el salón %s?')\"><img class=\"icon\" src=\"../img/remove.png\" /></a></td></tr>", htmlentities (http_build_query ($link)), $object->Salon);
+			printf ("<td><a href=\"asignar_alumnos_aplicadores.php?%s\"><img class=\"icon\" src=\"../img/properties.png\" alt=\"editar\" /></a>", htmlentities (http_build_query ($link)));
+			printf ("<a href=\"eliminar_salon_aplicador.php?%s\" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar el salón %s?')\"><img class=\"icon\" src=\"../img/remove.png\" alt=\"eliminar\" /></a></td></tr>", htmlentities (http_build_query ($link)), $object->Salon);
 		}
 		echo "</tbody>";
 		
