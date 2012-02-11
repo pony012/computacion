@@ -95,12 +95,12 @@
 		
 		echo "</p>\n";
 	?>
-	<?php
-		echo "<ul>";
+	<?php	
 		if ($_SESSION['permisos']['crear_materias'] == 1) {
+			echo "<ul>";
 			echo "<li><a href=\"nueva_materia.php\">Agregar una nueva materia</a></li>\n";
+			echo "</ul>";
 		}
-		echo "</ul>";
 	?>
 </body>
 </html>
