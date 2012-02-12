@@ -24,7 +24,7 @@
 	
 	require_once '../mysql-con.php';
 		
-	$query = sprintf ("SELECT * FROM Materias WHERE Clave='%s'", $POST['clave']);
+	$query = sprintf ("SELECT * FROM Materias WHERE Clave='%s'", $_POST['clave']);
 	
 	$result = mysql_query ($query, $mysql_con);
 	

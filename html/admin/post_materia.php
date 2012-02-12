@@ -177,7 +177,7 @@
 		mysql_query ($query);
 		
 		/* Re-ingresar las calificaciones */
-		$query = sprintf ("SELECT Alumno, Nrc FROM Grupos AS G INNER JOIN Secciones AS S ON G.Nrc = S.Nrc WHERE S.Materia = '%s'", $_POST['clave']);
+		$query = sprintf ("SELECT G.Alumno, G.Nrc FROM Grupos AS G INNER JOIN Secciones AS S ON G.Nrc = S.Nrc WHERE S.Materia = '%s'", $_POST['clave']);
 		
 		$result = mysql_query ($query);
 		
