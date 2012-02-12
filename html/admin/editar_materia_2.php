@@ -10,13 +10,6 @@
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
-		/* Privilegios insuficientes */
-		header ("Location: vistas.php");
-		agrega_mensaje (3, "Privilegios insuficientes");
-		exit;
-	}
-	
 	/* Validar la clave la materia */
 	if (isset ($_GET['clave'])) {
 		header ("Location: editar_materia.php?clave=" . $_GET['clave']);
@@ -24,9 +17,54 @@
 	}
 	
 	/* Si no llegamos por post de la página anterior, regresar a las materias */
-	if (!isset ($_POST['clave'])) {
+	if (!isset ($_POST['clave']) || !isset ($_POST['descripcion']) || !isset ($_POST['evals']) || !is_array ($_POST['evals'])) {
 		header ("Location: materias.php");
 		exit;
+	}
+	
+	require_once '../mysql-con.php';
+		
+	$query = sprintf ("SELECT * FROM Materias WHERE Clave='%s'", $POST['clave']);
+	
+	$result = mysql_query ($query, $mysql_con);
+	
+	if (mysql_num_rows ($result) == 0) {
+		header ("Location: materias.php");
+		agrega_mensaje (3, "Error desconocido");
+		mysql_free_result ($result);
+		mysql_close ($mysql_con);
+		exit;
+	}
+	
+	$materia = mysql_fetch_object ($result);
+	mysql_free_result ($result);
+	
+	/* Ahora sí, checar por todos los permisos */
+	if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
+		/* Si no tienes el permiso global de crear_materias checamos por la academia */
+		if (is_null ($materia->Academia)) { /* Si no pertence a una academia, bye bye */
+			/* Privilegios insuficientes */
+			agrega_mensaje (3, "Privilegios insuficientes");
+			header ("Location: vistas.php");
+			exit;
+		} else {
+			$query = sprintf ("SELECT Maestro, Materias FROM Academias WHERE Id = '%s'", $materia->Academia);
+			$result = mysql_query ($query, $mysql_con);
+			$academia = mysql_fetch_object ($result);
+			mysql_free_result ($result);
+	
+			if ($academia->Maestro != $_SESSION['codigo']) {
+				agrega_mensaje (3, "Privilegios insuficientes");
+				header ("Location: vistas.php");
+				exit;
+			}
+			
+			if ($academia->Materias != 1) {
+				agrega_mensaje (1, "La academia no permite la edición de materias\nContacte al jefe de departamento");
+				header ("Location: academias.php");
+				exit;
+			}
+		}
 	}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -34,6 +72,7 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
+	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
@@ -104,9 +143,9 @@
 		
 		foreach ($_POST['evals'] as $value) {
 			if (!isset ($todas[$value])) continue; /* Una evaluacion que no existe */
-			$grupo = $todas[$value];
+			$grupo = $todas[$value]; /* Guardar el grupo al que pertenece */
 			if (!isset ($limpias[$grupo])) $limpias[$grupo] = array ();
-			$limpias[$grupo][$value] = $descripciones[$value];
+			$limpias[$grupo][$value] = $descripciones[$value]; /* Meter esta forma de evaluacion bajo el grupo que pertenece */
 		}
 		
 		unset ($todas);

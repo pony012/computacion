@@ -10,13 +10,6 @@
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
-		/* Privilegios insuficientes */
-		agrega_mensaje (3, "Privilegios insuficientes");
-		header ("Location: vistas.php");
-		exit;
-	}
-	
 	/* Validar la clave la materia */
 	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['clave'])) {
 		header ("Location: materias.php");
@@ -26,26 +19,55 @@
 	
 	require_once '../mysql-con.php';
 		
-	$query = "SELECT * FROM Materias WHERE Clave='". $_GET['clave'] ."' LIMIT 1";
+	$query = sprintf ("SELECT * FROM Materias WHERE Clave='%s'", $_GET['clave']);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
 		header ("Location: materias.php");
-		agrega_mensaje (3, "Materia desconocida");
+		agrega_mensaje (3, "Error desconocido");
 		mysql_free_result ($result);
 		mysql_close ($mysql_con);
 		exit;
 	}
 	
-	$object = mysql_fetch_object ($result);
+	$materia = mysql_fetch_object ($result);
 	mysql_free_result ($result);
+	
+	/* Ahora sí, checar por todos los permisos */
+	if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
+		/* Si no tienes el permiso global de crear_materias checamos por la academia */
+		if (is_null ($materia->Academia)) { /* Si no pertence a una academia, bye bye */
+			/* Privilegios insuficientes */
+			agrega_mensaje (3, "Privilegios insuficientes 1");
+			header ("Location: vistas.php");
+			exit;
+		} else {
+			$query = sprintf ("SELECT Maestro, Materias FROM Academias WHERE Id = '%s'", $materia->Academia);
+			$result = mysql_query ($query, $mysql_con);
+			$academia = mysql_fetch_object ($result);
+			mysql_free_result ($result);
+			
+			if ($academia->Maestro != $_SESSION['codigo']) {
+				agrega_mensaje (3, "Privilegios insuficientes");
+				header ("Location: vistas.php");
+				exit;
+			}
+			
+			if ($academia->Materias != 1) {
+				agrega_mensaje (1, "La academia no permite la edición de materias\nContacte al jefe de departamento");
+				header ("Location: academias.php");
+				exit;
+			}
+		}
+	}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
+	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
@@ -95,11 +117,10 @@
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Editar materia</h1>
 	<form action="editar_materia_2.php" method="post" onsubmit="return validar()">
-	<input type="hidden" name="modo" value="repost" />
 	<p><b>Advertencia</b>: Cambiar las formas de evaluación de una materia borra todas las calificaciones existentes</p>
 	<?php
-		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" maxlength=\"5\" value=\"%s\" readonly=\"readonly\" /></p>", $object->Clave);
-		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" maxlength=\"99\" value=\"%s\"/></p>", $object->Descripcion);
+		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" maxlength=\"5\" value=\"%s\" readonly=\"readonly\" /></p>", $materia->Clave);
+		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" maxlength=\"99\" value=\"%s\"/></p>", $materia->Descripcion);
 		echo "<p>Formas de evaluación disponibles: <br />";
 		require_once '../mysql-con.php';
 		
@@ -128,7 +149,7 @@
 		
 		/* Recuperar los actualmente selccionados */
 		/* SELECT P.Tipo, E.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave = 'ET213' */
-		$query = sprintf ("SELECT P.Tipo, E.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave = '%s' ORDER BY E.Grupo, P.Tipo", $_GET['clave']);
+		$query = sprintf ("SELECT P.Tipo, E.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave = '%s' ORDER BY E.Grupo, P.Tipo", $materia->Clave);
 		
 		$result = mysql_query ($query, $mysql_con);
 		

@@ -75,8 +75,8 @@
 			printf ("<a href=\"eliminar_materia_academia.php?%s\"\n onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la materia %s de la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" alt=\"eliminar\" /></a>", htmlentities (http_build_query ($link)), $object->Clave, $academia->Nombre);
 		}
 		
-		if ($academia->Maestro == $_SESSION['codigo']) { /* El presidente de la academia */
-			
+		if ($academia->Maestro == $_SESSION['codigo'] && $academia->Materias == 1) { /* El presidente de la academia */
+			printf ("<a href=\"editar_materia.php?clave=%s\"><img class=\"icon\" src=\"../img/properties.png\" alt=\"editar\"/></a>", $object->Clave);
 		}
 		
 		echo "</td></tr>\n";
