@@ -11,7 +11,7 @@
 	require_once 'mensajes.php';
 	
 	/* Validar la clave la materia */
-	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['clave'])) {
+	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_GET['clave'])) {
 		header ("Location: materias.php");
 		agrega_mensaje (3, "Clave incorrecta");
 		exit;

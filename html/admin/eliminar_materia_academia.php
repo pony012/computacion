@@ -29,7 +29,7 @@
 	settype ($_GET['id'], 'integer');
 	
 	/* Sanear la entrada "materia" */
-	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) {
+	if (!preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_GET['materia'])) {
 		agrega_mensaje (3, "Materia incorrecta");
 		exit;
 	}

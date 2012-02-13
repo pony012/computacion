@@ -34,7 +34,7 @@
 			var evals = document.getElementById ("evals");
 			var agregados = document.getElementById ("agregados");
 			/* Validaciones sobre la clave */
-			if (!/^([A-Za-z]){2}([0-9]){3}$/.test(clave)) {
+			if (!/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/.test(clave)) {
 				/* Clave incorrecta */
 				alert ("Clave incorrecta");
 				return false;

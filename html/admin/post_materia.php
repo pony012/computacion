@@ -13,7 +13,7 @@
 	header ("Location: materias.php");
 	
 	/* Validar la clave la materia */
-	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_POST['clave'])) {
+	if (!isset ($_POST['clave']) || !preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_POST['clave'])) {
 		agrega_mensaje (3, "Materia incorrecta");
 		exit;
 	}
@@ -24,7 +24,7 @@
 		exit;
 	}
 	
-	if (!isset ($_POST['grupo']) || !isset ($_POST['descripcion']) || !isset ($_POST['clave'])) {
+	if (!isset ($_POST['grupo']) || !isset ($_POST['descripcion']) || $_POST['descripcion'] == "") {
 		agrega_mensaje (3, "Ha ocurrido un error procesando los datos");
 		exit;
 	}

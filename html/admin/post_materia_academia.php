@@ -25,7 +25,7 @@
 	
 	settype ($_POST['id'], 'integer');
 	
-	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_POST['materia'])) {
+	if (!preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_POST['materia'])) {
 		agrega_mensaje (3, "Materia incorrecta");
 		exit;
 	}

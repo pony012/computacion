@@ -17,7 +17,7 @@
 		exit;
 	}
 	
-	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) {
+	if (!preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_GET['materia'])) {
 		agrega_mensaje (1, "La clave especificada es incorrecta");
 		header ("Location: aplicadores_general.php");
 		exit;

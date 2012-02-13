@@ -22,6 +22,12 @@
 		exit;
 	}
 	
+	if (!preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_POST['clave'])) {
+		header ("Location: materias.php");
+		agrega_mensaje (3, "Error al procesar los datos");
+		exit;
+	}
+	
 	require_once '../mysql-con.php';
 		
 	$query = sprintf ("SELECT * FROM Materias WHERE Clave='%s'", $_POST['clave']);

@@ -8,10 +8,7 @@
 	if (!isset ($_GET['modo'])) exit;
 	
 	if ($_GET['modo'] == 'evals') {
-		if (!isset ($_GET['materia'])) exit;
-		if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) {
-			exit;
-		}
+		if (!isset ($_GET['materia']) || !preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_GET['materia'])) exit;
 		if (isset ($_GET['exclusiva']) && $_GET['exclusiva'] == 1) $exclu = 1;
 		else $exclu = 0;
 		
@@ -37,7 +34,7 @@
 	if ($_GET['modo'] == 'grupos') {
 		if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) exit;
 		if (!isset ($_GET['materia']) || !isset ($_GET['bus']) || $_GET['bus'] == "") exit;
-		if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) exit;
+		if (!preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_GET['materia'])) exit;
 		
 		$mate = strtoupper ($_GET['materia']);
 		
@@ -66,7 +63,7 @@
 		if (!isset ($_GET['tipo'])) exit;
 		
 		if ($_GET['tipo'] == 'alumnos') {
-			if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_GET['materia'])) exit;
+			if (!isset ($_GET['materia']) || !preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_GET['materia'])) exit;
 			
 			$mate = strtoupper ($_GET['materia']);
 			

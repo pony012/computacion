@@ -19,7 +19,7 @@
 	
 	header ("Location: aplicadores_general.php");
 	
-	if (!preg_match ("/^([A-Za-z]){2}([0-9]){3}$/", $_POST['materia'])) {
+	if (!isset ($_POST['materia']) || !preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_POST['materia'])) {
 		agrega_mensaje (3, "Clave de materia incorrecta");
 		exit;
 	}
