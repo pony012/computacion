@@ -13,7 +13,16 @@
 		var x = document.getElementById("user").value;
 		var y = document.getElementById("pass").value;
 		
-		if (x == null || x == "" || y == null || y == "") return false;
+		if (x == null || x == "" || y == null || y == "") {
+			alert ("Usuario o contraseña vacia");
+			return false;
+		}
+		
+		var w = parseInt (x);
+		if (isNaN (w) || w < 0) {
+			alert ("Usuario inválido");
+			return false;
+		}
 
 		// En caso contrario, encriptar la contraseña
 		var m = MD5 (y);
@@ -24,7 +33,7 @@
 	}
 	</script>
 </head>
-<body>
+<body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 <h1>Ingresar al sistema</h1>
 	<form action="auth.php" method="post" onsubmit="return validar()">
 		<table>

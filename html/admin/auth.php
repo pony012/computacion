@@ -6,49 +6,63 @@
 	 # md5 -> la contraseña
 	 */
 	
+	header ("Location: login.php");
+	
 	/* Verificar que haya datos POST */
 	if (!isset ($_POST['user']) || !isset ($_POST['md5'])) {
-		header ("Location: login.php");
+		exit;
+	}
+	
+	require_once 'mensajes.php';
+	
+	/* Sanitizado de variables */
+	$id_usuario = strval (intval ($_POST['user']));
+	$contrasena = $_POST['md5'];
+	
+	if ($id_usuario <= 0 || !preg_match ("/^([A-fa-f0-9]){32}$/", $contrasena)) { /* Datos inválidos */
+		agrega_mensaje (3, "Error desconocido");
+		/* TODO: Sumar los intentos fallidos */
 		exit;
 	}
 	
 	require_once "../mysql-con.php";
 	
-	/* Sanitizado de variables */
-	filter_input (INPUT_POST, 'user', FILTER_SANITIZE_NUMBER_INT);
-	
-	$query = sprintf ("SELECT s.codigo, s.permisos, m.nombre FROM Sesiones_Maestros AS s INNER JOIN Maestros AS m ON s.codigo = m.codigo WHERE s.codigo='%s' AND s.pass='%s' AND s.activo=1 LIMIT 1", mysql_real_escape_string ($_POST['user']), mysql_real_escape_string ($_POST['md5']));
+	$query = sprintf ("SELECT Codigo, Permisos, Activo FROM Sesiones_Maestros WHERE Codigo = '%s' AND Pass = '%s'", $id_usuario, $contrasena);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
-	if (mysql_num_rows ($result) > 0) {
-		$user = mysql_fetch_object ($result);
-		
-		/* Empezar a rellenar datos de la sesion */
-		$_SESSION['auth'] = 1;
-		$_SESSION['nombre'] = $user->nombre;
-		$_SESSION['codigo'] = $user->codigo;
-		
+	if (mysql_num_rows ($result) == 0) {
 		mysql_free_result ($result);
+		agrega_mensaje (3, "Usuario o contraseña inválidos");
+		exit;
+	} else {
+		$usuario = mysql_fetch_object ($result);
+		mysql_free_result ($result);
+		
+		if ($usuario->Activo == 0) {
+			agrega_mensaje (1, "Su cuenta está desactivada, contacte al administrador del sistema");
+			/* TODO: Sumar los intentos fallidos */
+			exit;
+		}
+		
+		/* Rellenar los datos de la sesion */
+		$_SESSION['auth'] = 1;
+		$_SESSION['codigo'] = $usuario->Codigo;
+		
+		/* TODO: Enviar el nombre y el correo a COOKIES */
 		
 		/* Ahora recuperar la tabla de permisos */
-		$query = sprintf ("SELECT p.* FROM Permisos AS p INNER JOIN Sesiones_Maestros AS s ON p.id = s.permisos WHERE s.permisos='%s' LIMIT 1", $user->permisos);
-		$result = mysql_query ($query, $mysql_con);
-		$object = (array)mysql_fetch_object ($result);
+		$query = sprintf ("SELECT * FROM Permisos WHERE Id = '%s'", $usuario->Permisos);
 		
-		$_SESSION['permisos'] = array ();
-		foreach($object as $key => $valor) $_SESSION['permisos'][$key] = $valor;
+		$result = mysql_query ($query, $mysql_con);
+		$permisos = mysql_fetch_assoc ($result);
+		
+		$_SESSION['permisos'] = $permisos;
+		
 		mysql_free_result ($result);
 		
-		mysql_close ($mysql_con);
-		
 		header ("Location: vistas.php");
-		exit;
 	}
 	
-	mysql_free_result ($result);
 	mysql_close ($mysql_con);
-		
-	header ("Location: login.php");
-	exit
 ?>
