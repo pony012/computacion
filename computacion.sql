@@ -28,7 +28,9 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 CREATE TABLE IF NOT EXISTS `Academias` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Nombre` varchar(100) NOT NULL,
-  `Maestro` int(9) unsigned zerofill DEFAULT NULL,
+  `Maestro` int(7) unsigned zerofill DEFAULT NULL,
+  `Subida` tinyint(1) NOT NULL DEFAULT '0',
+  `Materias` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`Id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -82,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `Alumnos_Aplicadores` (
 
 CREATE TABLE IF NOT EXISTS `Calificaciones` (
   `Alumno` char(9) NOT NULL,
-  `Nrc` int(5) NOT NULL,
+  `Nrc` int(5) unsigned zerofill NOT NULL,
   `Tipo` int(11) NOT NULL,
   `Valor` int(11) DEFAULT NULL,
   PRIMARY KEY (`Alumno`,`Nrc`,`Tipo`),
@@ -142,7 +144,7 @@ CREATE TABLE IF NOT EXISTS `Evaluaciones` (
 
 CREATE TABLE IF NOT EXISTS `Grupos` (
   `Alumno` char(9) NOT NULL,
-  `Nrc` int(5) NOT NULL,
+  `Nrc` int(5) unsigned zerofill NOT NULL,
   PRIMARY KEY (`Alumno`,`Nrc`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -173,7 +175,7 @@ CREATE TABLE IF NOT EXISTS `Grupos_Evaluaciones` (
 --
 
 CREATE TABLE IF NOT EXISTS `Maestros` (
-  `Codigo` int(7) NOT NULL,
+  `Codigo` int(7) unsigned zerofill NOT NULL,
   `Nombre` varchar(30) NOT NULL,
   `Apellido` varchar(70) NOT NULL,
   `Correo` varchar(100) NOT NULL,
@@ -274,7 +276,7 @@ CREATE TABLE IF NOT EXISTS `Salones_Aplicadores` (
   `Tipo` int(11) NOT NULL,
   `Salon` char(20) NOT NULL,
   `FechaHora` datetime NOT NULL,
-  `Maestro` int(7) DEFAULT NULL,
+  `Maestro` int(7) unsigned zerofill DEFAULT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `Salon` (`Salon`,`FechaHora`),
   KEY `Materia` (`Materia`),
@@ -298,9 +300,9 @@ CREATE TABLE IF NOT EXISTS `Salones_Aplicadores` (
 --
 
 CREATE TABLE IF NOT EXISTS `Secciones` (
-  `Nrc` int(5) NOT NULL,
+  `Nrc` int(5) unsigned zerofill NOT NULL,
   `Materia` char(5) NOT NULL,
-  `Maestro` int(7) NOT NULL,
+  `Maestro` int(7) unsigned zerofill NOT NULL,
   `Seccion` char(3) NOT NULL,
   PRIMARY KEY (`Nrc`),
   UNIQUE KEY `Materia` (`Materia`,`Seccion`)
@@ -341,7 +343,7 @@ CREATE TABLE IF NOT EXISTS `Sesiones_Alumnos` (
 --
 
 CREATE TABLE IF NOT EXISTS `Sesiones_Maestros` (
-  `Codigo` int(7) NOT NULL,
+  `Codigo` int(7) unsigned zerofill NOT NULL,
   `Pass` char(32) NOT NULL,
   `Permisos` int(11) NOT NULL,
   `Activo` tinyint(1) NOT NULL,
