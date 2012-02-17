@@ -9,6 +9,7 @@
 	}
 	
 	require_once '../mysql-con.php';
+	require_once 'mensajes.php';
 	
 	/* Verificar que sea al menos presidente de una academia */
 	$query = sprintf ("SELECT * FROM Academias WHERE Maestro = '%s' LIMIT 1", $_SESSION['codigo']);
@@ -30,6 +31,33 @@
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<script language="javascript" src="../scripts/comun.js" type="text/javascript"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script language="javascript" type="text/javascript">
+		// <![CDATA[
+		$(document).ready(function(){
+			$('#materia').change(function() {
+				if ($('#materia').val() == 'NULL') {
+					$('#depa').empty ();
+					$('#depa').append ($("<option></option>").attr("value", "NULL").text("Selecciona una materia primero"));
+					return;
+				}
+				$.getJSON("json.php",
+				{
+					modo: 'evals',
+					materia: $('#materia').val(),
+					exclusiva: '0'
+				},
+				function(data) {
+					$('#depa').empty ();
+					$('#depa').append ($("<option></option>").attr("value", "NULL").attr("selected", "selected").text("Seleccione una forma de evaluación"));
+					$.each(data, function(i,item){
+						$('#depa').append ($("<option></option>").attr("value", item.Tipo).text(item.Descripcion));
+					}); /* For each data */
+				}); /* Json, get data */
+			}); /* Materia on change */
+		}); /* Document.ready */
+		// ]]>
+	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
@@ -47,18 +75,20 @@
 		if (mysql_num_rows ($result) == 0) {
 			printf ("<p>Por el momento no hay materias que permitan subida de calificaciones</p>");
 			mysql_free_result ($result);
-		} else {
-			echo "<p>Materia: <select name=\"materia\" id=\"materia\"><option value=\"NULL\">Seleccione una materia</option>\n";
-			
-			while (($object = mysql_fetch_object ($result))) {
-				printf ("<option value=\"%s\">%s - %s</option>\n", $object->Clave, $object->Clave, $object->Descripcion);
-			}
-			
-			mysql_free_result ($result);
-			echo "</select></p>\n";
-			
-			echo "<p>Departamental: <select name=\"depa\" id=\"depa\"><option value=\"NULL\">Seleccione una materia primero</option></select></p>\n";
+		} else { ?>
+		<form method="get" action="seleccionar_subida_2.php">
+		<p>Materia: <select name="materia" id="materia"><option value="NULL">Seleccione una materia</option>
+		
+		<?php while (($object = mysql_fetch_object ($result))) {
+			printf ("<option value=\"%s\">%s - %s</option>\n", $object->Clave, $object->Clave, $object->Descripcion);
 		}
-	?>
+		
+		mysql_free_result ($result); ?>
+		</select></p>
+		
+		<p>Departamental: <select name="depa" id="depa"><option value="NULL">Seleccione una materia primero</option></select></p>
+		
+		<input type="submit" value="Subida" /></form>
+		<?php } ?>
 </body>
 </html>
