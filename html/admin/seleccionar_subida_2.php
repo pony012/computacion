@@ -122,7 +122,7 @@
 		echo "<table border=\"1\"><thead><tr><th>Salón</th><th>Fecha</th><th>Hora</th><th>Aplicado por el maestro</th></tr></thead><tbody>";
 		
 		while (($object = mysql_fetch_object ($result))) {
-			printf ("<tr><td>%s</td><td>%s</td><td>%s</td>", $object->Salon, strftime ("%a %e %h %Y", $object->FechaHora), strftime ("%H:%M", $object->FechaHora));
+			printf ("<tr><td><a href=\"subida_calificaciones_depa.php?id=%s\">%s</a></td><td>%s</td><td>%s</td>", $object->Id, $object->Salon, strftime ("%a %e %h %Y", $object->FechaHora), strftime ("%H:%M", $object->FechaHora));
 			if (!is_null ($object->Maestro)) {
 				$query_m = sprintf ("SELECT Nombre, Apellido FROM Maestros WHERE Codigo = '%s'", $object->Maestro);
 				$result_m = mysql_query ($query_m);
