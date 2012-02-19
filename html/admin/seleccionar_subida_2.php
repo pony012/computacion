@@ -27,13 +27,13 @@
 	/* Verificar que la materia exista, pertenece a una academia y este maestro es dueño de la academia */
 	/* SELECT * FROM Academias AS A INNER JOIN Materias AS M ON M.Academia = A.Id WHERE A.Maestro = '2066907' AND M.Clave = 'ET200' */
 	
-	$query = sprintf ("SELECT A.Maestro, A.Subida FROM Academias AS A INNER JOIN Materias AS M ON M.Academia = A.Id WHERE M.Clave = '%s'", $_GET['materia']);
+	$query = sprintf ("SELECT M.Descripcion, A.Maestro, A.Subida FROM Academias AS A INNER JOIN Materias AS M ON M.Academia = A.Id WHERE M.Clave = '%s'", $_GET['materia']);
 	
 	$result = mysql_query ($query, $mysql_con);
 	if (mysql_num_rows ($result) == 0) {
 		mysql_free_result ($result);
 		header ("Location: seleccionar_subida.php");
-		agrega_mensaje (1, "La materia no pertenece a ninguna academia");
+		agrega_mensaje (1, "La materia no pertenece a una academia");
 		exit;
 	}
 	
@@ -51,6 +51,8 @@
 		agrega_mensaje (3, "No tiene permiso para subir calificaciones en esta academia");
 		exit;
 	}
+	
+	$materia_descripcion = $object->Descripcion;
 	
 	/* Verificar que la forma de evaluacion exista con la materia especificada
 	 * Adicionalmente, recoger si la forma de evaluación está abierta */
@@ -90,20 +92,7 @@
 		}
 	}
 	
-	if ($object->Estado == 'closed') { 
-		header ("Location: ver_grupo.php?nrc=" . $_GET['nrc']);
-		agrega_mensaje (1, "La forma de evaluación está cerrada");
-		exit;
-	}
-	
-	if ($object->Estado == 'time') {
-		$now = time ();
-		if ($now < $object->Apertura || $now >= $object->Cierre) {
-			header ("Location: ver_grupo.php?nrc=" . $_GET['nrc']);
-			agrega_mensaje (1, "Fuera de tiempo para subida de calificaciones");
-			exit;
-		}
-	}
+	$evaluacion_descripcion = $object->Descripcion;
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -111,12 +100,6 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
-	<script language="javascript" src="../scripts/comun.js" type="text/javascript"></script>
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-	<script language="javascript" type="text/javascript">
-		// <![CDATA[
-		// ]]>
-	</script>
 	<title><?php
 	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
 	echo $cfg['nombre'];
@@ -124,6 +107,34 @@
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes ();?>
 	<h1>Subida de calificaciones</h1>
-	<p>Aquí la lista de salones</p>
+	<?php printf ("<p>Materia: %s<br />\nEvaluación %s</p>", $materia_descripcion, $evaluacion_descripcion);
+	
+	echo "<p>Salones de aplicación</p>";
+	
+	$query = sprintf ("SELECT *, UNIX_TIMESTAMP (FechaHora) AS FechaHora FROM Salones_Aplicadores WHERE Materia = '%s' AND Tipo = '%s' ORDER BY Salon", $_GET['materia'], $evaluacion);
+	$result = mysql_query ($query, $mysql_con);
+	
+	if (mysql_num_rows ($result) == 0) {
+		/* No hay salones de aplicacion */
+		printf ("<p><b>No hay salones de aplicación para la materia y forma de evaluación seleccionada</b></p>");
+	} else {
+		/* Imprimir la cabecera */
+		echo "<table border=\"1\"><thead><tr><th>Salón</th><th>Fecha</th><th>Hora</th><th>Aplicado por el maestro</th></tr></thead><tbody>";
+		
+		while (($object = mysql_fetch_object ($result))) {
+			printf ("<tr><td>%s</td><td>%s</td><td>%s</td>", $object->Salon, strftime ("%a %e %h %Y", $object->FechaHora), strftime ("%H:%M", $object->FechaHora));
+			if (!is_null ($object->Maestro)) {
+				$query_m = sprintf ("SELECT Nombre, Apellido FROM Maestros WHERE Codigo = '%s'", $object->Maestro);
+				$result_m = mysql_query ($query_m);
+				$maestro = mysql_fetch_object ($result_m);
+				printf ("<td>%s %s</td></tr>\n", $maestro->Apellido, $maestro->Nombre);
+				mysql_free_result ($result_m);
+			} else {
+				echo "<td><b>Indefinido</b></td></tr>\n";
+			}
+		}
+		echo "</tbody></table>";
+	}
+	mysql_free_result ($result); ?>
 </body>
 </html>
