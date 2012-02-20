@@ -1,4 +1,3 @@
-<html></html>
 <?php
 	session_start ();
 	
@@ -64,7 +63,7 @@
 	
 	if ($datos_eval->Estado == 'time') {
 		$now = time ();
-		if ($now < $object->Apertura || $now >= $object->Cierre) {
+		if ($now < $datos_eval->Apertura || $now >= $datos_eval->Cierre) {
 			agrega_mensaje (1, "Fuera de tiempo para subida de calificaciones");
 			exit;
 		}

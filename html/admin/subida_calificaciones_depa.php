@@ -171,7 +171,7 @@
 		printf ("<p>Subida para la materia %s<br />Forma de evaluación: %s<br />Salón: %s<br/></p>", $materia_descripcion, $evaluacion_descripcion, $salon_nombre);
 		printf ("<p>El valor para esta evaluación es de <b>%s puntos</b>, puede especificar este valor en puntos (del 0 al %s) o en porcentaje (ej, 80%%). En caso de señalar un porcentaje, éste será convertido a su valor en puntos. Puede poner \"--\" para representar una calificación vacía</p>", $evaluacion_ponderacion, $evaluacion_ponderacion);
 		
-		echo "<form action=\"../server.php\" method=\"post\" onsubmit=\"return validar()\" autocomplete=\"off\">";
+		echo "<form action=\"post_subida_depa.php\" method=\"post\" onsubmit=\"return validar()\" autocomplete=\"off\">";
 		
 		printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />", $_GET['id']);
 		printf ("<input type=\"hidden\" id=\"ponderacion\" value=\"%s\" />", $evaluacion_ponderacion);
