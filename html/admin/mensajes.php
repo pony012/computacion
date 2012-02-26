@@ -1,4 +1,6 @@
 <?php
+	require_once 'session_maestro.php';
+	
 	function mostrar_mensajes () {
 		if (!isset ($_SESSION['mensajes'])) return;
 		foreach ($_SESSION['mensajes'] as $index => $m) {

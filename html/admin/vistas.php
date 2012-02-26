@@ -1,12 +1,7 @@
 <?php
-	session_start ();
+	require_once 'session_maestro.php';
 	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	check_valid_session ();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -14,10 +9,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Acciones para el sistema</h1>

@@ -1,5 +1,5 @@
 <?php
-	session_start ();
+	require_once 'session_maestro.php';
 	
 	/* Variables que recibimos por $POST:
 	 # user -> nombre de usuario
@@ -48,7 +48,7 @@
 		exit;
 	}
 	
-	require_once "../mysql-con.php";
+	database_connect ();
 	
 	$query = sprintf ("SELECT Codigo, Permisos, Activo FROM Sesiones_Maestros WHERE Codigo = '%s' AND Pass = '%s'", $id_usuario, $contrasena);
 	
@@ -69,25 +69,9 @@
 			exit;
 		}
 		
-		/* Rellenar los datos de la sesion */
-		$_SESSION['intentos_fallidos'] = 0;
-		$_SESSION['auth'] = 1;
-		$_SESSION['codigo'] = $usuario->Codigo;
-		
-		/* TODO: Enviar el nombre y el correo a COOKIES */
-		
-		/* Ahora recuperar la tabla de permisos */
-		$query = sprintf ("SELECT * FROM Permisos WHERE Id = '%s'", $usuario->Permisos);
-		
-		$result = mysql_query ($query, $mysql_con);
-		$permisos = mysql_fetch_assoc ($result);
-		
-		$_SESSION['permisos'] = $permisos;
-		
-		mysql_free_result ($result);
+		/* Crear una nueva sessión */
+		new_session ($usuario);
 		
 		header ("Location: vistas.php");
 	}
-	
-	mysql_close ($mysql_con);
 ?>
