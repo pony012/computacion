@@ -23,7 +23,7 @@
 <h1>Salones de aplicación de exámenes</h1>
 <?php
 	setlocale (LC_ALL, "es_MX.UTF-8");
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	/* SELECT COUNT(DISTINCT A.Materia, A.Tipo) AS TOTAL FROM Aplicadores AS A */
 	$query = "SELECT COUNT(DISTINCT Materia, Tipo) AS TOTAL FROM Salones_Aplicadores";

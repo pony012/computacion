@@ -139,7 +139,7 @@
 		$query = substr_replace ($query, ";", -1);
 		mysql_query ($query, $mysql_con);
 		
-		agrega_mensaje (0, sprintf ("La materia %s fué creada", htmlentities ($descripcion));
+		agrega_mensaje (0, sprintf ("La materia %s fué creada", $descripcion));
 	} else if ($_POST['modo'] == 'editar') {
 		$query = sprintf ("UPDATE Materias SET Descripcion='%s' WHERE Clave='%s'", $descripcion, $clave_materia);
 		
@@ -185,6 +185,6 @@
 			mysql_query ($query_cal, $mysql_con);
 		}
 		
-		agrega_mensaje (0, sprintf ("La materia %s fué actualizada", htmlentities ($descripcion));
+		agrega_mensaje (0, sprintf ("La materia %s fué actualizada", $descripcion));
 	}
 ?>

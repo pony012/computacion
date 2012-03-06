@@ -84,7 +84,7 @@
 	$query_aplicadores = "INSERT INTO Alumnos_Aplicadores (Id, Alumno) VALUES ";
 	
 	foreach ($_POST['alumno'] as $value) {
-		$un_alumno = strval (intval ($value))
+		$un_alumno = strval (intval ($value));
 		$query_alumno = sprintf ("SELECT Codigo FROM Alumnos WHERE Codigo = '%s'", $un_alumno);
 		$result = mysql_query ($query_alumno);
 		if (mysql_num_rows ($result) == 0) {

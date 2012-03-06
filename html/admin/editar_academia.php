@@ -17,14 +17,14 @@
 	}
 	
 	/* Verificar que haya datos GET cuando sea modo editar */
-	if ($_GET['tipo'] == 'e' && !isset ($_GET['id'])) {
+	if ($_GET['modo'] == 'e' && !isset ($_GET['id'])) {
 		/* No especificó un id */
 		header ("Location: academias.php");
 		exit;
 	}
 	
-	if ($_GET['tipo'] == 'e') {
-		require_once '../mysql-con.php';
+	if ($_GET['modo'] == 'e') {
+		database_connect ();
 		
 		$id_academia = strval (intval ($_GET['id']));
 		
@@ -88,7 +88,7 @@
 	<p>Nombre de la academia: <input type="text" name="nombre" /></p>
 	<p>Presidente de academia: <select name="maestro"><option value="NULL" selected="selected">Indefinido</option>
 	<?php
-		require_once '../mysql-con.php';
+		database_connect ();
 		
 		$query = "SELECT Codigo, Nombre, Apellido FROM Maestros ORDER BY Apellido, Nombre";
 		$result = mysql_query ($query, $mysql_con);

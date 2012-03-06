@@ -80,6 +80,8 @@
 	if (($archivo = fopen ($argv[1], "r")) !== FALSE) {
 		require_once 'mysql-con.php';
 		
+		database_connect ();
+		
 		/* Verificar que exista el Departamental 1, 2 y puntos del maestro */
 		$result = mysql_query ("SELECT * FROM Evaluaciones WHERE Id = 1", $mysql_con);
 		

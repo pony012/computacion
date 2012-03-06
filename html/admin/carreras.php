@@ -11,7 +11,7 @@
 <body><?php require_once 'mensajes.php'; mostrar_mensajes ();?>
 	<h1>Carreras</h1>
 	<?php
-		require_once '../mysql-con.php';
+		database_connect ();
 		
 		$result = mysql_query ("SELECT COUNT(*) AS TOTAL FROM Carreras", $mysql_con);
 		$row = mysql_fetch_object ($result);

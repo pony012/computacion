@@ -50,7 +50,7 @@
 	<form action="post_editar_seccion.php" method="post">
 	<?php
 		printf ("<p>Nrc: %s</p><input type=\"hidden\" value=\"%s\" name=\"nrc\" />", $datos_seccion->Nrc, $datos_seccion->Nrc);
-		printf ("<p>Materia: %s - %s</p><p>Sección: %s</p>\n", $datos_seccion->Nrc, $datos_seccion->Nrc);
+		printf ("<p>Materia: %s - %s</p><p>Sección: %s</p>\n", $datos_seccion->Materia, $datos_seccion->descripcion, $datos_seccion->Seccion);
 		
 		echo "<p>Maestro:<select name=\"maestro\" id=\"maestro\">\n";
 		

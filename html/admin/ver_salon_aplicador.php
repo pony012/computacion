@@ -48,7 +48,7 @@
 <h1>Salón de aplicación</h1>
 <?php
 	setlocale (LC_ALL, "es_MX.UTF-8");
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	/* SELECT A.Materia, M.Descripcion, A.Maestro, MAS.Nombre, MAS.Apellido, A.Tipo, E.Descripcion AS Evaluacion, UNIX_TIMESTAMP (A.FechaHora) AS
 	 FechaHora, A.Salon FROM Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Maestros AS MAS ON A.Maestro = MAS.Codigo

@@ -39,7 +39,7 @@
 			exit;
 		}
 		
-		agrega_mensaje (0, sprintf ("La carrera %s fué creada", htmlentities ($_POST['descripcion'])));
+		agrega_mensaje (0, sprintf ("La carrera %s fué creada", $_POST['descripcion']));
 	} else if ($_POST['modo'] == 'editar') {
 		$query = sprintf ("UPDATE Carreras SET Descripcion='%s' WHERE Clave='%s'", mysql_real_escape_string ($_POST['descripcion']), $clave_carrera);
 		
@@ -50,6 +50,6 @@
 			exit;
 		}
 		
-		agrega_mensaje (0, sprintf ("La carrera %s ha sido actualizada", htmlentities ($_POST['descripcion'])));
+		agrega_mensaje (0, sprintf ("La carrera %s ha sido actualizada", $_POST['descripcion']));
 	}
 ?>

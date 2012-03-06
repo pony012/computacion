@@ -58,7 +58,7 @@
 	database_connect ();
 	
 	/* Verificar que existe la materia */
-	$query = sprintf ("SELECT Clave FROM Materias WHERE Clave = '%s'", $materia);
+	$query = sprintf ("SELECT Clave FROM Materias WHERE Clave = '%s'", $clave_materia);
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
@@ -95,21 +95,21 @@
 	}
 	mysql_free_result ($result);
 	
-	$query = sprintf ("SELECT Nrc FROM Secciones WHERE Materia = '%s' AND Seccion = '%s'", $materia, $seccion);
+	$query = sprintf ("SELECT Nrc FROM Secciones WHERE Materia = '%s' AND Seccion = '%s'", $clave_materia, $seccion);
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) != 0) {
 		/* Materia y Sección duplicadas */
 		$object = mysql_fetch_object ($result);
 		mysql_free_result ($result);
-		agrega_mensaje (3, sprintf ("Sección duplicada<br />La materia %s ya existe en la sección %s, bajo el nrc %s", $materia, $seccion, $object->Nrc));
+		agrega_mensaje (3, sprintf ("Sección duplicada<br />La materia %s ya existe en la sección %s, bajo el nrc %s", $clave_materia, $seccion, $object->Nrc));
 		exit;
 	}
 	mysql_free_result ($result);
 	
 	
 	/* Ahora sí, hacer la inserción en la tabla */
-	$query = sprintf ("INSERT INTO Secciones (Nrc, Materia, Maestro, Seccion) VALUES ('%s', '%s', '%s', '%s')", $nrc, $materia, $maestro, $seccion);
+	$query = sprintf ("INSERT INTO Secciones (Nrc, Materia, Maestro, Seccion) VALUES ('%s', '%s', '%s', '%s')", $nrc, $clave_materia, $maestro, $seccion);
 	
 	$result = mysql_query ($query, $mysql_con);
 	

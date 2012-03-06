@@ -49,9 +49,9 @@
 	function has_permiso ($permiso) {
 		/* Si los permisos se utilizan directamente desde la base de datos,
 		 * Hacer la consulta aquí */
-		if (!isset ($_SESSION[$permiso])) return FALSE;
+		if (!isset ($_SESSION['permisos'][$permiso])) return FALSE;
 		
-		if ($_SESSION[$permiso] != 1) return FALSE;
+		if ($_SESSION['permisos'][$permiso] != 1) return FALSE;
 		return TRUE;
 	}
 ?>
