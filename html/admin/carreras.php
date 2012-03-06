@@ -1,13 +1,4 @@
-<?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
-?>
+<?php require_once 'session_maestro.php'; check_valid_session (); ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,10 +6,7 @@
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<script language="javascript" src="../scripts/comun.js" type="text/javascript"></script>
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes ();?>
 	<h1>Carreras</h1>
@@ -54,7 +42,7 @@
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
 			
-			if (isset ($_SESSION['permisos']['grupos_globales']) && $_SESSION['permisos']['grupos_globales'] == 1) {
+			if (has_permiso ('grupos_globales')) {
 				printf ("<td><a href=\"ver_por_carrera.php?carrera=%s\">%s</a></td>", $object->Clave, $object->Clave);
 			} else {
 				printf ("<td>%s</td>", $object->Clave);
@@ -62,7 +50,7 @@
 			printf ("<td>%s</td>", $object->Descripcion);
 			
 			echo "<td>";
-			if ($_SESSION['permisos']['admin_carreras'] == 1) {
+			if (has_permiso ('admin_carreras')) {
 				printf ("<a href=\"editar_carrera.php?clave=%s\"><img class=\"icon\" src=\"../img/properties.png\" alt=\"editar\"/></a>", $object->Clave);
 				printf ("<a href=\"eliminar_carrera.php?clave=%s\"\n", $object->Clave);
 				printf (" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la carrera %s?')\">", $object->Descripcion);
@@ -95,12 +83,8 @@
 		
 		echo "</p>\n";
 	?>
-	<?php
-		echo "<ul>";
-		if ($_SESSION['permisos']['admin_carreras'] == 1) {
-			echo "<li><a href=\"nueva_carrera.php\">Nueva carrera</a></li>\n";
-		}
-		echo "</ul>";
-	?>
+	<?php if (has_permiso ('admin_carreras')) {
+		echo "<ul><li><a href=\"nueva_carrera.php\">Nueva carrera</a></li></ul>\n";
+	} ?>
 </body>
 </html>

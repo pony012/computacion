@@ -1,16 +1,10 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) {
+	if (!has_permiso ('asignar_aplicadores')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
@@ -25,7 +19,7 @@
 	
 	settype ($_GET['id'], 'integer');
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	/* SELECT * FROM Salones_Aplicadores AS SA INNER JOIN Evaluaciones as E ON SA.Tipo = E.Id INNER JOIN Materias AS M ON SA.Materia = M.Clave WHERE Id = 1 */
 	$query = sprintf ("SELECT SA.Id, M.Clave, M.Descripcion, SA.Tipo, E.Descripcion AS Evaluacion, SA.Salon, UNIX_TIMESTAMP (SA.FechaHora) AS FechaHora, SA.Maestro FROM Salones_Aplicadores AS SA INNER JOIN Evaluaciones as E ON SA.Tipo = E.Id INNER JOIN Materias AS M ON SA.Materia = M.Clave WHERE SA.Id = '%s'", $_GET['id']);
@@ -163,10 +157,7 @@
 		}
 		// ]]>
 	</script>
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Modificar salón aplicador</h1>

@@ -1,12 +1,6 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
@@ -17,7 +11,7 @@
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	/* SELECT * FROM Secciones AS Sec INNER JOIN Materias AS M ON Sec.Materia = M.Clave INNER JOIN Maestros AS Mas ON Sec.Maestro = Mas.Codigo WHERE Sec.Nrc='2006' */
 	$query = sprintf ("SELECT Sec.Nrc, Sec.Seccion, M.Clave, M.Descripcion, Mas.Codigo, Mas.Nombre, Mas.Apellido FROM Secciones AS Sec INNER JOIN Materias AS M ON Sec.Materia = M.Clave INNER JOIN Maestros AS Mas ON Sec.Maestro = Mas.Codigo WHERE Sec.Nrc='%s'", $_GET['nrc']);
 	$result = mysql_query ($query, $mysql_con);
@@ -26,18 +20,16 @@
 		header ("Location: vistas.php");
 		agrega_mensaje (3, "El nrc especificado no existe");
 		mysql_free_result ($result);
-		mysql_close ($mysql_con);
 		exit;
 	}
 	
 	$grupo = mysql_fetch_object ($result);
 	mysql_free_result ($result);
 	
-	if ($grupo->Codigo != $_SESSION['codigo'] && (!isset ($_SESSION['permisos']['grupos_globales']) || $_SESSION['permisos']['grupos_globales'] != 1)) {
+	if ($grupo->Codigo != $_SESSION['codigo'] && !has_permiso ('grupos_globales')) {
 		/* No puedes ver el grupo porque no tienes permisos globales */
 		header ("Location: vistas.php");
 		agrega_mensaje (3, "Privilegios insuficientes");
-		mysql_close ($mysql_con);
 		exit;
 	}
 ?>
@@ -57,10 +49,7 @@
 		});
 		// ]]>
 	</script>
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Grupo</h1>
@@ -69,7 +58,7 @@
 		printf ("<p>Maestro: <a href=\"ver_maestro.php?codigo=%s\">%s %s</a></p>", $grupo->Codigo, $grupo->Nombre, $grupo->Apellido);
 		printf ("<p>Seccion: %s</p>", $grupo->Seccion);
 		
-		require_once '../mysql-con.php';
+		database_connect ();
 		
 		$query = sprintf ("SELECT E.Id, E.Descripcion, E.Estado, E.Exclusiva, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave='%s' AND E.Exclusiva = 1 ORDER BY E.Grupo, E.Id", $grupo->Clave);
 		

@@ -1,16 +1,10 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_SESSION['permisos']['admin_evaluaciones']) || $_SESSION['permisos']['admin_evaluaciones'] != 1) {
+	if (!has_permiso ('admin_evaluaciones')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
@@ -50,7 +44,7 @@
 		$exclu = 0;
 	}
 	
-	require_once "../mysql-con.php";
+	database_connect ();
 	
 	if ($_POST['modo'] == 'nuevo') {
 		/* Verificar que el grupo de evaluaciones exista */
@@ -73,13 +67,11 @@
 		
 		$result = mysql_query ($query);
 		
-		mysql_close ($mysql_con);
 		if (!$result) {
 			agrega_mensaje (3, "Error desconocido");
-			exit;
+		} else {
+			agrega_mensaje (0, "La forma de evaluación ha sido creada");
 		}
-		
-		agrega_mensaje (0, "La forma de evaluación ha sido creada");
 		exit;
 	} else if ($_POST['modo'] == 'editar') {
 		if (!isset ($_POST['id']) || $_POST['id'] < 1) {
@@ -91,13 +83,11 @@
 		
 		$result = mysql_query ($query);
 		
-		mysql_close ($mysql_con);
 		if (!$result) {
 			agrega_mensaje (3, "Error desconocido");
-			exit;
+		} else {
+			agrega_mensaje (0, "La forma de evaluación ha sido actualizada");
 		}
-		
-		agrega_mensaje (0, "La forma de evaluación ha sido actualizada");
 		exit;
 	}
 ?>

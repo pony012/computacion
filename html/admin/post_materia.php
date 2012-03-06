@@ -1,12 +1,6 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
@@ -29,17 +23,16 @@
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
 	
 	if ($_POST['modo'] == 'editar') {	
 		$query = sprintf ("SELECT * FROM Materias WHERE Clave='%s'", $_POST['clave']);
+	database_connect ();
 		
 		$result = mysql_query ($query, $mysql_con);
 		
 		if (mysql_num_rows ($result) == 0) {
 			agrega_mensaje (3, "Error desconocido");
 			mysql_free_result ($result);
-			mysql_close ($mysql_con);
 			exit;
 		}
 	
@@ -47,7 +40,7 @@
 		mysql_free_result ($result);
 		
 		/* Ahora sí, checar por todos los permisos */
-		if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
+		if (!has_permiso ('crear_materias')) {
 			/* Si no tienes el permiso global de crear_materias checamos por la academia */
 			if (is_null ($materia->Academia)) { /* Si no pertence a una academia, bye bye */
 				/* Privilegios insuficientes */
@@ -74,7 +67,7 @@
 			}
 		}
 	} else { /* En el caso de crear una materia, verificar el permiso global */
-		if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
+		if (!has_permiso ('crear_materias')) {
 			agrega_mensaje (3, "Privilegios insuficientes");
 			exit;
 		}
@@ -194,7 +187,4 @@
 		
 		agrega_mensaje (0, sprintf ("La materia %s fué actualizada", $_POST['clave']));
 	}
-	
-	mysql_close ($mysql_con);
-	exit;
 ?>

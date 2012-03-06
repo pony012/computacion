@@ -1,16 +1,10 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) {
+	if (!has_permiso ('asignar_aplicadores')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
@@ -189,17 +183,14 @@
 		}
 		// ]]>
 	</script>
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body>
 	<h1>Cálculo de salones automático</h1>
 	<p><b>Advertencia</b>: Si genera salones para una materia y evaluación existente, eliminará todos los salones y alumnos previamente asignados.</p>
 	<form action="post_auto_salones.php" method="post" onsubmit="return validar ()">
 	<?php
-		require_once '../mysql-con.php';
+		database_connect ();
 		
 		/* SELECT DISTINCT P.Clave, M.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave WHERE E.Exclusiva = 0 */
 		$query = "SELECT DISTINCT P.Clave, M.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave WHERE E.Exclusiva = 0";

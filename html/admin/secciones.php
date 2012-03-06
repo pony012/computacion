@@ -1,13 +1,4 @@
-<?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
-?>
+<?php require_once 'session_maestro.php'; check_valid_session (); ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,15 +6,12 @@
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<script language="javascript" src="../scripts/comun.js" type="text/javascript"></script>
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Grupos</h1>
 	<?php
-		require_once "../mysql-con.php";
+		database_connect ();
 		
 		/* Recuperar la cantidad total de filas */
 		$result = mysql_query ("SELECT COUNT(*) AS TOTAL FROM Secciones", $mysql_con);
@@ -48,7 +36,7 @@
 		/* Mostrar la cabecera */
 		echo "<thead><tr><th>NRC</th><th>Clave</th><th>Materia</th><th>Seccion</th><th>Maestro</th>";
 		
-		if ($_SESSION['permisos']['crear_grupos'] == 1) {
+		if (has_permiso ('crear_grupos')) {
 			echo "<th colspan=\"2\">Acción</th>";
 		}
 		
@@ -63,7 +51,7 @@
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
 			/* El nrc */
-			if ($_SESSION['codigo'] == $object->Codigo || (isset ($_SESSION['permisos']['grupos_globales']) && $_SESSION['permisos']['grupos_globales'] == 1)) {
+			if ($_SESSION['codigo'] == $object->Codigo || has_permiso ('grupos_globales')) {
 				printf ("<td><a href=\"ver_grupo.php?nrc=%s\">%s</a></td>",$object->Nrc, $object->Nrc);
 			} else {
 				printf ("<td>%s</td>", $object->Nrc);
@@ -72,7 +60,7 @@
 			printf ("<td>%s</td>", $object->Descripcion);
 			printf ("<td>%s</td>", $object->Seccion);
 			printf ("<td><a href=\"ver_maestro.php?codigo=%s\">%s %s</a></td>", $object->Codigo, $object->Apellido, $object->Nombre);
-			if ($_SESSION['permisos']['crear_grupos'] == 1) {
+			if (has_permiso ('crear_grupos')) {
 				printf ("<td><a href=\"editar_seccion.php?nrc=%s\"><img class=\"icon\" src=\"../img/properties.png\" alt=\"editar\"/></a></td>\n", $object->Nrc);
 				printf ("<td><a href=\"eliminar_seccion.php?nrc=%s\"", $object->Nrc);
 				printf (" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar el NRC %s?')\">", $object->Nrc);
@@ -106,7 +94,7 @@
 	?>
 	<?php
 		echo "<ul>";
-		if ($_SESSION['permisos']['crear_grupos'] == 1) {
+		if (has_permiso('crear_grupos')) {
 			echo "<li><a href=\"nueva_seccion.php\">Agregar una nueva seccion</a></li>\n";
 		}
 		echo "</ul>";

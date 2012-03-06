@@ -1,16 +1,10 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) {
+	if (!has_permiso ('asignar_aplicadores')) {
 		/* Privilegios insuficientes */
 		header ("Location: vistas.php");
 		agrega_mensaje (3, "Privilegios insuficientes");
@@ -39,7 +33,7 @@
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	/* Validar que exista la forma de evaluacion seleccionada con la materia seleccionada */
 	/* SELECT * FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave */

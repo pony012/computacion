@@ -1,8 +1,4 @@
-<?php
-	require_once 'session_maestro.php';
-	
-	check_valid_session ();
-?>
+<?php require_once 'session_maestro.php'; check_valid_session (); ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -20,10 +16,10 @@
 	<?php
 		printf ("<li><a href=\"ver_maestro.php?codigo=%s\">Mis grupos</a></li>", $_SESSION['codigo']);
 		
-		if (isset ($_SESSION['permisos']['admin_evaluaciones']) && $_SESSION['permisos']['admin_evaluaciones'] == 1) {
+		if (has_permiso ('admin_evaluaciones')) {
 			echo "<li><a href=\"evaluaciones.php\">Formas de evaluación</a></li>";
 		}
-		if (isset ($_SESSION['permisos']['asignar_aplicadores']) && $_SESSION['permisos']['asignar_aplicadores'] == 1) {
+		if (has_permiso ('asignar_aplicadores')) {
 			echo "<li><a href=\"aplicadores_general.php\">Gestionar salones de aplicacion de exámenes</a></li>";
 		}
 	?>

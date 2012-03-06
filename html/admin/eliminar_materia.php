@@ -1,16 +1,10 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
+	if (!has_permiso ('crear_materias')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
@@ -28,7 +22,7 @@
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	/* Impedir que eliminen la materia si tiene secciones
 	 * que dependan de ella */

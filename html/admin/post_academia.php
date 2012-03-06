@@ -1,18 +1,12 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
 	header ("Location: academias.php");
 	
-	if (!isset ($_SESSION['permisos']['admin_academias']) || $_SESSION['permisos']['admin_academias'] != 1) {
+	if (!has_permiso ('admin_academias')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		exit;
@@ -35,7 +29,7 @@
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	/* Validar el maestro contra mysql */
 	if ($_POST['maestro'] != "NULL") {

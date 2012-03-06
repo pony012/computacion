@@ -1,16 +1,10 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_SESSION['permisos']['admin_evaluaciones']) || $_SESSION['permisos']['admin_evaluaciones'] != 1) {
+	if (!has_permiso ('admin_evaluaciones')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
@@ -28,7 +22,7 @@
 		exit;
 	}
 	
-	require_once "../mysql-con.php";
+	database_connect ();
 	
 	$query = sprintf ("SELECT Tipo FROM Porcentajes WHERE Tipo = '%s' LIMIT 1", $_GET['id']);
 	
@@ -47,9 +41,7 @@
 	
 	if (!$result) {
 		agrega_mensaje (3, "Error desconocido");
-		exit;
+	} else {
+		agrega_mensaje (0, "La forma de evaluación fué eliminada");
 	}
-	
-	agrega_mensaje (0, "La forma de evaluación fué eliminada");
-	mysql_close ($mysql_con);
 ?>

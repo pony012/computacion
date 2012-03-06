@@ -1,16 +1,10 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_SESSION['permisos']['admin_carreras']) || $_SESSION['permisos']['admin_carreras'] != 1) {
+	if (!has_permiso ('admin_carreras')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
@@ -30,9 +24,9 @@
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
 	
 	$_POST['clave'] = strtoupper ($_POST['clave']);
+	database_connect ();
 	
 	if ($_POST['modo'] == 'nuevo') {
 		/* INSERT INTO `computacion`.`Carreras` (`Clave`, `Descripcion`) VALUES ('COM', 'Ingeniería en computación'); */
@@ -58,7 +52,4 @@
 		
 		agrega_mensaje (0, sprintf ("La carrera %s ha sido actualizada", $_POST['descripcion']));
 	}
-	
-	mysql_close ($mysql_con);
-	exit;
 ?>

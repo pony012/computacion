@@ -1,12 +1,6 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	header ("Location: seleccionar_subida.php");
 	
@@ -25,7 +19,7 @@
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	/* Verificar que el id del salón exista, y guardar la clave de la materia */
 	$query = sprintf ("SELECT * FROM Salones_Aplicadores WHERE Id = '%s'", $id_salon);
@@ -155,6 +149,4 @@
 	}
 	
 	agrega_mensaje (0, "Calificaciones subidas exitosamente");
-	
-	mysql_close ($mysql_con);
 ?>

@@ -1,15 +1,9 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
-	if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) {
+	if (!has_permiso ('asignar_aplicadores')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
@@ -18,7 +12,7 @@
 	
 	settype ($_GET['id'], 'integer');
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	/* Select Materia FROM Aplicadores WHERE Materia = '%s' AND Tipo = '%s' AND Salon = '%s' LIMIT 1 */
 	$query = sprintf ("SELECT Id FROM Salones_Aplicadores WHERE Id = '%s' LIMIT 1", $_GET['id']);
@@ -27,7 +21,6 @@
 	
 	if (mysql_num_rows ($result) == 0) {
 		mysql_free_result ($result);
-		mysql_close ($mysql_con);
 		agrega_mensaje (3, "Id desconocido");
 		header ("Location: aplicadores_general.php");
 		exit;

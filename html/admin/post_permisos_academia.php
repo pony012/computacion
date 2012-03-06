@@ -1,18 +1,12 @@
 <?
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
 	header ("Location: academias.php");
 	
-	if (!isset ($_SESSION['permisos']['admin_academias']) || $_SESSION['permisos']['admin_academias'] != 1) {
+	if (!has_permiso ('admin_academias')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		exit;
@@ -30,7 +24,7 @@
 		$id_limpio[] = strval (intval ($value));
 	}
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	foreach ($id_limpio as $index => $value) {
 		$query = sprintf ("SELECT Id, Maestro FROM Academias WHERE Id = '%s'", $value);
@@ -65,7 +59,11 @@
 	
 	$query = substr_replace ($query, ";", -3);
 	
-	mysql_query ($query, $mysql_con);
+	$result = mysql_query ($query, $mysql_con);
 	
-	agrega_mensaje (0, "Permisos actualizados");
+	if (!$result) {
+		agrega_mensaje (3, "Error desconocido");
+	} else {
+		agrega_mensaje (0, "Permisos actualizados");
+	}
 ?>

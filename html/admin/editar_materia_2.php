@@ -1,16 +1,10 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
-	/* Validar la clave la materia */
+	/* Si existe un argumento GET, posiblemente sea la otra página a la que busquen */
 	if (isset ($_GET['clave'])) {
 		header ("Location: editar_materia.php?clave=" . $_GET['clave']);
 		exit;
@@ -22,13 +16,15 @@
 		exit;
 	}
 	
+	/* Validar la clave la materia */
 	if (!preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_POST['clave'])) {
 		header ("Location: materias.php");
 		agrega_mensaje (3, "Error al procesar los datos");
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
+	
+	database_connect ();
 		
 	$query = sprintf ("SELECT * FROM Materias WHERE Clave='%s'", $_POST['clave']);
 	
@@ -38,7 +34,6 @@
 		header ("Location: materias.php");
 		agrega_mensaje (3, "Error desconocido");
 		mysql_free_result ($result);
-		mysql_close ($mysql_con);
 		exit;
 	}
 	
@@ -46,7 +41,7 @@
 	mysql_free_result ($result);
 	
 	/* Ahora sí, checar por todos los permisos */
-	if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
+	if (!has_permiso ('crear_materias')) {
 		/* Si no tienes el permiso global de crear_materias checamos por la academia */
 		if (is_null ($materia->Academia)) { /* Si no pertence a una academia, bye bye */
 			/* Privilegios insuficientes */
@@ -79,10 +74,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 	<script language="javascript" type="text/javascript">
 		// <![CDATA[
 		function validar () {
@@ -129,7 +121,7 @@
 		
 		echo "<h2>Asignar porcentajes:</h2>\n";
 		
-		require_once '../mysql-con.php';
+		database_connect ();
 		
 		sort ($_POST['evals'], SORT_NUMERIC);
 		
@@ -138,6 +130,7 @@
 		/* Recuperar las formas de evaluación */
 		$result = mysql_query ("SELECT Id, Grupo, Descripcion FROM Evaluaciones ORDER BY Grupo, Id");
 		
+		/* En "$todas" queda guardado a que grupo de evaluacion pertenece */
 		while (($object = mysql_fetch_object ($result))) {
 			$todas[$object->Id] = $object->Grupo;
 			$descripciones[$object->Id] = $object->Descripcion;
@@ -147,12 +140,27 @@
 		
 		$limpias = array ();
 		
+		/* Validar cada una de las recibidas por POST contra las de la base de datos */
 		foreach ($_POST['evals'] as $value) {
 			if (!isset ($todas[$value])) continue; /* Una evaluacion que no existe */
 			$grupo = $todas[$value]; /* Guardar el grupo al que pertenece */
 			if (!isset ($limpias[$grupo])) $limpias[$grupo] = array ();
 			$limpias[$grupo][$value] = $descripciones[$value]; /* Meter esta forma de evaluacion bajo el grupo que pertenece */
 		}
+		
+		/* Al final, quedan organizadas como sigue (más o menos):
+		 $limpias = array(2) {
+		 	[1] => -- Es Ordinario --
+		 	array (3) {
+		 		[1] => string() => "Departamental 1"
+		 		[2] => string() => "Departamental 2"
+		 		[10] => string() => "Puntos del maestro"
+		 	}
+		 	[2] => -- Es extraordinario --
+		 	array (1) {
+		 		[1] => string() => "Extraordinario"
+		 	}
+		 } */
 		
 		unset ($todas);
 		unset ($descripciones);

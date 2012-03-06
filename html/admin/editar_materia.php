@@ -1,12 +1,6 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
@@ -27,7 +21,6 @@
 		header ("Location: materias.php");
 		agrega_mensaje (3, "Error desconocido");
 		mysql_free_result ($result);
-		mysql_close ($mysql_con);
 		exit;
 	}
 	
@@ -35,7 +28,7 @@
 	mysql_free_result ($result);
 	
 	/* Ahora sí, checar por todos los permisos */
-	if (!isset ($_SESSION['permisos']['crear_materias']) || $_SESSION['permisos']['crear_materias'] != 1) {
+	if (!has_permiso ('crear_materias')) {
 		/* Si no tienes el permiso global de crear_materias checamos por la academia */
 		if (is_null ($materia->Academia)) { /* Si no pertence a una academia, bye bye */
 			/* Privilegios insuficientes */
@@ -48,13 +41,13 @@
 			$academia = mysql_fetch_object ($result);
 			mysql_free_result ($result);
 			
-			if ($academia->Maestro != $_SESSION['codigo']) {
+			if ($academia->Maestro != $_SESSION['codigo']) { /* No eres el presidente */
 				agrega_mensaje (3, "Privilegios insuficientes");
 				header ("Location: vistas.php");
 				exit;
 			}
 			
-			if ($academia->Materias != 1) {
+			if ($academia->Materias != 1) { /* No hay edición de materias para esta academia */
 				agrega_mensaje (1, "La academia no permite la edición de materias\nContacte al jefe de departamento");
 				header ("Location: academias.php");
 				exit;
@@ -68,10 +61,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 	<script language="javascript" type="text/javascript">
 		// <![CDATA[
 		function validar () {
@@ -122,12 +112,14 @@
 		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" maxlength=\"5\" value=\"%s\" readonly=\"readonly\" /></p>", $materia->Clave);
 		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" maxlength=\"99\" value=\"%s\"/></p>", $materia->Descripcion);
 		echo "<p>Formas de evaluación disponibles: <br />";
-		require_once '../mysql-con.php';
+		
+		database_connect ();
 		
 		echo "<select id=\"disponibles\">";
 		$result = mysql_query ("SELECT * FROM Grupos_Evaluaciones", $mysql_con);
 		
 		while (($grupo_e = mysql_fetch_object ($result))) {
+			/* FIXME: Optgroup vacio cuando no hay formas de evaluación */
 			printf ("<optgroup label=\"%s\">", $grupo_e->Descripcion);
 			
 			$query = sprintf ("SELECT Id, Descripcion FROM Evaluaciones WHERE Grupo = '%s' ORDER BY Id", $grupo_e->Id);

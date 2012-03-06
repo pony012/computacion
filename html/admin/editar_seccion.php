@@ -1,17 +1,11 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
 	/* Luego verificar si tiene el permiso de crear grupos */
-	if (!isset ($_SESSION['permisos']['crear_grupos']) || $_SESSION['permisos']['crear_grupos'] != 1) {
+	if (!has_permiso ('crear_grupos')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
@@ -23,7 +17,7 @@
 		header ("Location: secciones.php");
 		exit;
 	}
-	require_once "../mysql-con.php";
+	database_connect ();
 	
 	$query = sprintf ("SELECT sec.*, m.descripcion FROM Secciones AS sec INNER JOIN Materias AS m ON sec.Materia = m.Clave WHERE Nrc='%s' LIMIT 1", mysql_real_escape_string ($_GET['nrc']));
 	
@@ -45,10 +39,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body>
 	<h1>Editar una sección</h1>
@@ -63,7 +54,7 @@
 		
 		echo "<p>Maestro:<select name=\"maestro\" id=\"maestro\">\n";
 		
-		require_once "../mysql-con.php";
+		database_connect ();
 		
 		$query = "SELECT Codigo, Nombre, Apellido FROM Maestros";
 		
@@ -81,7 +72,6 @@
 		
 		echo "</select></p>\n";
 		mysql_free_result ($result);
-		mysql_close ($mysql_con);
 	?>
 	<input type="submit" value="Enviar" />
 	</form>

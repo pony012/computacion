@@ -1,16 +1,10 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_SESSION['permisos']['admin_evaluaciones']) || $_SESSION['permisos']['admin_evaluaciones'] != 1) {
+	if (!has_permiso ('admin_evaluaciones')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
@@ -148,10 +142,7 @@
 		}
 		// ]]>
 	</script>
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Nueva forma de evaluación</h1>
@@ -160,7 +151,7 @@
 	<p>Del tipo:<?php
 	echo "<select name=\"grupo\" id=\"grupo\" >\n";
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	$query = "SELECT * FROM Grupos_Evaluaciones";
 	$result = mysql_query ($query, $mysql_con);

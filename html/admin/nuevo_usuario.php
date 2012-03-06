@@ -1,17 +1,11 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
 	/* Luego verificar si tiene el permiso de gestionar usuarios */
-	if (!isset ($_SESSION['permisos']['aed_usuarios']) || $_SESSION['permisos']['aed_usuarios'] != 1) {
+	if (!has_permiso ('aed_usuarios')) {
 		/* Privilegios insuficientes */
 		header ("Location: vistas.php");
 		agrega_mensaje (3, "Privilegios insuficientes");
@@ -21,6 +15,7 @@
 	$tipo = $_GET['t'];
 	if ($tipo != 'u' && $tipo != 'm') {
 		header ("Location: usuarios.php");
+		exit;
 	}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -29,10 +24,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 	<script language="javascript" src="../scripts/md5.js" type="text/javascript"></script>
 	<script language="javascript" type="text/javascript">
 		// <![CDATA[

@@ -1,13 +1,4 @@
-<?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
-?>
+<?php require_once 'session_maestro.php'; check_valid_session (); ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -15,15 +6,12 @@
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<script language="javascript" src="../scripts/comun.js" type="text/javascript"></script>
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes ();?>
 	<h1>Materias</h1>
 	<?php
-		require_once "../mysql-con.php";
+		database_connect ();
 		
 		/* Recuperar la cantidad total de filas */
 		$result = mysql_query ("SELECT COUNT(*) AS TOTAL FROM Materias", $mysql_con);
@@ -31,7 +19,7 @@
 		$total = $row->TOTAL;
 		mysql_free_result ($result);
 		
-		$offset = (isset ($_GET['off'])) ? $_GET['off'] : 0;
+		$offset = (isset ($_GET['off'])) ? $_GET['off'] : 0; /* FIXME: usar intval */
 		settype ($offset, "integer");
 		$cant = 40;
 		$show = $cant;
@@ -62,7 +50,7 @@
 			echo "<td>".$object->Descripcion."</td>";
 			echo "<td>";
 			
-			if ($_SESSION['permisos']['crear_materias'] == 1) {
+			if (has_permiso ('crear_materias')) {
 				printf ("<a href=\"editar_materia.php?clave=%s\"><img class=\"icon\" src=\"../img/properties.png\" alt=\"editar\" /></a>", $object->Clave);
 				printf ("<a href=\"eliminar_materia.php?clave=%s\"\n", $object->Clave);
 				printf (" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la materia %s?')\">", $object->Clave);
@@ -96,7 +84,7 @@
 		echo "</p>\n";
 	?>
 	<?php	
-		if ($_SESSION['permisos']['crear_materias'] == 1) {
+		if (has_permiso ('crear_materias')) {
 			echo "<ul>";
 			echo "<li><a href=\"nueva_materia.php\">Agregar una nueva materia</a></li>\n";
 			echo "</ul>";

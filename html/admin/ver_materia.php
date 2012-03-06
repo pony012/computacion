@@ -1,12 +1,6 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
@@ -17,7 +11,7 @@
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	$query = "SELECT * FROM Materias WHERE Clave='". $_GET['clave'] ."' LIMIT 1";
 	$result = mysql_query ($query, $mysql_con);
@@ -26,7 +20,6 @@
 		header ("Location: materias.php");
 		agrega_mensaje (3, "Materia inválida");
 		mysql_free_result ($result);
-		mysql_close ($mysql_con);
 		exit;
 	}
 	
@@ -40,10 +33,7 @@
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<script language="javascript" src="../scripts/comun.js" type="text/javascript"></script>
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Detalles de la materia</h1>
@@ -51,7 +41,7 @@
 		echo "<p>Materia: " . $object->Clave . "</p>\n";
 		echo "<p>Descripción: " . $object->Descripcion . "</p>\n";
 		
-		require_once "../mysql-con.php";
+		database_connect ();
 		
 		/* Recuperar la cantidad total de filas */
 		$query = sprintf ("SELECT COUNT(*) AS TOTAL FROM Secciones WHERE Materia = '%s'", $_GET['clave']);
@@ -85,7 +75,7 @@
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
 			/* El nrc */
-			if ($_SESSION['codigo'] == $object->Codigo || (isset ($_SESSION['permisos']['grupos_globales']) && $_SESSION['permisos']['grupos_globales'] == 1)) {
+			if ($_SESSION['codigo'] == $object->Codigo || has_permiso ('grupos_globales')) {
 				printf ("<td><a href=\"ver_grupo.php?nrc=%s\">%s</a></td>",$object->Nrc, $object->Nrc);
 			} else {
 				printf ("<td>%s</td>", $object->Nrc);

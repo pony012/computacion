@@ -1,16 +1,10 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) {
+	if (!has_permiso ('asignar_aplicadores')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
@@ -23,7 +17,8 @@
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
+	
+	database_connect ();
 	
 	if (!isset ($_GET['tipo'])) { /* Cuando sólo abren Materia */
 		$query = sprintf ("SELECT Materia FROM Salones_Aplicadores WHERE Materia = '%s' LIMIT 1", $_GET['materia']);

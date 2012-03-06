@@ -1,16 +1,10 @@
 <?php
-	session_start ();
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
-	
-	require_once '../mysql-con.php';
 	require_once 'mensajes.php';
 	
+	database_connect ();
 	/* Verificar que sea al menos presidente de una academia */
 	$query = sprintf ("SELECT * FROM Academias WHERE Maestro = '%s' LIMIT 1", $_SESSION['codigo']);
 	
@@ -58,15 +52,12 @@
 		}); /* Document.ready */
 		// ]]>
 	</script>
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes ();?>
 	<h1>Subida de calificaciones</h1>
 	<?php
-		require_once '../mysql-con.php';
+		database_connect ();
 		
 		$query = sprintf ("SELECT M.Clave, M.Descripcion FROM Materias AS M INNER JOIN Academias AS A ON M.Academia = A.Id WHERE A.Maestro = '%s' AND A.Subida = 1 ORDER BY M.Clave", $_SESSION['codigo']);
 		

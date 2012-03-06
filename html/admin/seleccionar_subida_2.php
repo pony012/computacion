@@ -1,12 +1,6 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	/* Validar los datos $_GET */
 	if (!isset ($_GET['materia']) || !isset ($_GET['depa'])) {
@@ -21,9 +15,9 @@
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
 	require_once 'mensajes.php';
 	
+	database_connect ();
 	/* Verificar que la materia exista, pertenece a una academia y este maestro es dueño de la academia */
 	/* SELECT * FROM Academias AS A INNER JOIN Materias AS M ON M.Academia = A.Id WHERE A.Maestro = '2066907' AND M.Clave = 'ET200' */
 	

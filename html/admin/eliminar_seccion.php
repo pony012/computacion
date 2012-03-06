@@ -1,17 +1,11 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
 	/* Luego verificar si tiene el permiso de crear grupos */
-	if (!isset ($_SESSION['permisos']['crear_grupos']) || $_SESSION['permisos']['crear_grupos'] != 1) {
+	if (!has_permiso ('crear_grupos')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
@@ -31,7 +25,7 @@
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	/* Impedir que eliminen la sección si tiene alumnos */
 	$query = sprintf ("SELECT * FROM Grupos WHERE Nrc='%s' LIMIT 1", $_GET['nrc']);
@@ -51,9 +45,7 @@
 	
 	if (!$result) {
 		agrega_mensaje (3, "Error Desconocido");
+	} else {
+		agrega_mensaje (1, "La sección fué eliminada");
 	}
-	
-	agrega_mensaje (1, "La sección fué eliminada");
-	
-	mysql_close ($mysql_con);
 ?>

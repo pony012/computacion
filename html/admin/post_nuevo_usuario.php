@@ -1,17 +1,11 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
 	/* Luego verificar si tiene el permiso de gestionar usuarios */
-	if (!isset ($_SESSION['permisos']['aed_usuarios']) || $_SESSION['permisos']['aed_usuarios'] != 1) {
+	if (!has_permiso ('aed_usuarios')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
@@ -45,7 +39,7 @@
 	
 	filter_input (INPUT_POST, 'correo', FILTER_SANITIZE_EMAIL);
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	$_POST['correo'] = mysql_real_escape_string ($_POST['correo']);
 	
@@ -59,7 +53,6 @@
 		 * junto con un mensaje de error en usuarios.php
 		 */
 		 mysql_free_result ($result);
-		 mysql_close ($mysql_con);
 		 agrega_mensaje (3, "El maestro ya existe");
 		 exit;
 	}

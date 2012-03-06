@@ -1,28 +1,16 @@
-<?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
-?>
+<?php require_once 'session_maestro.php'; check_valid_session (); ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Maestros:</h1>
 	<?php
-		require_once "../mysql-con.php";
+		database_connect ();
 		
 		/* Recuperar la cantidad total de filas */
 		$result = mysql_query ("SELECT COUNT(*) AS TOTAL FROM Maestros", $mysql_con);
@@ -45,7 +33,7 @@
 		
 		/* Mostrar la cabecera */
 		echo "<thead><tr><th>Código</th><th>Nombre</th>";
-		if ($_SESSION['permisos']['aed_usuarios'] == 1) {
+		if (has_permiso ('aed_usuarios')) {
 			echo "<th>Activo</th><th>Editar</th>";
 		}
 		echo "</tr></thead>\n";
@@ -59,8 +47,8 @@
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
 			printf ("<td><a href=\"ver_maestro.php?codigo=%s\">%s</a></td>", $object->codigo, $object->codigo);
-			echo "<td>".$object->Apellido." ".$object->nombre."</td>";
-			if ($_SESSION['permisos']['aed_usuarios'] == 1) {
+			printf ("<td>%s %s</td>", $object->Apellido, $object->Nombre);
+			if (has_permiso ('aed_usuarios')) {
 				if ($object->activo == 1) {
 					echo "<td><img src=\"../img/day.png\" alt=\"activo\" /></td>";
 				} else {
@@ -94,7 +82,7 @@
 		
 		echo "</p>\n";
 		
-		if ($_SESSION['permisos']['aed_usuarios'] == 1) { ?>
+		if (has_permiso ('aed_usuarios')) { ?>
 	<ul>
 	<li><a href="nuevo_usuario.php?t=u">Agregar un nuevo usuario</a></li>
 	<li><a href="nuevo_usuario.php?t=m">Agregar nuevo maestro</a></li>

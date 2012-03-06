@@ -1,17 +1,11 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
 	/* Validar la clave la materia */
-	if (!isset ($_SESSION['permisos']['grupos_globales']) || $_SESSION['permisos']['grupos_globales'] != 1) {
+	if (!has_permiso ('grupos_globales')) {
 		header ("Location: carreras.php");
 		agrega_mensaje (3, "Privilegios insuficientes");
 		exit;
@@ -25,7 +19,7 @@
 	
 	$_GET['carrera'] = strtoupper ($_GET['carrera']);
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	$query = sprintf ("SELECT Clave FROM Carreras WHERE Clave='%s' LIMIT 1", $_GET['carrera']);
 	$result = mysql_query ($query, $mysql_con);
@@ -34,7 +28,6 @@
 		header ("Location: carreras.php");
 		agrega_mensaje (3, "Carrera inválida");
 		mysql_free_result ($result);
-		mysql_close ($mysql_con);
 		exit;
 	}
 	
@@ -46,15 +39,12 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Alumnos por carrera</h1>
 	<?php
-		require_once "../mysql-con.php";
+		database_connect ();
 		
 		$query = sprintf ("SELECT * FROM Carreras WHERE Clave = '%s'", $_GET['carrera']);
 		$result = mysql_query ($query, $mysql_con);

@@ -1,6 +1,6 @@
 <?php
-	define('ROOT_PATH', dirname(__FILE__));
-	define('ADMIN_PATH', dirname(__FILE__).'/..');
+	define('ADMIN_PATH', dirname(__FILE__));
+	define('ROOT_PATH', dirname(__FILE__).'/..');
 	set_include_path (get_include_path()
 		.PATH_SEPARATOR.ROOT_PATH
 		.PATH_SEPARATOR.ADMIN_PATH
@@ -15,7 +15,7 @@
 	session_start ();
 	
 	function check_valid_session () {
-		if (!isset ($_SESSION['auth_m']) || $_SESSION['auth_m'] == false) {
+		if (!isset ($_SESSION['auth_m']) || $_SESSION['auth_m'] != true) {
 			header ("Location: login.php");
 			exit;
 		}
@@ -44,5 +44,14 @@
 		$_SESSION['permisos'] = $permisos;
 		
 		mysql_free_result ($result);
+	}
+	
+	function has_permiso ($permiso) {
+		/* Si los permisos se utilizan directamente desde la base de datos,
+		 * Hacer la consulta aquí */
+		if (!isset ($_SESSION[$permiso])) return FALSE;
+		
+		if ($_SESSION[$permiso] != 1) return FALSE;
+		return TRUE;
 	}
 ?>

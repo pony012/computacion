@@ -1,15 +1,8 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
 	
 	/* Luego verificar si tiene el permiso de crear grupos */
-	if (!isset ($_SESSION['permisos']['crear_grupos']) || $_SESSION['permisos']['crear_grupos'] != 1) {
+	if (!has_permiso ('crear_grupos')) {
 		/* Privilegios insuficientes */
 		header ("Location: vistas.php");
 		exit;
@@ -21,10 +14,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 	<script language="javascript" type="text/javascript">
 		// <![CDATA[
 		function validar () {
@@ -58,7 +48,7 @@
 	<form action="post_nueva_seccion.php" method="post" onsubmit="return validar()">
 	<p>Nrc:<input name="nrc" id="nrc" type="text" /></p>
 	<?php
-		require_once "../mysql-con.php";
+		database_connect ();
 		/* Listar todas las materias */
 		echo "<p>Materia:<select name=\"materia\" id=\"materia\">\n";
 		$query = "SELECT * FROM Materias";
@@ -88,7 +78,7 @@
 		
 		echo "</select></p>\n";
 		
-		mysql_close ($mysql_con);
+		mysql_free_result ($result);
 	?>
 	<input type="submit" value="Enviar" />
 	</form>

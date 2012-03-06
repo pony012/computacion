@@ -1,12 +1,6 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
@@ -15,7 +9,7 @@
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	$query = sprintf ("SELECT * FROM Academias WHERE Id = '%s'", $_GET['id']);
 	
@@ -37,10 +31,7 @@
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<script language="javascript" src="../scripts/comun.js" type="text/javascript"></script>
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes ();
 	printf ("<h1>Academia %s</h1>\n", $academia->Nombre);
@@ -69,7 +60,7 @@
 		printf ("<tr><td>%s</td><td>%s</td>", $object->Clave, $object->Descripcion);
 		
 		echo "<td>";
-		if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
+		if (has_permiso ('admin_academias')) {
 			/* Acciones */
 			$link = array ('materia' => $object->Clave, 'id' => $academia->Id);
 			printf ("<a href=\"eliminar_materia_academia.php?%s\"\n onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la materia %s de la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" alt=\"eliminar\" /></a>", htmlentities (http_build_query ($link)), $object->Clave, $academia->Nombre);
@@ -85,7 +76,7 @@
 	echo "</tbody></table>";
 	
 	/* Mostrar Agregar sólo si tiene permisos */
-	if (isset ($_SESSION['permisos']['admin_academias']) && $_SESSION['permisos']['admin_academias'] == 1) {
+	if (has_permiso ('admin_academias')) {
 		echo "<form method=\"post\" action=\"post_materia_academia.php\">\n<p>Agregar una materia a esta academia:</p><p>\n";
 		printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />\n", $academia->Id);
 		echo "<select name=\"materia\"><option selected=\"selected\" value=\"NULL\">Seleccione una materia</option>";

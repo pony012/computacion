@@ -1,16 +1,10 @@
 <?php
-	session_start ();
-	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
+	require_once 'session_maestro.php';
+	check_valid_session ();
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_SESSION['permisos']['asignar_aplicadores']) || $_SESSION['permisos']['asignar_aplicadores'] != 1) {
+	if (!has_permiso ('asignar_aplicadores')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
 		header ("Location: vistas.php");
@@ -30,7 +24,7 @@
 	
 	settype ($_GET['id'], 'integer');
 	
-	require_once '../mysql-con.php';
+	database_connect ();
 	
 	/* Verificar que el id del salon exista */
 	
@@ -41,7 +35,6 @@
 	if (mysql_num_rows ($result) == 0) {
 		/* TODO: argumento next para regresar a la página anterior */
 		agrega_mensaje (3, "El salon especificado no existe");
-		mysql_close ($mysql_con);
 		exit;
 	}
 	
