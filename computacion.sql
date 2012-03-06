@@ -401,5 +401,5 @@ INSERT INTO `Evaluaciones` (`Id`, `Grupo`, `Descripcion`, `Exclusiva`, `Apertura
 (10, 1, 'Puntos del maestro', 1, NOW(), NOW()),
 (11, 1, 'Moodle', 1, NOW(), NOW()),
 (12, 1, 'Proymoodle', 1, NOW(), NOW()),
-(100, 0, 'Extraordinario', 0, NOW(), NOW());
+(100, 2, 'Extraordinario', 0, NOW(), NOW());
 
