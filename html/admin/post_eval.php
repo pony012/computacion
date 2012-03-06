@@ -16,7 +16,7 @@
 	if (!isset ($_POST['modo']) || ($_POST['modo'] != 'nuevo' && $_POST['modo'] != 'editar')) exit;
 	
 	/* Validaciones varias sobre los campos */
-	if (!isset ($_POST['descripcion']) || $_POST['descripcion'] == "") {
+	if (!isset ($_POST['descripcion']) || trim ($_POST['descripcion']) == "") {
 		agrega_mensaje (3, "Datos incorrectos");
 		exit;
 	}
@@ -27,12 +27,13 @@
 		exit;
 	}
 	
-	settype ($_POST['grupo'], 'integer');
-	settype ($_POST['inicio'], 'integer');
-	settype ($_POST['fin'], 'integer');
+	$estado = $_POST['estado'];
+	$grupo_eval = strval (intval ($_POST['grupo']));
+	$hora_inicio = strval (intval ($_POST['inicio']));
+	$hora_fin = strval (intval ($_POST['fin']));
 	
 	if ($_POST['estado'] == 'time') {
-		if ($_POST['inicio'] >= $_POST['fin'] || $_POST['inicio'] < 0 || $_POST['fin'] < 0) {
+		if ($hora_inicio >= $hora_fin || $hora_inicio < 0 || $hora_fin < 0) {
 			agrega_mensaje (3, "Datos incorrectos");
 			exit;
 		}
@@ -48,24 +49,24 @@
 	
 	if ($_POST['modo'] == 'nuevo') {
 		/* Verificar que el grupo de evaluaciones exista */
-		if (!isset ($_POST['grupo']) || $_POST['grupo'] < 0) {
+		if (!isset ($grupo_eval) || $grupo_eval < 0) {
 			agrega_mensaje (3, "Grupo de evaluacion noexistente");
 			exit;
 		}
-	
-		$query = sprintf ("SELECT Id FROM Grupos_Evaluaciones WHERE Id = '%s'", $_POST['grupo']);
+		
+		$query = sprintf ("SELECT Id FROM Grupos_Evaluaciones WHERE Id = '%s'", $grupo_eval);
 		$result = mysql_query ($query, $mysql_con);
 	
 		if (mysql_num_rows ($result) == 0) {
 			agrega_mensaje (3, "Grupo de evaluacion no existente");
 			exit;
 		}
-	
+		
 		mysql_free_result ($result);
 		
-		$query = sprintf ("INSERT INTO Evaluaciones (Grupo, Descripcion, Estado, Exclusiva, Apertura, Cierre) VALUES ('%s', '%s', '%s', '%s', FROM_UNIXTIME(%s), FROM_UNIXTIME(%s));", $_POST['grupo'], mysql_real_escape_string ($_POST['descripcion']), $_POST['estado'], $exclu, $_POST['inicio'], $_POST['fin']);
+		$query = sprintf ("INSERT INTO Evaluaciones (Grupo, Descripcion, Estado, Exclusiva, Apertura, Cierre) VALUES ('%s', '%s', '%s', '%s', FROM_UNIXTIME(%s), FROM_UNIXTIME(%s));", $grupo_eval, mysql_real_escape_string (trim ($_POST['descripcion'])), $estado, $exclu, $hora_inicio, $hora_fin);
 		
-		$result = mysql_query ($query);
+		$result = mysql_query ($query, $mysql_con);
 		
 		if (!$result) {
 			agrega_mensaje (3, "Error desconocido");
@@ -78,8 +79,10 @@
 			agrega_mensaje (3, "Error desconocido");
 			exit;
 		}
+		$id_eval = strval (intval ($_POST['id']));
+		
 		/* UPDATE `computacion`.`Evaluaciones` SET `Exclusiva` = '1', `Apertura` = '2012-02-02 01:40:00', `Cierre` = '2012-02-05 23:59:00' WHERE `Evaluaciones`.`Id` = 4; */
-		$query = sprintf ("UPDATE Evaluaciones SET Descripcion = '%s', Exclusiva = '%s', Estado = '%s', Apertura = FROM_UNIXTIME (%s), Cierre = FROM_UNIXTIME (%s) WHERE Id = '%s'", mysql_real_escape_string ($_POST['descripcion']), $exclu, $_POST['estado'], $_POST['inicio'], $_POST['fin'], $_POST['id']);
+		$query = sprintf ("UPDATE Evaluaciones SET Descripcion = '%s', Exclusiva = '%s', Estado = '%s', Apertura = FROM_UNIXTIME (%s), Cierre = FROM_UNIXTIME (%s) WHERE Id = '%s'", mysql_real_escape_string (trim ($_POST['descripcion'])), $exclu, $estado, $hora_inicio, $hora_fin, $id_eval);
 		
 		$result = mysql_query ($query);
 		

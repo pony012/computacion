@@ -10,9 +10,11 @@
 		exit;
 	}
 	
+	$maestro = $_GET['codigo'];
+	
 	database_connect ();
 	
-	$query = sprintf ("SELECT * FROM Maestros WHERE Codigo='%s' LIMIT 1", $_GET['codigo']);
+	$query = sprintf ("SELECT * FROM Maestros WHERE Codigo='%s' LIMIT 1", $maestro);
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
@@ -22,7 +24,7 @@
 		exit;
 	}
 	
-	$object = mysql_fetch_object ($result);
+	$datos_maestro = mysql_fetch_object ($result);
 	mysql_free_result ($result);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -36,18 +38,18 @@
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<?php
-		if ($_SESSION['codigo'] == $_GET['codigo']) {
+		if ($_SESSION['codigo'] == $maestro) {
 			echo "<h1>Mis grupos</h1>";
 		} else {
 			echo "<h1>Profesor</h1>";
 		}
-		printf ("<p>Profesor: %s %s (%s)</p>\n", $object->Nombre, $object->Apellido, $object->Codigo);
-		printf ("<p>Correo electrónico: %s</p>", $object->Correo);
+		printf ("<p>Profesor: %s %s (%s)</p>\n", $datos_maestro->Nombre, $datos_maestro->Apellido, $datos_maestro->Codigo);
+		printf ("<p>Correo electrónico: %s</p>", $datos_maestro->Correo);
 		
 		database_connect ();
 		
 		/* Recuperar la cantidad total de filas */
-		$query = sprintf ("SELECT COUNT(*) AS TOTAL FROM Secciones WHERE Maestro = '%s'", $_GET['codigo']);
+		$query = sprintf ("SELECT COUNT(*) AS TOTAL FROM Secciones WHERE Maestro = '%s'", $maestro);
 		$result = mysql_query ($query, $mysql_con);
 		$row = mysql_fetch_object ($result);
 		$total = $row->TOTAL;
@@ -70,7 +72,7 @@
 		echo "<thead><tr><th>NRC</th><th>Clave</th><th>Materia</th><th>Seccion</th><th>Maestro</th></tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
-		$query = sprintf ("SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo WHERE sec.Maestro = '%s' LIMIT %s, %s", $_GET['codigo'], $offset , $show);
+		$query = sprintf ("SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo WHERE sec.Maestro = '%s' LIMIT %s, %s", $maestro, $offset , $show);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -84,14 +86,10 @@
 				printf ("<td>%s</td>", $object->Nrc);
 			}
 			printf ("<td><a href=\"ver_materia.php?clave=%s\">%s</a></td>", $object->Materia, $object->Materia);
-			printf ("<td>%s</td>", $object->Descripcion);
-			printf ("<td>%s</td>", $object->Seccion);
-			printf ("<td>%s %s</td>", $object->Apellido, $object->Nombre);
-			echo "</tr>\n";
+			printf ("<td>%s</td><td>%s</td><td>%s %s</td></tr>\n", $object->Descripcion, $object->Seccion, $object->Apellido, $object->Nombre);
 		}
 		
-		echo "</tbody>";
-		echo "</table>\n";
+		echo "</tbody></table>\n";
 		echo "<p>";
 		
 		$next = $offset + $show;

@@ -165,7 +165,7 @@
 		
 		echo "<form action=\"post_subida_depa.php\" method=\"post\" onsubmit=\"return validar()\" autocomplete=\"off\">";
 		
-		printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />", $_GET['id']);
+		printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />", $id_salon);
 		printf ("<input type=\"hidden\" id=\"ponderacion\" value=\"%s\" />", $evaluacion_ponderacion);
 		echo "<table border=\"1\"><thead><tr><th>Codigo</th><th>Alumno</th><th>Calificacion anterior (en puntos)</th><th>Nueva Calificación</th></tr></thead>\n";
 		
@@ -186,11 +186,9 @@
 			echo "<input type=\"hidden\" name=\"valor[]\" /></td></tr>\n";
 		}
 		mysql_free_result ($result);
-		
-		echo "</tbody></table>\n";
-		
-		echo "<p><input type=\"submit\" value=\"Subir calificaciones\" /></p>";
-		echo "</form>";
 	?>
+	</tbody></table>
+	<p><input type="submit" value="Subir calificaciones" /></p>
+	</form>
 </body>
 </html>

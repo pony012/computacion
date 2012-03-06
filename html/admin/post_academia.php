@@ -31,9 +31,12 @@
 	
 	database_connect ();
 	
+	$nombre_academia = mysql_real_escape_string ($_POST['nombre']);
+	$presidente = $_POST['maestro'];
+	
 	/* Validar el maestro contra mysql */
-	if ($_POST['maestro'] != "NULL") {
-		$query = sprintf ("SELECT Codigo FROM Maestros WHERE Codigo = '%s'", $_POST['maestro']);
+	if ($presidente != "NULL") {
+		$query = sprintf ("SELECT Codigo FROM Maestros WHERE Codigo = '%s'", $presidente);
 	
 		$result = mysql_query ($query, $mysql_con);
 		if (mysql_num_rows ($result) == 0) {
@@ -48,9 +51,9 @@
 		/* Validar el ID */
 		if (!isset ($_POST['id']) || $_POST['id'] < 0) exit;
 		
-		settype ($_POST['id'], 'integer');
+		$id_academia = strval (intval ($_POST['id']));
 		
-		$query = sprintf ("SELECT Id FROM Academias WHERE Id = '%s'", $_POST['id']);
+		$query = sprintf ("SELECT Id FROM Academias WHERE Id = '%s'", $id_academia);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -61,7 +64,7 @@
 		
 		mysql_free_result ($result);
 		
-		$query = sprintf ("UPDATE Academias SET Nombre = '%s', Maestro = %s WHERE Id = '%s'", mysql_real_escape_string ($_POST['nombre']), $_POST['maestro'], $_POST['id']);
+		$query = sprintf ("UPDATE Academias SET Nombre = '%s', Maestro = %s WHERE Id = '%s'", $nombre_academia, $presidente, $id_academia);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -71,11 +74,11 @@
 			agrega_mensaje (0, "Academia actualizada");
 		}
 		
-		header ("Location: ver_academia.php?id=" . $_POST['id']);
+		header ("Location: ver_academia.php?id=" . $id_academia);
 		exit;
 	} else if ($_POST['modo'] == 'nuevo') {
 		/* Insertar una nueva Academia */
-		$query = sprintf ("INSERT INTO Academias (Nombre, Maestro) VALUES ('%s', %s)", mysql_real_escape_string ($_POST['nombre']), $_POST['maestro']);
+		$query = sprintf ("INSERT INTO Academias (Nombre, Maestro) VALUES ('%s', %s)", $nombre_academia, $presidente);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -87,7 +90,6 @@
 			header ("Location: ver_academia.php?id=" . $id);
 			agrega_mensaje (0, "Academia creada");
 		}
-		
 		exit;
 	}
 ?>

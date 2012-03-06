@@ -14,7 +14,7 @@
 	
 	$id_salon = strval (intval ($_POST['id']));
 	
-	if (count ($_POST['alumno']) == 0 || count ($_POST['alumno']) != count ($_POST['valor'])) {
+	if (!is_array ($_POST['alumno']) || !is_array ($_POST['valor']) || count ($_POST['alumno']) == 0 || count ($_POST['alumno']) != count ($_POST['valor'])) {
 		agrega_mensaje (3, "Datos incorrectos");
 		exit;
 	}

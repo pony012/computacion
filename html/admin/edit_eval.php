@@ -4,6 +4,11 @@
 	
 	require_once 'mensajes.php';
 	
+	if (!isset ($_GET['id'])) {
+		header ("Location: evaluaciones.php");
+		exit;
+	}
+	
 	if (!has_permiso ('admin_evaluaciones')) {
 		/* Privilegios insuficientes */
 		agrega_mensaje (3, "Privilegios insuficientes");
@@ -11,26 +16,21 @@
 		exit;
 	}
 	
+	$id_eval = strval (intval ($_GET['id']));
 	database_connect ();
 	
-	if (!isset ($_GET['id']) || $_GET['id'] < 0) {
+	$query = sprintf ("SELECT E.Descripcion, E.Id, E.Exclusiva, E.Estado, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre, GE.Descripcion AS Grupo FROM Evaluaciones AS E INNER JOIN Grupos_Evaluaciones AS GE ON E.Grupo = GE.Id WHERE E.Id='%s'", $id_eval);
+	
+	$result = mysql_query ($query, $mysql_con);
+	
+	if (mysql_num_rows ($result) == 0) {
 		header ("Location: evaluaciones.php");
 		agrega_mensaje (1, "La forma de evaluación especificada no existe");
 		exit;
-	} else {
-		settype ($_GET['id'], 'integer');
-		$query = sprintf ("SELECT E.Descripcion, E.Id, E.Exclusiva, E.Estado, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre, GE.Descripcion AS Grupo FROM Evaluaciones AS E INNER JOIN Grupos_Evaluaciones AS GE ON E.Grupo = GE.Id WHERE E.Id='%s' LIMIT 1", $_GET['id']);
-		
-		$result = mysql_query ($query, $mysql_con);
-		
-		if (mysql_num_rows ($result) == 0) {
-			agrega_mensaje (1, "La forma de evaluación especificada no existe");
-			exit;
-		}
-		
-		$object = mysql_fetch_object ($result);
-		mysql_free_result ($result);
 	}
+	
+	$evaluacion = mysql_fetch_object ($result);
+	mysql_free_result ($result);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -165,11 +165,11 @@
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Editar forma de evaluación</h1>
 	<form action="post_eval.php" method="post" onsubmit="return validar()"><input type="hidden" name="modo" value="editar" />
-	<?php printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />", $_GET['id']);
-	printf ("<p>Nombre de la forma de evaluación:<input type=\"text\" id=\"descripcion\" name=\"descripcion\" value=\"%s\" /></p>\n", $object->Descripcion);
-	printf ("<p>Del tipo: <b>%s</b></p>", $object->Grupo);
+	<?php printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />", $evaluacion->Id);
+	printf ("<p>Nombre de la forma de evaluación:<input type=\"text\" id=\"descripcion\" name=\"descripcion\" value=\"%s\" /></p>\n", $evaluacion->Descripcion);
+	printf ("<p>Del tipo: <b>%s</b></p>", $evaluacion->Grupo);
 		
-	if ($object->Exclusiva == 1) {
+	if ($evaluacion->Exclusiva == 1) {
 		echo "<input type=\"checkbox\" id=\"exclusiva\" name=\"exclusiva\" value=\"1\" checked=\"checked\" /><label for=\"exclusiva\">Exclusiva para el maestro</label>\n";
 	} else {
 		echo "<input type=\"checkbox\" id=\"exclusiva\" name=\"exclusiva\" value=\"1\" /><label for=\"exclusiva\">Exclusiva para el maestro</label>\n";
@@ -179,7 +179,7 @@
 	echo "<p><b>Estado de la evaluación</b></p><p>Abierta: Las calificaciones pueden ser subidas en cualquier momento.<br />Cerrada: Nadie puede subir calificaciones para esta evaluación.<br />Basada en fechas: El tiempo de subida se define por el rango de fechas</p><p>Estado: <select name=\"estado\" id=\"estado\" onchange=\"actualizar_cajas ()\">";
 	
 	foreach (array ('open' => 'Abierta', 'closed' => 'Cerrada', 'time' => 'Basada en fechas') as $valor => $descr) {
-		if ($object->Estado == $valor) {
+		if ($evaluacion->Estado == $valor) {
 			printf ("<option value=\"%s\" selected=\"selected\">%s</option>\n", $valor, $descr);
 		} else {
 			printf ("<option value=\"%s\">%s</option>\n", $valor, $descr);
@@ -187,15 +187,15 @@
 	}
 	echo "</select></p>\n";
 	
-	if ($object->Estado == "time") {
+	if ($evaluacion->Estado == 'time') {
 		echo "<p>Fecha de apertura: <input type=\"text\" id=\"apertura\" /></p><input type=\"hidden\" id=\"inicio\" name=\"inicio\" />\n<p>Fecha de cierre: <input type=\"text\" id=\"cierre\" /></p><input type=\"hidden\" id=\"fin\" name=\"fin\" />\n";
 		
 		/* Forzar una actualización javascript de las fechas de inicio, fin */
 		echo "<script language=\"javascript\" type=\"text/javascript\">\n// <![CDATA[\n$(function() {";
-		printf ("var d1 = new Date (%s);\n", ($object->Apertura * 1000));
+		printf ("var d1 = new Date (%s);\n", ($evaluacion->Apertura * 1000));
 		echo "$('#apertura').datetimepicker('setDate', d1);\n";
 				
-		printf ("var d2 = new Date (%s);\n", ($object->Cierre * 1000));
+		printf ("var d2 = new Date (%s);\n", ($evaluacion->Cierre * 1000));
 		echo "$('#cierre').datetimepicker('setDate', d2);\n";
 		echo "});\n// ]]>\n</script>";
 	} else {

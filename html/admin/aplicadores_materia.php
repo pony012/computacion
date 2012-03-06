@@ -11,22 +11,22 @@
 		exit;
 	}
 	
-	if (!preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_GET['materia'])) {
+	if (!isset ($_GET['materia']) || !preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_GET['materia'])) {
 		agrega_mensaje (1, "La clave especificada es incorrecta");
 		header ("Location: aplicadores_general.php");
 		exit;
 	}
 	
+	$materia = strtoupper ($_GET['materia']);
+	if (isset ($_GET['tipo'])) $eval = strval (intval ($_GET['tipo'])); /* Sanear la forma de evaluación */
 	
 	database_connect ();
 	
-	if (!isset ($_GET['tipo'])) { /* Cuando sólo abren Materia */
-		$query = sprintf ("SELECT Materia FROM Salones_Aplicadores WHERE Materia = '%s' LIMIT 1", $_GET['materia']);
+	if (!isset ($eval)) { /* Cuando sólo abren Materia */
+		$query = sprintf ("SELECT Materia FROM Salones_Aplicadores WHERE Materia = '%s' LIMIT 1", $materia);
 	} else { /* Cuando nos dan materia y Tipo */
-		settype ($_GET['tipo'], 'integer');
-		
 		/* Verificar si el tipo de evaluación existe */
-		$query = sprintf ("SELECT Tipo FROM Salones_Aplicadores WHERE Materia = '%s' AND Tipo = '%s' LIMIT 1", $_GET['materia'], $_GET['tipo']);
+		$query = sprintf ("SELECT Tipo FROM Salones_Aplicadores WHERE Materia = '%s' AND Tipo = '%s' LIMIT 1", $materia, $eval);
 	}
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -59,8 +59,8 @@
 	require_once '../mysql-con.php';
 	
 	/* SELECT COUNT(DISTINCT A.Materia, A.Tipo) AS TOTAL FROM Aplicadores AS A */
-	if (isset ($_GET['tipo'])) {
-		$query = sprintf ("SELECT COUNT(DISTINCT Materia, Tipo, Salon) AS TOTAL FROM Salones_Aplicadores WHERE Materia = '%s' AND Tipo = '%s'", $_GET['materia'], $_GET['tipo']);
+	if (isset ($eval)) {
+		$query = sprintf ("SELECT COUNT(DISTINCT Materia, Tipo, Salon) AS TOTAL FROM Salones_Aplicadores WHERE Materia = '%s' AND Tipo = '%s'", $materia, $eval);
 	
 		$result = mysql_query ($query, $mysql_con);
 		$object = mysql_fetch_object ($result);
@@ -77,8 +77,8 @@
 		if (($offset + $cant) >= $total) $show = $total - $offset;
 	}
 	
-	if (!isset ($_GET['tipo'])) {
-		$query = sprintf ("SELECT Descripcion FROM Materias WHERE Clave = '%s'", $_GET['materia']);
+	if (!isset ($eval)) {
+		$query = sprintf ("SELECT Descripcion FROM Materias WHERE Clave = '%s'", $materia);
 		$result = mysql_query ($query, $mysql_con);
 		$object = mysql_fetch_object ($result);
 		
@@ -86,19 +86,19 @@
 		echo "<p>Ver <a href=\"aplicadores_general.php\">todas las materias</a></p>";
 		mysql_free_result ($result);
 	} else {
-		$query = sprintf ("SELECT P.Clave, M.Descripcion, E.Descripcion AS Evaluacion FROM Porcentajes AS P INNER JOIN Materias AS M ON P.Clave = M.Clave INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave = '%s' AND Tipo = '%s'", $_GET['materia'], $_GET['tipo']);
+		$query = sprintf ("SELECT P.Clave, M.Descripcion, E.Descripcion AS Evaluacion FROM Porcentajes AS P INNER JOIN Materias AS M ON P.Clave = M.Clave INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave = '%s' AND Tipo = '%s'", $materia, $eval);
 		$result = mysql_query ($query, $mysql_con);
 		$object = mysql_fetch_object ($result);
 		
-		printf ("<p>Salones asignados para <a href=\"aplicadores_materia.php?materia=%s\">%s</a> en la fomra de evaluación %s</p>\n", $object->Clave, $object->Descripcion, $object->Evaluacion);
+		printf ("<p>Salones asignados para <a href=\"aplicadores_materia.php?materia=%s\">%s</a> en la forma de evaluación %s</p>\n", $object->Clave, $object->Descripcion, $object->Evaluacion);
 		mysql_free_result ($result);
 	}
 	
 	echo "<table border=\"1\">";
 	
-	if (!isset ($_GET['tipo'])) {
+	if (!isset ($eval)) {
 		echo "<thead><tr><th>Materia</th><th>Tipo</th></tr></thead>\n";
-		$query = sprintf ("SELECT DISTINCT A.Materia, A.Tipo, Mat.Descripcion, E.Descripcion AS Evaluacion FROM Salones_Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE Materia = '%s' ORDER BY A.Materia, A.Tipo", $_GET['materia']);
+		$query = sprintf ("SELECT DISTINCT A.Materia, A.Tipo, Mat.Descripcion, E.Descripcion AS Evaluacion FROM Salones_Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE Materia = '%s' ORDER BY A.Materia, A.Tipo", $materia);
 		$result = mysql_query ($query, $mysql_con);
 		
 		echo "<tbody>";
@@ -115,7 +115,7 @@
 	} else {
 		echo "<thead><tr><th>Materia</th><th>Salón</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Maestro</th><th>Acciones</th></tr></thead>\n";
 		/* INNER JOIN Maestros AS M ON A.Maestro = M.Codigo */
-		$query = sprintf ("SELECT DISTINCT A.Id, A.Materia, Mat.Descripcion, A.Salon, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Tipo, E.Descripcion AS Evaluacion, A.Maestro FROM Salones_Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Materia = '%s' AND A.Tipo = '%s' ORDER BY A.Salon, FechaHora LIMIT %s, %s", $_GET['materia'], $_GET['tipo'], $offset, $show);
+		$query = sprintf ("SELECT A.Id, A.Materia, Mat.Descripcion, A.Salon, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Tipo, E.Descripcion AS Evaluacion, A.Maestro FROM Salones_Aplicadores AS A INNER JOIN Materias AS Mat ON A.Materia = Mat.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Materia = '%s' AND A.Tipo = '%s' ORDER BY A.Salon, FechaHora LIMIT %s, %s", $materia, $eval, $offset, $show);
 		$result = mysql_query ($query, $mysql_con);
 		
 		echo "<tbody>";
@@ -145,7 +145,7 @@
 	
 	echo "</table>";
 	
-	if (isset ($_GET['tipo'])) {
+	if (isset ($eval)) {
 		/* Paginacion sólo para cuando hay tipo definido */
 		echo "<p>";
 		$next = $offset + $show;
@@ -155,13 +155,14 @@
 		if ($prev < 0) $prev = 0;
 	
 		/* Mostrar las flechas de dezplamiento */
+		$link = $_GET;
 		if ($offset > 0) {
-			printf ("<a href=\"%s?off=0&materia=%s&tipo=%s\"><img class=\"icon\" src=\"../img/first.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $_GET['materia'], $_GET['tipo']);
-			printf ("<a href=\"%s?off=%s&materia=%s&tipo=%s\"><img class=\"icon\" src=\"../img/prev.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $prev, $_GET['materia'], $_GET['tipo']);
+			printf ("<a href=\"%s?%s\"><img class=\"icon\" src=\"../img/first.png\" alt=\"primero\" /></a>\n", $_SERVER['SCRIPT_NAME'], htmlentities (http_build_query (Array ('off' => 0) + $link)));
+			printf ("<a href=\"%s?%s\"><img class=\"icon\" src=\"../img/prev.png\" alt=\"anterior\"/></a>\n", $_SERVER['SCRIPT_NAME'], htmlentities (http_build_query (Array ('off' => $prev) + $link)));
 		}
 		if ($offset + $show < $total) { 
-			printf ("<a href=\"%s?off=%s&materia=%s&tipo=%s\"><img class=\"icon\" src=\"../img/next.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $next, $_GET['materia'], $_GET['tipo']);
-			printf ("<a href=\"%s?off=%s&materia=%s&tipo=%s\"><img class=\"icon\" src=\"../img/last.png\" /></a>\n", $_SERVER['SCRIPT_NAME'], $ultimo, $_GET['materia'], $_GET['tipo']);
+			printf ("<a href=\"%s?%s\"><img class=\"icon\" src=\"../img/next.png\" alt=\"siguiente\"/></a>\n", $_SERVER['SCRIPT_NAME'], htmlentities (http_build_query (Array ('off' => $next) + $link)));
+			printf ("<a href=\"%s?%s\"><img class=\"icon\" src=\"../img/last.png\" alt=\"ultimo\" /></a>\n", $_SERVER['SCRIPT_NAME'], htmlentities (http_build_query (Array ('off' => $ultimo) + $link)));
 		}
 	
 		echo "</p>\n";

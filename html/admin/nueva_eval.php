@@ -148,9 +148,7 @@
 	<h1>Nueva forma de evaluación</h1>
 	<form action="post_eval.php" method="post" onsubmit="return validar()"><input type="hidden" name="modo" value="nuevo" />
 	<p>Ingrese el nombre de la forma de evaluación: <input type="text" id="descripcion" name="descripcion" /></p>
-	<p>Del tipo:<?php
-	echo "<select name=\"grupo\" id=\"grupo\" >\n";
-	
+	<p>Del tipo: <select name="grupo" id="grupo" ><?php
 	database_connect ();
 	
 	$query = "SELECT * FROM Grupos_Evaluaciones";
@@ -161,8 +159,7 @@
 	}
 	
 	mysql_free_result ($result);
-	echo "</select></p>\n";
-	?>
+	?></select></p>
 	<p><b>Subida de calificaciones</b></p><p>Abierta: Las calificaciones pueden ser subidas en cualquier momento.<br />Cerrada: Nadie puede subir calificaciones para esta evaluación.<br />Basada en fechas: El tiempo de subida se define por el rango de fechas</p>
 	<p>Subida: <select name="estado" id="estado" onchange="actualizar_cajas ()">
 		<option value="open">Abierta</option>

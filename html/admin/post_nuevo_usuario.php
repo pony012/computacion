@@ -23,13 +23,6 @@
 	 
 	header ("Location: usuarios.php");
 	
-	/* Verificar que haya datos POST */
-	if (!isset ($_POST['codigo']) ||
-	    !isset ($_POST['nombre']) ||
-	    !isset ($_POST['md5'])) {
-		exit;
-	}
-	
 	/* Sanitizado de variables */
 	/* Validar el maestro */
 	if (!isset ($_POST['codigo']) || !preg_match ("/^([0-9]){1,7}$/", $_POST['codigo'])) {
@@ -37,14 +30,28 @@
 		exit;
 	}
 	
-	filter_input (INPUT_POST, 'correo', FILTER_SANITIZE_EMAIL);
+	if (!isset ($_POST['nombre']) || trim ($_POST['nombre']) == "" || !isset ($_POST['apellido'])) {
+		agrega_mensaje (3, "Nombre incorrecto");
+		exit;
+	}
+	
+	if (!isset ($_POST['md5']) || !preg_match ("/^([A-Za-z0-9]){32}$/", $_POST['md5'])) {
+		agrega_mensaje (3, "Datos incorrectos");
+		exit;
+	}
+	
+	$codigo = strval (intval ($_POST['codigo']));
+	$contra = $_POST['md5'];
+	$correo = filter_input (INPUT_POST, 'correo', FILTER_SANITIZE_EMAIL);
 	
 	database_connect ();
 	
-	$_POST['correo'] = mysql_real_escape_string ($_POST['correo']);
+	$correo = mysql_real_escape_string ($correo);
+	$nombre = mysql_real_escape_string ($_POST['nombre']);
+	$apellido = mysql_real_escape_string ($_POST['apellido']);
 	
 	/* Voy a checar que el codigo no existe */
-	$query = sprintf ("SELECT m.Codigo FROM Maestros AS m WHERE m.Codigo = '%s'", $_POST['codigo']);
+	$query = sprintf ("SELECT m.Codigo FROM Maestros AS m WHERE m.Codigo = '%s'", $codigo);
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) > 0) {
@@ -59,7 +66,7 @@
 	
 	mysql_free_result ($result);
 	
-	$query = sprintf ("INSERT INTO Maestros (Codigo, Nombre, Apellido, Correo, Flag) VALUES ('%s', '%s', '%s', '%s', 0)", $_POST['codigo'], mysql_real_escape_string ($_POST['nombre']), mysql_real_escape_string ($_POST['apellido']), mysql_real_escape_string ($_POST['correo']));
+	$query = sprintf ("INSERT INTO Maestros (Codigo, Nombre, Apellido, Correo, Flag) VALUES ('%s', '%s', '%s', '%s', 0)", $codigo, $nombre, $apellido, $correo);
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (!$result) {
@@ -71,17 +78,13 @@
 	/* Falta insertar los permisos */
 	/* TODO: Elegir los permisos acordes al tipo */
 	$query = "INSERT INTO Permisos (aed_usuarios, crear_grupos, asignar_aplicadores) VALUES (0, 0, 0)";
-	$result = mysql_query ($query, $mysql_con);
+	mysql_query ($query, $mysql_con);
 	
 	$ultimo_permiso = mysql_insert_id ($mysql_con);
 	
 	/* Crear la sesión */
-	$query = sprintf ("INSERT INTO Sesiones_Maestros (Codigo, Pass, Permisos, Activo) VALUES ('%s', '%s', %s, 1)", $_POST['codigo'], mysql_real_escape_string ($_POST['md5']), $ultimo_permiso);
-	$result = mysql_query ($query, $mysql_con);
+	$query = sprintf ("INSERT INTO Sesiones_Maestros (Codigo, Pass, Permisos, Activo) VALUES ('%s', '%s', %s, 1)", $codigo, $contra, $ultimo_permiso);
+	mysql_query ($query, $mysql_con);
 	
-	mysql_close ($mysql_con);
-	
-	/* TODO: Enviar un mensaje de correcto */
 	agrega_mensaje (0, "El maestro/usuario fué creado");
-	exit;
 ?>

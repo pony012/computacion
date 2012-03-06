@@ -10,12 +10,17 @@
 		exit;
 	}
 	
-	settype ($_GET['id'], 'integer');
+	if (!isset ($_GET['id'])) {
+		header ("Location: aplicadores_general.php");
+		exit;
+	}
+	
+	$id_salon = strval (intval ($_GET['id']));
 	
 	database_connect ();
 	
 	/* Select Materia FROM Aplicadores WHERE Materia = '%s' AND Tipo = '%s' AND Salon = '%s' LIMIT 1 */
-	$query = sprintf ("SELECT Id FROM Salones_Aplicadores WHERE Id = '%s' LIMIT 1", $_GET['id']);
+	$query = sprintf ("SELECT Id FROM Salones_Aplicadores WHERE Id = '%s' LIMIT 1", $id_salon);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -48,7 +53,7 @@
 	/* SELECT A.Materia, M.Descripcion, A.Maestro, MAS.Nombre, MAS.Apellido, A.Tipo, E.Descripcion AS Evaluacion, UNIX_TIMESTAMP (A.FechaHora) AS
 	 FechaHora, A.Salon FROM Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Maestros AS MAS ON A.Maestro = MAS.Codigo
 	  INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Materia = 'CC422' AND A.Tipo = '2' AND A.Salon = 'Salón 2' LIMIT 1*/
-	$query = sprintf ("SELECT A.Materia, M.Descripcion, A.Maestro, A.Tipo, E.Descripcion AS Evaluacion, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Salon FROM Salones_Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Id = '%s' LIMIT 1", $_GET['id']);
+	$query = sprintf ("SELECT A.Materia, M.Descripcion, A.Maestro, A.Tipo, E.Descripcion AS Evaluacion, UNIX_TIMESTAMP (A.FechaHora) AS FechaHora, A.Salon FROM Salones_Aplicadores AS A INNER JOIN Materias AS M ON A.Materia = M.Clave INNER JOIN Evaluaciones AS E ON A.Tipo = E.Id WHERE A.Id = '%s' LIMIT 1", $id_salon);
 	
 	$result = mysql_query ($query, $mysql_con);
 	

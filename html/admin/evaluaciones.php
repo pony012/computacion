@@ -23,13 +23,10 @@
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Formas de evaluación</h1>
 	<p>Las siguientes formas de evalución están disponibles para las materias</p>
+	<table border="1">
+	<thead><tr><th>Nombre</th><th>Tipo</th><th>Evaluación para uso del maestro</th><th>Subida</th><th>Tiempo de apertura</th><th>Tiempo de cierre</th><th>Acción</th></tr></thead><tbody>
 	<?php
 		setlocale (LC_ALL, "es_MX.UTF-8");
-		
-		echo "<table border=\"1\">";
-		
-		/* Mostrar la cabecera */
-		echo "<thead><tr><th>Nombre</th><th>Tipo</th><th>Evaluación para uso del maestro</th><th>Subida</th><th>Tiempo de apertura</th><th>Tiempo de cierre</th><th>Acción</th></tr></thead>";
 		database_connect ();
 		
 		/* Empezar la consulta mysql */
@@ -37,7 +34,6 @@
 		
 		$result = mysql_query ($query, $mysql_con);
 		
-		echo "<tbody>";
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
 			
@@ -71,9 +67,8 @@
 			
 			echo "</tr>\n";
 		}
-		
-		echo "</tbody></table>\n";
 	?>
+	</tbody></table>
 	<ul><li><a href="nueva_eval.php">Nueva forma de evaluación</a></li></ul>
 </body>
 </html>

@@ -105,54 +105,46 @@
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Nuevo salón para aplicar evaluación</h1>
+	<form method="post" action="post_nuevo_salon.php" onsubmit="return validar ();" ><p>Materia:
+	<select name="materia" id="materia">
+	<option value="NULL" selected="selected">Seleccione una materia</option>
 	<?php
-		
-		echo "<form method=\"post\" action=\"post_nuevo_salon.php\" onsubmit=\"return validar ();\" ><p>Materia:";
-		
 		database_connect ();
 		/* SELECT DISTINCT P.Clave, M.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave WHERE E.Exclusiva = 0 */
 		$query = "SELECT DISTINCT P.Clave, M.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave WHERE E.Exclusiva = 0";
-		
 		$result = mysql_query ($query, $mysql_con);
-		
-		echo "<select name=\"materia\" id=\"materia\">\n";
-		echo "<option value=\"NULL\" selected=\"selected\">Seleccione una materia</option>\n";
 		while (($object = mysql_fetch_object ($result))) {
 			printf ("<option value=\"%s\">%s - %s</option>\n", $object->Clave, $object->Clave, $object->Descripcion);
 		}
-		echo "</select></p>";
 		mysql_free_result ($result);
-		
-		echo "<p>Evaluación: <select name=\"evaluacion\" id=\"evaluacion\"><option value=\"NULL\" selected=\"selected\">Seleccione una materia primero</option></select></p>\n";
-		echo "<p>Fecha y hora de aplicación:<input type=\"text\" id=\"SFecha\" /><input type=\"hidden\" id=\"fecha\" name=\"fecha\" /></p>\n";
-		echo "<p><input type=\"radio\" id=\"pre_salon_1\" name=\"pre_salon\" checked=\"checked\" onchange=\"actualizar_cajas ()\"/><label for=\"pre_salon_1\">Un salón de la lista:</label>\n";
-		
-		echo "<select id=\"sel_salon\" name=\"salon\">\n";
+	?>
+	</select></p>
+	<p>Evaluación: <select name="evaluacion" id="evaluacion"><option value="NULL" selected="selected">Seleccione una materia primero</option></select></p>
+	<p>Fecha y hora de aplicación:<input type="text" id="SFecha" /><input type="hidden" id="fecha" name="fecha" /></p>
+	<p><input type="radio" id="pre_salon_1" name="pre_salon" checked="checked" onchange="actualizar_cajas ()"/><label for="pre_salon_1\">Un salón de la lista:</label>
+	<select id="sel_salon" name="salon">
+	<?php
 		$query = "SELECT DISTINCT Salon FROM Salones_Aplicadores ORDER BY Salon";
-		
 		$result = mysql_query ($query, $mysql_con);
-		
 		while (($object = mysql_fetch_object ($result))) {
 			printf ("<option value=\"%s\">%s</option>\n", $object->Salon, $object->Salon);
 		}
-		
 		mysql_free_result ($result);
-		echo "</select></p>\n";
-		
-		echo "<p><input type=\"radio\" id=\"pre_salon_2\" name=\"pre_salon\" onchange=\"actualizar_cajas ()\"/><label for=\"pre_salon_2\">Un nuevo salón:</label>\n";
-		echo "<input type=\"text\" id=\"txt_salon\" name=\"salon\" disabled=\"disabled\" /></p>\n";
-		
-		echo "<p>Maestro a cargo del salón:<select name=\"maestro\" id=\"maestro\">\n<option value=\"NULL\" selected=\"selected\" >Pendiente</option>\n";
-		
+	?>
+	</select></p>
+	<p><input type="radio" id="pre_salon_2" name="pre_salon" onchange="actualizar_cajas ()"/><label for="pre_salon_2">Un nuevo salón:</label>
+	<input type="text" id="txt_salon" name="salon" disabled="disabled" /></p>
+	<p>Maestro a cargo del salón:<select name="maestro" id="maestro">
+	<option value="NULL" selected="selected" >Pendiente</option>
+	<?php
 		$query = "SELECT Codigo, Nombre, Apellido FROM Maestros ORDER BY Apellido, Nombre";
 		$result = mysql_query ($query, $mysql_con);
 		while (($object = mysql_fetch_object ($result))) {
 			printf ("<option value=\"%s\">%s %s</option>\n", $object->Codigo, $object->Apellido, $object->Nombre);
 		}
 		mysql_free_result ($result);
-		echo "</select></p>\n";
-		
-		echo "<input type=\"submit\" value=\"Asignar alumnos\" /></form>";
 	?>
+	</select></p>
+	<input type="submit" value="Asignar alumnos" /></form>
 </body>
 </html>

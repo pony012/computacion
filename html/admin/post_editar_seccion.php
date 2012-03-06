@@ -24,10 +24,30 @@
 		exit;
 	}
 	
+	if (!isset ($_POST['maestro']) || !preg_match ("/^([0-9]){1,7}$/", $_POST['maestro'])) {
+		agrega_mensaje (3, "Datos incorrectos");
+		exit;
+	}
+	
+	$nrc = strval (intval ($_POST['nrc']));
+	$maestro = strval (intval ($_POST['maestro']));
+	
 	database_connect ();
 	
+	/* Validar el nrc */
+	$query = sprintf ("SELECT Nrc FROM Secciones WHERE Nrc = '%s'", $nrc);
+	$result = mysql_query ($query, $mysql_con);
+	
+	if (mysql_num_rows ($result) == 0) {
+		/* El Nrc no existe */
+		agrega_mensaje (3, "Nrc desconocido");
+		exit;
+	}
+	
+	mysql_free_result ($result);
+	
 	/* Validar el maestro */
-	$query = sprintf ("SELECT Codigo FROM Maestros WHERE Codigo='%s'", $_POST['maestro']);
+	$query = sprintf ("SELECT Codigo FROM Maestros WHERE Codigo='%s'", $maestro);
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
@@ -38,7 +58,8 @@
 	
 	mysql_free_result ($result);
 	
-	$query = sprintf ("UPDATE Secciones SET Maestro='%s' WHERE NRC='%s'", mysql_real_escape_string ($_POST['maestro']), $_POST['nrc']);
+	/* Ahora sí, actualizar la tabla */
+	$query = sprintf ("UPDATE Secciones SET Maestro = '%s' WHERE Nrc = '%s'", $maestro, $nrc);
 	
 	$result = mysql_query ($query, $mysql_con);
 	

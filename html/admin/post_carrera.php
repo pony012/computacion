@@ -24,13 +24,13 @@
 		exit;
 	}
 	
+	$clave_carrera = strtoupper ($_POST['clave']);
 	
-	$_POST['clave'] = strtoupper ($_POST['clave']);
 	database_connect ();
 	
 	if ($_POST['modo'] == 'nuevo') {
 		/* INSERT INTO `computacion`.`Carreras` (`Clave`, `Descripcion`) VALUES ('COM', 'Ingeniería en computación'); */
-		$query = sprintf ("INSERT INTO Carreras (Clave, Descripcion) VALUES ('%s', '%s');", $_POST['clave'], mysql_real_escape_string ($_POST['descripcion']));
+		$query = sprintf ("INSERT INTO Carreras (Clave, Descripcion) VALUES ('%s', '%s');", $clave_carrera, mysql_real_escape_string ($_POST['descripcion']));
 		
 		$result = mysql_query ($query, $mysql_con);
 	
@@ -39,9 +39,9 @@
 			exit;
 		}
 		
-		agrega_mensaje (0, sprintf ("La carrera %s fué creada", $_POST['descripcion']));
+		agrega_mensaje (0, sprintf ("La carrera %s fué creada", htmlentities ($_POST['descripcion'])));
 	} else if ($_POST['modo'] == 'editar') {
-		$query = sprintf ("UPDATE Carreras SET Descripcion='%s' WHERE Clave='%s'", mysql_real_escape_string ($_POST['descripcion']), $_POST['clave']);
+		$query = sprintf ("UPDATE Carreras SET Descripcion='%s' WHERE Clave='%s'", mysql_real_escape_string ($_POST['descripcion']), $clave_carrera);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -50,6 +50,6 @@
 			exit;
 		}
 		
-		agrega_mensaje (0, sprintf ("La carrera %s ha sido actualizada", $_POST['descripcion']));
+		agrega_mensaje (0, sprintf ("La carrera %s ha sido actualizada", htmlentities ($_POST['descripcion'])));
 	}
 ?>

@@ -11,9 +11,11 @@
 		exit;
 	}
 	
-	require_once '../mysql-con.php';
+	$clave_materia = $_GET['clave'];
+	
+	database_connect ();
 		
-	$query = sprintf ("SELECT * FROM Materias WHERE Clave='%s'", $_GET['clave']);
+	$query = sprintf ("SELECT * FROM Materias WHERE Clave='%s'", $clave_materia);
 	
 	$result = mysql_query ($query, $mysql_con);
 	

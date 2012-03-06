@@ -2,14 +2,7 @@
 	require_once 'session_maestro.php';
 	check_valid_session ();
 	
-	/* Primero verificar una sesión válida */
-	if (!isset ($_SESSION['auth']) || $_SESSION['auth'] != 1) {
-		/* Tenemos un intento de acceso inválido */
-		header ("Location: login.php");
-		exit;
-	}
-	
-	if (!isset ($_GET['tipo']) || ($_GET['tipo'] != 'n' && $_GET['tipo'] != 'e')) {
+	if (!isset ($_GET['modo']) || ($_GET['modo'] != 'n' && $_GET['modo'] != 'e')) {
 		header ("Location: academias.php");
 		exit;
 	}
@@ -23,8 +16,8 @@
 		exit;
 	}
 	
-	/* Verificar que haya datos POST */
-	if ($_GET['tipo'] == 'e' && (!isset ($_GET['id']) && $_GET['id'] < 0)) {
+	/* Verificar que haya datos GET cuando sea modo editar */
+	if ($_GET['tipo'] == 'e' && !isset ($_GET['id'])) {
 		/* No especificó un id */
 		header ("Location: academias.php");
 		exit;
@@ -33,9 +26,9 @@
 	if ($_GET['tipo'] == 'e') {
 		require_once '../mysql-con.php';
 		
-		settype ($_GET['tipo'], 'integer');
+		$id_academia = strval (intval ($_GET['id']));
 		
-		$query = sprintf ("SELECT * FROM Academias WHERE Id = '%s'", $_GET['id']);
+		$query = sprintf ("SELECT * FROM Academias WHERE Id = '%s'", $id_academia);
 		$result = mysql_query ($query, $mysql_con);
 		
 		if (mysql_num_rows ($result) == 0) {
@@ -54,16 +47,13 @@
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<script language="javascript" src="../scripts/comun.js" type="text/javascript"></script>
-	<title><?php
-	require_once '../global-config.php'; # Debería ser Require 'global-config.php'
-	echo $cfg['nombre'];
-	?></title>
+	<title><?php echo $cfg['nombre']; ?></title>
 </head>
 <body><?php require_once 'mensajes.php'; mostrar_mensajes ();
-	if ($_GET['tipo'] == 'e') {
+	if ($_GET['modo'] == 'e') {
 		echo "<h1>Editar academia</h1>\n<form method=\"post\" action=\"post_academia.php\"><input type=\"hidden\" name=\"modo\" value=\"editar\" />\n";
 		
-		printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />\n", $_GET['id']);
+		printf ("<input type=\"hidden\" name=\"id\" value=\"%s\" />\n", $id_academia);
 		printf ("<p>Nombre de la academia: <input type=\"text\" name=\"nombre\" value=\"%s\" /></p>\n", $academia->Nombre);
 		
 		echo "<p>Presidente de academia: <select name=\"maestro\">\n";

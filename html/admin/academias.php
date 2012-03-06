@@ -54,7 +54,7 @@
 					echo "<td><img src=\"../img/night.png\" alt=\"inactivo\" /></td>";
 				}
 				
-				$link = array ('tipo' => 'e', 'id' => $object->Id);
+				$link = array ('modo' => 'e', 'id' => $object->Id);
 				printf ("<td><a href=\"editar_academia.php?%s\"><img class=\"icon\" src=\"../img/properties.png\" alt=\"editar\" /></a>", htmlentities (http_build_query ($link)));
 				printf ("<a href=\"eliminar_academia.php?id=%s\" onclick=\"return confirmarDrop(this, '¿Realmente desea eliminar la academia %s?')\"><img class=\"icon\" src=\"../img/remove.png\" alt=\"eliminar\" /></a>", $object->Id, $object->Nombre);
 				printf ("<a href=\"permisos_academia.php?id=%s\"><img class=\"icon\" src=\"../img/subida.png\" alt=\"permisos\" /></a></td>", $object->Id);
@@ -65,7 +65,7 @@
 		</tbody></table>
 		<?php if (has_permiso ('admin_academias')) {
 			echo "<input type=\"submit\" value=\"Modificar múltiples\" /></form>"; /* Botón editar y cerrar el formulario */
-			echo "<ul><li><a href=\"editar_academia.php?tipo=n\">Nueva academia</a></li></ul>\n";
+			echo "<ul><li><a href=\"editar_academia.php?modo=n\">Nueva academia</a></li></ul>\n";
 		} ?>
 </body>
 </html>

@@ -23,10 +23,11 @@
 		exit;
 	}
 	
+	$clave_materia = $_POST['clave'];
 	
 	database_connect ();
 		
-	$query = sprintf ("SELECT * FROM Materias WHERE Clave='%s'", $_POST['clave']);
+	$query = sprintf ("SELECT * FROM Materias WHERE Clave='%s'", $clave_materia);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -116,7 +117,7 @@
 	<input type="hidden" name="modo" value="editar" />
 	<p><b>Advertencia</b>: Cambiar las formas de evaluación de una materia borra todas las calificaciones existentes</p>
 	<?php
-		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" value=\"%s\" readonly=\"readonly\" maxlength=\"5\" /></p>\n", $_POST['clave']);
+		printf ("<p>Clave de la materia: <input type=\"text\" name=\"clave\" id=\"clave\" value=\"%s\" readonly=\"readonly\" maxlength=\"5\" /></p>\n", $materia->Clave);
 		printf ("<p>Descripción: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" value=\"%s\" maxlength=\"99\" /></p>\n", $_POST['descripcion']);
 		
 		echo "<h2>Asignar porcentajes:</h2>\n";
@@ -165,18 +166,18 @@
 		unset ($todas);
 		unset ($descripciones);
 		
-		foreach ($limpias as $key => $value) {
-			$query = sprintf ("SELECT Descripcion FROM Grupos_Evaluaciones WHERE Id = '%s'", $key);
+		foreach ($limpias as $grupo => $value) {
+			$query = sprintf ("SELECT Descripcion FROM Grupos_Evaluaciones WHERE Id = '%s'", $grupo);
 			$result = mysql_query ($query, $mysql_con);
 			$object = mysql_fetch_object ($result);
 			printf ("<h3>Para %s:</h3>", $object->Descripcion);
 			mysql_free_result ($result);
 			
-			printf ("<input name=\"grupo[]\" type=\"hidden\" value=\"%s\" />\n", $key);
+			printf ("<input name=\"grupo[]\" type=\"hidden\" value=\"%s\" />\n", $grupo);
 			$temp_por = (int) (100 / count ($value));
 			foreach ($value as $id => $des) {
-				printf ("<p>%s:<br /><input type=\"hidden\" name=\"eval_%s[]\" value=\"%s\" />\n", $des, $key, $id);
-				printf ("Porcentaje: <input type=\"text\" name=\"p_%s[]\" value=\"%s%%\" /></p><hr />\n", $key, $temp_por);
+				printf ("<p>%s:<br /><input type=\"hidden\" name=\"eval_%s[]\" value=\"%s\" />\n", $des, $grupo, $id);
+				printf ("Porcentaje: <input type=\"text\" name=\"p_%s[]\" value=\"%s%%\" /></p><hr />\n", $grupo, $temp_por);
 			}
 		}
 	?>

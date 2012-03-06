@@ -39,17 +39,17 @@
 		echo "</tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
-		$query = sprintf ("SELECT m.codigo, m.Apellido, m.nombre, s.activo FROM Maestros AS m INNER JOIN Sesiones_Maestros AS s ON m.Codigo = s.Codigo LIMIT %s, %s", $offset, $show);
+		$query = sprintf ("SELECT m.Codigo, m.Apellido, m.Nombre, s.Activo FROM Maestros AS m INNER JOIN Sesiones_Maestros AS s ON m.Codigo = s.Codigo LIMIT %s, %s", $offset, $show);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
 		echo "<tbody>";
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
-			printf ("<td><a href=\"ver_maestro.php?codigo=%s\">%s</a></td>", $object->codigo, $object->codigo);
+			printf ("<td><a href=\"ver_maestro.php?codigo=%s\">%s</a></td>", $object->Codigo, $object->Codigo);
 			printf ("<td>%s %s</td>", $object->Apellido, $object->Nombre);
 			if (has_permiso ('aed_usuarios')) {
-				if ($object->activo == 1) {
+				if ($object->Activo == 1) {
 					echo "<td><img src=\"../img/day.png\" alt=\"activo\" /></td>";
 				} else {
 					echo "<td><img src=\"../img/night.png\" alt=\"desactivado\" /></td>";
@@ -58,9 +58,7 @@
 			echo "</tr>\n";
 		}
 		
-		echo "</tbody>";
-		echo "</table>\n";
-		
+		echo "</tbody></table>\n";
 		echo "<p>";
 		
 		$next = $offset + $show;

@@ -18,9 +18,9 @@
 	}
 	
 	/* Verificar que haya datos POST */
-	if (!isset ($_GET['id']) || $_GET['id'] < 0 || !isset ($_GET['materia']) || $_GET['materia'] === "NULL") exit;
+	if (!isset ($_GET['id']) || !isset ($_GET['materia']) || $_GET['materia'] === "NULL") exit;
 	
-	settype ($_GET['id'], 'integer');
+	$id_academia = strval (intval ($_GET['id']));
 	
 	/* Sanear la entrada "materia" */
 	if (!preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_GET['materia'])) {
@@ -28,13 +28,14 @@
 		exit;
 	}
 	
+	$clave_materia = strtoupper ($_GET['materia']);
 	
 	database_connect ();
 	
-	header ("Location: ver_academia.php?id=" . $_GET['id']);
+	header ("Location: ver_academia.php?id=" . $id_academia);
 	
 	/* Verificar que la materia existe, y que pertenece a la academia especificada */
-	$query = sprintf ("SELECT Academia FROM Materias WHERE Clave = '%s'", $_GET['materia']);
+	$query = sprintf ("SELECT Academia FROM Materias WHERE Clave = '%s'", $clave_materia);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -46,7 +47,7 @@
 	$m = mysql_fetch_object ($result);
 	mysql_free_result ($result);
 	
-	if (is_null ($m->Academia) || $m->Academia != $_GET['id']) {
+	if (is_null ($m->Academia) || $m->Academia != $id_academia) {
 		/* Esta materia no pertenece a ninguna academia o
 		 * no pertence a esa academia */
 		agrega_mensaje (1, "La materia no pertenece a la academia especificada");
@@ -54,7 +55,7 @@
 	}
 	
 	/* Ahora sí, sacar esta materia de la academia especificada */
-	$query = sprintf ("UPDATE Materias SET Academia = NULL WHERE Clave = '%s'", $_GET['materia']);
+	$query = sprintf ("UPDATE Materias SET Academia = NULL WHERE Clave = '%s'", $clave_materia);
 	
 	$result = mysql_query ($query, $mysql_con);
 	

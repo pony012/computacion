@@ -6,27 +6,30 @@
 	
 	header ("Location: materias.php");
 	
-	/* Validar la clave la materia */
-	if (!isset ($_POST['clave']) || !preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_POST['clave'])) {
-		agrega_mensaje (3, "Materia incorrecta");
-		exit;
-	}
-	
 	/* Verificar el modo */
 	if (!isset ($_POST['modo']) || ($_POST['modo'] != 'nuevo' && $_POST['modo'] != 'editar')) {
 		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
-	if (!isset ($_POST['grupo']) || !isset ($_POST['descripcion']) || $_POST['descripcion'] == "") {
+	/* Validar la clave la materia */
+	if (!isset ($_POST['clave']) || !preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_POST['clave'])) {
+		agrega_mensaje (3, "Materia incorrecta");
+		exit;
+	}
+	
+	if (!isset ($_POST['grupo']) || !is_array ($_POST['grupo']) || !isset ($_POST['descripcion']) || trim ($_POST['descripcion']) == "") {
 		agrega_mensaje (3, "Ha ocurrido un error procesando los datos");
 		exit;
 	}
 	
+	$clave_materia = strtoupper ($_POST['clave']);
 	
-	if ($_POST['modo'] == 'editar') {	
-		$query = sprintf ("SELECT * FROM Materias WHERE Clave='%s'", $_POST['clave']);
 	database_connect ();
+	$descripcion = mysql_real_escape_string (trim ($_POST['descripcion']));
+	
+	if ($_POST['modo'] == 'editar') {
+		$query = sprintf ("SELECT * FROM Materias WHERE Clave='%s'", $clave_materia);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -52,13 +55,13 @@
 				$result = mysql_query ($query, $mysql_con);
 				$academia = mysql_fetch_object ($result);
 				mysql_free_result ($result);
-	
+				
 				if ($academia->Maestro != $_SESSION['codigo']) {
 					agrega_mensaje (3, "Privilegios insuficientes");
 					header ("Location: vistas.php");
 					exit;
 				}
-			
+				
 				if ($academia->Materias != 1) {
 					agrega_mensaje (1, "La academia no permite la edición de materias\nContacte al jefe de departamento");
 					header ("Location: academias.php");
@@ -72,8 +75,6 @@
 			exit;
 		}
 	}
-	
-	$_POST['clave'] = strtoupper ($_POST['clave']);
 	
 	/* Recuperar las formas de evaluación */
 	$todas = array ();
@@ -99,8 +100,7 @@
 				agrega_mensaje (3, "Error desconocido");
 				exit;
 			}
-			$porcentaje = $_POST['p_' . $id_grupo][$index];
-			settype ($porcentaje, 'integer');
+			$porcentaje = intval ($_POST['p_' . $id_grupo][$index]);
 			
 			if ($porcentaje <= 0) {
 				agrega_mensaje (3, "Error desconocido");
@@ -120,7 +120,7 @@
 	
 	if ($_POST['modo'] == 'nuevo') {
 		/* INSERT INTO `computacion`.`Materias` (`Clave`, `Descripcion`) VALUES ('as123', 'sadfgh'); */
-		$query = sprintf ("INSERT INTO Materias (Clave, Descripcion) VALUES ('%s', '%s');", $_POST['clave'], mysql_real_escape_string ($_POST['descripcion']));
+		$query = sprintf ("INSERT INTO Materias (Clave, Descripcion) VALUES ('%s', '%s');", $clave_materia, $descripcion);
 		
 		$result = mysql_query ($query, $mysql_con);
 	
@@ -132,16 +132,16 @@
 		/* Insertar las formas de evaluación */
 		$query = "INSERT INTO Porcentajes (Clave, Tipo, Ponderacion) VALUES ";
 		
-		foreach ($nuevas as $key => $porcentaje) {
-			$query = $query . sprintf ("('%s', '%s', '%s'),", $_POST['clave'], $key, $porcentaje);
+		foreach ($nuevas as $eval => $porcentaje) {
+			$query = $query . sprintf ("('%s', '%s', '%s'),", $clave_materia, $evak, $porcentaje);
 		}
 		
 		$query = substr_replace ($query, ";", -1);
 		mysql_query ($query, $mysql_con);
 		
-		agrega_mensaje (0, sprintf ("La materia %s fué creada", $_POST['clave']));
+		agrega_mensaje (0, sprintf ("La materia %s fué creada", htmlentities ($descripcion));
 	} else if ($_POST['modo'] == 'editar') {
-		$query = sprintf ("UPDATE Materias SET Descripcion='%s' WHERE Clave='%s'", mysql_real_escape_string ($_POST['descripcion']), $_POST['clave']);
+		$query = sprintf ("UPDATE Materias SET Descripcion='%s' WHERE Clave='%s'", $descripcion, $clave_materia);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -151,40 +151,40 @@
 		}
 		
 		/* Limpiar los porcentajes anteriores */
-		$query = sprintf ("DELETE FROM Porcentajes WHERE Clave='%s'", $_POST['clave']);
+		$query = sprintf ("DELETE FROM Porcentajes WHERE Clave='%s'", $clave_materia);
 		mysql_query ($query, $mysql_con);
 		
 		/* Insertar las nuevas formas de evaluación */
 		$query = "INSERT INTO Porcentajes (Clave, Tipo, Ponderacion) VALUES ";
 		
-		foreach ($nuevas as $key => $porcentaje) {
-			$query = $query . sprintf ("('%s', '%s', '%s'),", $_POST['clave'], $key, $porcentaje);
+		foreach ($nuevas as $eval => $porcentaje) {
+			$query = $query . sprintf ("('%s', '%s', '%s'),", $clave_materia, $eval, $porcentaje);
 		}
 		
 		$query = substr_replace ($query, ";", -1);
 		mysql_query ($query, $mysql_con);
 		
 		/* Borrar todas las calificaciones de esa materia */
-		$query = sprintf ("DELETE FROM C USING Calificaciones AS C INNER JOIN Secciones AS S ON C.Nrc = S.Nrc WHERE S.Materia='%s'", $_POST['clave']);
+		$query = sprintf ("DELETE FROM C USING Calificaciones AS C INNER JOIN Secciones AS S ON C.Nrc = S.Nrc WHERE S.Materia='%s'", $clave_materia);
 		
 		mysql_query ($query);
 		
 		/* Re-ingresar las calificaciones */
-		$query = sprintf ("SELECT G.Alumno, G.Nrc FROM Grupos AS G INNER JOIN Secciones AS S ON G.Nrc = S.Nrc WHERE S.Materia = '%s'", $_POST['clave']);
+		$query = sprintf ("SELECT G.Alumno, G.Nrc FROM Grupos AS G INNER JOIN Secciones AS S ON G.Nrc = S.Nrc WHERE S.Materia = '%s'", $clave_materia);
 		
 		$result = mysql_query ($query);
 		
 		while (($object = mysql_fetch_object ($result))) {
 			$query_cal = "INSERT DELAYED INTO Calificaciones (Alumno, Nrc, Tipo, Valor) VALUES ";
 			
-			foreach ($nuevas as $key => $porcentaje) {
-				$query_cal = $query_cal . sprintf (" ('%s', '%s', '%s', NULL),", $object->Alumno, $object->Nrc, $key);
+			foreach ($nuevas as $eval => $porcentaje) {
+				$query_cal = $query_cal . sprintf (" ('%s', '%s', '%s', NULL),", $object->Alumno, $object->Nrc, $eval);
 			}
 			
 			$query_cal = substr_replace ($query_cal, ";", -1);
 			mysql_query ($query_cal, $mysql_con);
 		}
 		
-		agrega_mensaje (0, sprintf ("La materia %s fué actualizada", $_POST['clave']));
+		agrega_mensaje (0, sprintf ("La materia %s fué actualizada", htmlentities ($descripcion));
 	}
 ?>

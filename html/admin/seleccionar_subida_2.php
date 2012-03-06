@@ -15,13 +15,14 @@
 		exit;
 	}
 	
+	$materia = $_GET['materia'];
+	
 	require_once 'mensajes.php';
 	
 	database_connect ();
 	/* Verificar que la materia exista, pertenece a una academia y este maestro es dueño de la academia */
 	/* SELECT * FROM Academias AS A INNER JOIN Materias AS M ON M.Academia = A.Id WHERE A.Maestro = '2066907' AND M.Clave = 'ET200' */
-	
-	$query = sprintf ("SELECT M.Descripcion, A.Maestro, A.Subida FROM Academias AS A INNER JOIN Materias AS M ON M.Academia = A.Id WHERE M.Clave = '%s'", $_GET['materia']);
+	$query = sprintf ("SELECT M.Descripcion, A.Maestro, A.Subida FROM Academias AS A INNER JOIN Materias AS M ON M.Academia = A.Id WHERE M.Clave = '%s'", $materia);
 	
 	$result = mysql_query ($query, $mysql_con);
 	if (mysql_num_rows ($result) == 0) {
@@ -52,7 +53,7 @@
 	 * Adicionalmente, recoger si la forma de evaluación está abierta */
 	/* SELECT * FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave = 'ET200' AND P.Tipo = 0 */
 	
-	$query = sprintf ("SELECT *, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave = '%s' AND P.Tipo = %s", $_GET['materia'], $evaluacion);
+	$query = sprintf ("SELECT *, UNIX_TIMESTAMP (E.Apertura) AS Apertura, UNIX_TIMESTAMP (E.Cierre) AS Cierre FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Clave = '%s' AND P.Tipo = %s", $materia, $evaluacion);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -105,7 +106,8 @@
 	
 	echo "<p>Salones de aplicación</p>";
 	
-	$query = sprintf ("SELECT *, UNIX_TIMESTAMP (FechaHora) AS FechaHora FROM Salones_Aplicadores WHERE Materia = '%s' AND Tipo = '%s' ORDER BY Salon", $_GET['materia'], $evaluacion);
+	database_connect ();
+	$query = sprintf ("SELECT *, UNIX_TIMESTAMP (FechaHora) AS FechaHora FROM Salones_Aplicadores WHERE Materia = '%s' AND Tipo = '%s' ORDER BY Salon", $materia, $evaluacion);
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {

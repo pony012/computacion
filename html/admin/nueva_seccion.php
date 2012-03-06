@@ -47,18 +47,16 @@
 	<h1>Agregar una nueva sección</h1>
 	<form action="post_nueva_seccion.php" method="post" onsubmit="return validar()">
 	<p>Nrc:<input name="nrc" id="nrc" type="text" /></p>
+	<p>Materia:<select name="materia" id="materia">
 	<?php
 		database_connect ();
 		/* Listar todas las materias */
-		echo "<p>Materia:<select name=\"materia\" id=\"materia\">\n";
-		$query = "SELECT * FROM Materias";
+		$query = "SELECT * FROM Materias ORDER BY Clave";
 		
 		$result = mysql_query ($query, $mysql_con);
 		
 		while (($object = mysql_fetch_object ($result))) {
-			echo "<option value=\"".$object->Clave."\">";
-			echo $object->Clave . " - " . $object->Descripcion;
-			echo "</option>\n";
+			printf ("<option value=\"%s\">%s - %s</option>", $object->Clave, $object->Clave, $object->Descripcion);
 		}
 		mysql_free_result ($result);
 		
@@ -66,20 +64,16 @@
 		echo "<p>Sección:<input name=\"seccion\" id=\"seccion\" type=\"text\" /></p>\n";
 		echo "<p>Maestro:<select name=\"maestro\" id=\"maestro\">\n";
 		
-		$query = "SELECT Codigo, Nombre, Apellido FROM Maestros";
+		$query = "SELECT Codigo, Nombre, Apellido FROM Maestros ORDER BY Apellido, Nombre";
 		
 		$result = mysql_query ($query, $mysql_con);
 		
 		while (($object = mysql_fetch_object ($result))) {
-			echo "<option value=\"".$object->Codigo."\">";
-			echo $object->Apellido . " " . $object->Nombre;
-			echo "</option>\n";
+			printf ("<option value=\"%s\">%s %s</option>\n", $object->Codigo, $object->Apellido, $object->Nombre);
 		}
-		
-		echo "</select></p>\n";
-		
 		mysql_free_result ($result);
 	?>
+	</select></p>
 	<input type="submit" value="Enviar" />
 	</form>
 </body>

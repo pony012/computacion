@@ -4,14 +4,16 @@
 	
 	require_once 'mensajes.php';
 	
-	if (!isset ($_GET['id']) || $_GET['id'] < 0) {
+	if (!isset ($_GET['id'])) {
 		header ("Location: academias.php");
 		exit;
 	}
 	
+	$id_academia = strval (intval ($_GET['id']));
+	
 	database_connect ();
 	
-	$query = sprintf ("SELECT * FROM Academias WHERE Id = '%s'", $_GET['id']);
+	$query = sprintf ("SELECT * FROM Academias WHERE Id = '%s'", $id_academia);
 	
 	$result = mysql_query ($query, $mysql_con);
 	

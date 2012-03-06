@@ -17,12 +17,12 @@
 		exit;
 	}
 	
-	settype ($_GET['id'], 'integer');
+	$id_salon = strval (intval ($_GET['id']));
 	
 	database_connect ();
 	
 	/* SELECT * FROM Salones_Aplicadores AS SA INNER JOIN Evaluaciones as E ON SA.Tipo = E.Id INNER JOIN Materias AS M ON SA.Materia = M.Clave WHERE Id = 1 */
-	$query = sprintf ("SELECT SA.Id, M.Clave, M.Descripcion, SA.Tipo, E.Descripcion AS Evaluacion, SA.Salon, UNIX_TIMESTAMP (SA.FechaHora) AS FechaHora, SA.Maestro FROM Salones_Aplicadores AS SA INNER JOIN Evaluaciones as E ON SA.Tipo = E.Id INNER JOIN Materias AS M ON SA.Materia = M.Clave WHERE SA.Id = '%s'", $_GET['id']);
+	$query = sprintf ("SELECT SA.Id, M.Clave, M.Descripcion, SA.Tipo, E.Descripcion AS Evaluacion, SA.Salon, UNIX_TIMESTAMP (SA.FechaHora) AS FechaHora, SA.Maestro FROM Salones_Aplicadores AS SA INNER JOIN Evaluaciones as E ON SA.Tipo = E.Id INNER JOIN Materias AS M ON SA.Materia = M.Clave WHERE SA.Id = '%s'", $id_salon);
 	
 	$result = mysql_query ($query, $mysql_con);
 	

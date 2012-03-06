@@ -49,7 +49,9 @@
 	}
 	
 	if (isset ($_POST['materias']) && $_POST['materias'] == "1") $permiso_materia = "1";
+	else $permiso_materia = "0";
 	if (isset ($_POST['subida']) && $_POST['subida'] == "1") $permiso_subida = "1";
+	else $permiso_subida = "0";
 	
 	$query = sprintf ("UPDATE Academias SET Materias = '%s', Subida = '%s' WHERE ", $permiso_materia, $permiso_subida);
 	

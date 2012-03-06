@@ -17,9 +17,12 @@
 		header ("Location: secciones.php");
 		exit;
 	}
+	
+	$nrc = $_GET['nrc'];
+	
 	database_connect ();
 	
-	$query = sprintf ("SELECT sec.*, m.descripcion FROM Secciones AS sec INNER JOIN Materias AS m ON sec.Materia = m.Clave WHERE Nrc='%s' LIMIT 1", mysql_real_escape_string ($_GET['nrc']));
+	$query = sprintf ("SELECT S.*, m.descripcion FROM Secciones AS S INNER JOIN Materias AS m ON S.Materia = m.Clave WHERE Nrc = '%s'", $nrc);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -30,7 +33,7 @@
 		exit;
 	}
 	
-	$object = mysql_fetch_object ($result);
+	$datos_seccion = mysql_fetch_object ($result);
 	mysql_free_result ($result);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -46,28 +49,23 @@
 	<p>Por motivos de seguridad, sólo se puede modificar el maestro que imparte esta sección</p>
 	<form action="post_editar_seccion.php" method="post">
 	<?php
-		echo "<p>Nrc: ".$object->Nrc."</p>";
-		echo "<input type=\"hidden\" value=\"".$object->Nrc."\" name=\"nrc\" />";
-		echo "<p>Materia: ".$object->Materia." - ".$object->descripcion."</p>";
-		
-		echo "<p>Sección: ".$object->Seccion."</p>";
+		printf ("<p>Nrc: %s</p><input type=\"hidden\" value=\"%s\" name=\"nrc\" />", $datos_seccion->Nrc, $datos_seccion->Nrc);
+		printf ("<p>Materia: %s - %s</p><p>Sección: %s</p>\n", $datos_seccion->Nrc, $datos_seccion->Nrc);
 		
 		echo "<p>Maestro:<select name=\"maestro\" id=\"maestro\">\n";
 		
 		database_connect ();
 		
-		$query = "SELECT Codigo, Nombre, Apellido FROM Maestros";
+		$query = "SELECT Codigo, Nombre, Apellido FROM Maestros ORDER BY Apellido, Nombre";
 		
 		$result = mysql_query ($query, $mysql_con);
 		
 		while (($maestro = mysql_fetch_object ($result))) {
-			if ($object->Maestro == $maestro->Codigo) {
-				echo "<option value=\"".$maestro->Codigo."\" selected=\"selected\" >";
+			if ($datos_seccion->Maestro == $maestro->Codigo) {
+				printf ("<option value=\"%s\" selected=\"selected\">%s %s</option>", $maestro->Codigo, $maestro->Apellido, $maestro->Nombre);
 			} else {
-				echo "<option value=\"".$maestro->Codigo."\">";
+				printf ("<option value=\"%s\">%s %s</option>", $maestro->Codigo, $maestro->Apellido, $maestro->Nombre);
 			}
-			echo $maestro->Apellido . " " . $maestro->Nombre;
-			echo "</option>\n";
 		}
 		
 		echo "</select></p>\n";

@@ -11,9 +11,11 @@
 		exit;
 	}
 	
+	$clave_materia = $_GET['clave'];
+	
 	database_connect ();
 	
-	$query = "SELECT * FROM Materias WHERE Clave='". $_GET['clave'] ."' LIMIT 1";
+	$query = sprintf ("SELECT * FROM Materias WHERE Clave = '%s'", $clave_materia);
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
@@ -23,7 +25,7 @@
 		exit;
 	}
 	
-	$object = mysql_fetch_object ($result);
+	$datos_materia = mysql_fetch_object ($result);
 	mysql_free_result ($result);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -38,13 +40,12 @@
 <body><?php require_once 'mensajes.php'; mostrar_mensajes (); ?>
 	<h1>Detalles de la materia</h1>
 	<?php
-		echo "<p>Materia: " . $object->Clave . "</p>\n";
-		echo "<p>Descripción: " . $object->Descripcion . "</p>\n";
+		printf ("<p>Materia: %s</p><p>Descripcion: %s </p>\n", $datos_materia->Clave, $datos_materia->Descripcion);
 		
 		database_connect ();
 		
 		/* Recuperar la cantidad total de filas */
-		$query = sprintf ("SELECT COUNT(*) AS TOTAL FROM Secciones WHERE Materia = '%s'", $_GET['clave']);
+		$query = sprintf ("SELECT COUNT(*) AS TOTAL FROM Secciones WHERE Materia = '%s'", $clave_materia);
 		$result = mysql_query ($query, $mysql_con);
 		$row = mysql_fetch_object ($result);
 		$total = $row->TOTAL;
@@ -59,7 +60,7 @@
 		if ($offset < 0) $offset = 0;
 		if (($offset + $cant) >= $total) $show = $total - $offset;
 		
-		printf ("<p>Grupos de la materia %s, mostrando de %s al %s</p>", $_GET['clave'], ($offset + 1), ($offset + $show));
+		printf ("<p>Grupos de la materia %s, mostrando de %s al %s</p>", $clave_materia, ($offset + 1), ($offset + $show));
 		
 		echo "<table border=\"1\">";
 		
@@ -67,7 +68,7 @@
 		echo "<thead><tr><th>NRC</th><th>Clave</th><th>Materia</th><th>Seccion</th><th>Maestro</th></tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
-		$query = sprintf ("SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido, m.Codigo FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo WHERE sec.Materia = '%s' LIMIT %s, %s", $_GET['clave'], $offset , $show);
+		$query = sprintf ("SELECT sec.Nrc, sec.Materia, mat.Descripcion, sec.Seccion, sec.Maestro, m.Nombre, m.Apellido, m.Codigo FROM Secciones AS sec INNER JOIN Materias AS mat ON sec.Materia = mat.Clave INNER JOIN Maestros AS m ON sec.Maestro = m.Codigo WHERE sec.Materia = '%s' LIMIT %s, %s", $clave_materia, $offset , $show);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -87,8 +88,7 @@
 			echo "</tr>\n";
 		}
 		
-		echo "</tbody>";
-		echo "</table>\n";
+		echo "</tbody></table>\n";
 		echo "<p>";
 		
 		$next = $offset + $show;

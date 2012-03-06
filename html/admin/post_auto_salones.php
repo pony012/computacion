@@ -18,17 +18,19 @@
 		exit;
 	}
 	
-	if (!isset ($_POST['select_order'])) {
+	if (!isset ($_POST['select_order']) || ($_POST['select_order'] != 'order' && $_POST['select_order'] != 'random' && $_POST['select_order'] != 'grupos')) {
 		agrega_mensaje (3, "Error desconocido");
 		exit;
 	}
 	
-	settype ($_POST['fecha'], 'integer');
-	$tiempo_fecha = $_POST['fecha'] - ($_POST['fecha'] % 900);
-	settype ($_POST['evaluacion'], 'integer');
-	settype ($_POST['no_alumnos'], 'integer');
+	$order = $_POST['select_order'];
+	$clave_materia = $_POST['materia'];
+	$tiempo_fecha = strval (intval ($_POST['fecha']));
+	$tiempo_fecha = $tiempo_fecha - ($tiempo_fecha % 900);
+	$id_eval = strval (intval ($_POST['evaluacion']));
+	$n_alumnos = strval (intval ($_POST['no_alumnos']));
 	
-	if (($_POST['select_order'] == 'order' || $_POST['select_order'] == 'random') && $_POST['no_alumnos'] < 10) {
+	if (($order == 'order' || $order == 'random') && $n_alumnos < 10) {
 		agrega_mensaje (3, "El mínimo de alumnos por salón aplicador es de 10");
 		exit;
 	}
@@ -37,7 +39,7 @@
 	
 	/* Validar que exista la forma de evaluacion seleccionada con la materia seleccionada */
 	/* SELECT * FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave */
-	$query = sprintf ("SELECT P.Tipo FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Tipo='%s' AND P.Clave='%s' AND E.Exclusiva = 0", $_POST['evaluacion'], $_POST['materia']);
+	$query = sprintf ("SELECT P.Tipo FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id WHERE P.Tipo='%s' AND P.Clave='%s' AND E.Exclusiva = 0", $id_eval, $clave_materia);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -65,25 +67,25 @@
 	}
 	
 	/* Re-indexar el arreglo */
-	$_POST['maestro'] = array_values ($_POST['maestro']);
+	$maestros_preasignados = array_values ($_POST['maestro']);
 	
 	/* Borrar todos los alumnos de esta materia y evaluación */
 	/* DELETE FROM AA USING Alumnos_Aplicadores AS AA INNER JOIN Salones_Aplicadores AS SA ON AA.Id = SA.Id WHERE SA.Materia = 'CC100' AND SA.Tipo = 1 */
-	$query = sprintf ("DELETE FROM AA USING Alumnos_Aplicadores AS AA INNER JOIN Salones_Aplicadores AS SA ON AA.Id = SA.Id WHERE SA.Materia = '%s' AND SA.Tipo = '%s'", $_POST['materia'], $_POST['evaluacion']);
+	$query = sprintf ("DELETE FROM AA USING Alumnos_Aplicadores AS AA INNER JOIN Salones_Aplicadores AS SA ON AA.Id = SA.Id WHERE SA.Materia = '%s' AND SA.Tipo = '%s'", $clave_materia, $id_eval);
 	
 	mysql_query ($query);
 	
 	/* DELETE FROM Salones_Aplicadores WHERE Materia = 'CC100' AND Tipo =1 */
 	
-	$query = sprintf ("DELETE FROM Salones_Aplicadores WHERE Materia = '%s' AND Tipo = '%s'", $_POST['materia'], $_POST['evaluacion']);
+	$query = sprintf ("DELETE FROM Salones_Aplicadores WHERE Materia = '%s' AND Tipo = '%s'", $clave_materia, $id_eval);
 	
 	mysql_query ($query);
 	
-	if ($_POST['select_order'] == 'order' || $_POST['select_order'] == 'random') {
+	if ($order == 'order' || $order == 'random') {
 		/* SELECT G.Alumno FROM Grupos AS G INNER JOIN Secciones AS S ON G.Nrc = S.Nrc INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE S.Materia = 'CC100' ORDER BY A.Apellido, A.Nombre */
-		$query = sprintf ("SELECT G.Alumno FROM Grupos AS G INNER JOIN Secciones AS S ON G.Nrc = S.Nrc INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE S.Materia = '%s'", $_POST['materia']);
+		$query = sprintf ("SELECT G.Alumno FROM Grupos AS G INNER JOIN Secciones AS S ON G.Nrc = S.Nrc INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE S.Materia = '%s'", $clave_materia);
 		
-		if ($_POST['select_order'] == 'order') {
+		if ($order == 'order') {
 			$query = $query . " ORDER BY A.Apellido, A.Nombre";
 		} else {
 			$query = $query . " ORDER BY RAND()";
@@ -101,13 +103,13 @@
 			
 			if ($id_salon == -1) {
 				/* Tomar un maestro de la lista */
-				if (isset ($_POST['maestro'][$salon - 1])) {
-					$un_maestro = $_POST['maestro'][$salon - 1];
+				if (isset ($maestros_preasignados[$salon - 1])) {
+					$un_maestro = $maestros_preasignados[$salon - 1];
 				} else {
 					$un_maestro = "NULL";
 				}
 				
-				$query = sprintf ("INSERT INTO Salones_Aplicadores (Materia, Tipo, Salon, FechaHora, Maestro) VALUES ('%s', '%s', 'Salon %s', FROM_UNIXTIME ('%s'), %s);", $_POST['materia'], $_POST['evaluacion'], $salon, $tiempo_fecha, $un_maestro);
+				$query = sprintf ("INSERT INTO Salones_Aplicadores (Materia, Tipo, Salon, FechaHora, Maestro) VALUES ('%s', '%s', 'Salon %s', FROM_UNIXTIME ('%s'), %s);", $clave_materia, $id_eval, $salon, $tiempo_fecha, $un_maestro);
 				
 				mysql_query ($query, $mysql_con);
 				
@@ -116,7 +118,7 @@
 			
 			$query_aplicadores = $query_aplicadores . sprintf (" ('%s', '%s'),", $id_salon, $object->Alumno);
 			
-			if ($g == $_POST['no_alumnos']) {
+			if ($g == $n_alumnos) {
 				/* Ejecutar la query, resetar la consulta y aumentar el salón */
 				$query_aplicadores = substr_replace ($query_aplicadores, ";", -1);
 				mysql_query ($query_aplicadores, $mysql_con);
@@ -136,15 +138,15 @@
 		
 		agrega_mensaje (0, sprintf ("Se han generado %s salones", $salon - 1));
 		exit;
-	} else if ($_POST['select_order'] == 'grupos') {
-		$query = sprintf ("SELECT Nrc, Maestro FROM Secciones WHERE Materia='%s'", $_POST['materia']);
+	} else if ($order == 'grupos') {
+		$query = sprintf ("SELECT Nrc, Maestro FROM Secciones WHERE Materia='%s'", $clave_materia);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
 		$salon = 1;
 		while (($nrc = mysql_fetch_object ($result))) {
 			/* Por cada Nrc, generar un query extendido */
-			$query = sprintf ("INSERT INTO Salones_Aplicadores (Materia, Tipo, Salon, FechaHora, Maestro) VALUES ('%s', '%s', 'Salon %s', FROM_UNIXTIME ('%s'), '%s');", $_POST['materia'], $_POST['evaluacion'], $salon, $tiempo_fecha, $nrc->Maestro);
+			$query = sprintf ("INSERT INTO Salones_Aplicadores (Materia, Tipo, Salon, FechaHora, Maestro) VALUES ('%s', '%s', 'Salon %s', FROM_UNIXTIME ('%s'), '%s');", $clave_materia, $id_eval, $salon, $tiempo_fecha, $nrc->Maestro);
 			
 			mysql_query ($query, $mysql_con);
 			$id_salon = mysql_insert_id ($mysql_con);

@@ -12,7 +12,12 @@
 		exit;
 	}
 	
+	if (!isset ($_GET['t'])) {
+		header ("Location: usuarios.php");
+		exit;
+	}
 	$tipo = $_GET['t'];
+	
 	if ($tipo != 'u' && $tipo != 'm') {
 		header ("Location: usuarios.php");
 		exit;

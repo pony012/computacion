@@ -17,11 +17,11 @@
 		exit;
 	}
 	
-	$_GET['carrera'] = strtoupper ($_GET['carrera']);
+	$clave_carrera = strtoupper ($_GET['carrera']);
 	
 	database_connect ();
 	
-	$query = sprintf ("SELECT Clave FROM Carreras WHERE Clave='%s' LIMIT 1", $_GET['carrera']);
+	$query = sprintf ("SELECT Clave FROM Carreras WHERE Clave='%s' LIMIT 1", $clave_carrera);
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
@@ -46,7 +46,7 @@
 	<?php
 		database_connect ();
 		
-		$query = sprintf ("SELECT * FROM Carreras WHERE Clave = '%s'", $_GET['carrera']);
+		$query = sprintf ("SELECT * FROM Carreras WHERE Clave = '%s'", $clave_carrera);
 		$result = mysql_query ($query, $mysql_con);
 		$object = mysql_fetch_object ($result);
 		mysql_free_result ($result);
@@ -54,7 +54,7 @@
 		printf ("<p>Alumnos de la carrera %s (%s)</p>\n", $object->Descripcion, $object->Clave);
 		
 		/* Recuperar la cantidad total de filas */
-		$query = sprintf ("SELECT COUNT(*) AS TOTAL FROM Alumnos WHERE Carrera = '%s'", $_GET['carrera']);
+		$query = sprintf ("SELECT COUNT(*) AS TOTAL FROM Alumnos WHERE Carrera = '%s'", $clave_carrera);
 		$result = mysql_query ($query, $mysql_con);
 		$row = mysql_fetch_object ($result);
 		$total = $row->TOTAL;
@@ -77,7 +77,7 @@
 		echo "<thead><tr><th>Carrera</th><th>Código</th><th>Alumno</th></tr></thead>\n";
 		
 		/* Empezar la consulta mysql */
-		$query = sprintf ("SELECT * FROM Alumnos WHERE Carrera='%s' ORDER BY Apellido, Nombre LIMIT %s, %s", $_GET['carrera'], $offset , $show);
+		$query = sprintf ("SELECT * FROM Alumnos WHERE Carrera='%s' ORDER BY Apellido, Nombre LIMIT %s, %s", $clave_carrera, $offset , $show);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
@@ -90,8 +90,7 @@
 			echo "</tr>\n";
 		}
 		
-		echo "</tbody>";
-		echo "</table>\n";
+		echo "</tbody></table>\n";
 		echo "<p>";
 		
 		$next = $offset + $show;

@@ -18,12 +18,12 @@
 	}
 	
 	/* Verificar que haya datos POST */
-	if (!isset ($_GET['id']) || $_GET['id'] < 0) exit;
-	settype ($_GET['id'], 'integer');
+	if (!isset ($_GET['id'])) exit;
+	$id_academia = strval (intval ($_GET['id']));
 	
 	database_connect ();
 	
-	$query = sprintf ("UPDATE Materias SET Academia = NULL WHERE Academia = '%s'", $_GET['id']);
+	$query = sprintf ("UPDATE Materias SET Academia = NULL WHERE Academia = '%s'", $id_academia);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -32,7 +32,7 @@
 		exit;
 	}
 	
-	$query = sprintf ("DELETE FROM Academias WHERE Id = '%s'", $_GET['id']);
+	$query = sprintf ("DELETE FROM Academias WHERE Id = '%s'", $id_academia);
 	
 	$result = mysql_query ($query, $mysql_con);
 	

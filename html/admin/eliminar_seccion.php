@@ -20,6 +20,8 @@
 		exit;
 	}
 	
+	$nrc = $_GET['nrc'];
+	
 	if (!isset ($_GET['confirmado_js']) || $_GET['confirmado_js'] != 1) {
 		agrega_mensaje (1, "Su solicitud no puede ser procesada. Por favor intente de nuevo");
 		exit;
@@ -28,18 +30,18 @@
 	database_connect ();
 	
 	/* Impedir que eliminen la sección si tiene alumnos */
-	$query = sprintf ("SELECT * FROM Grupos WHERE Nrc='%s' LIMIT 1", $_GET['nrc']);
+	$query = sprintf ("SELECT * FROM Grupos WHERE Nrc = '%s' LIMIT 1", $nrc);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
-	if (mysql_num_rows($result) > 0) {
+	if (mysql_num_rows ($result) > 0) {
 		agrega_mensaje (1, "La seccion no puede ser eliminada porque tiene alumnos matriculados");
 		exit;
 	}
 	
 	mysql_free_result ($result);
 	
-	$query = sprintf ("DELETE FROM Secciones WHERE Nrc='%s'", $_GET['nrc']);
+	$query = sprintf ("DELETE FROM Secciones WHERE Nrc='%s'", $nrc);
 	
 	$result = mysql_query ($query, $mysql_con);
 	

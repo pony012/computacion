@@ -33,21 +33,18 @@
 		echo "<table border=\"1\">";
 		
 		/* Mostrar la cabecera */
-		echo "<thead><tr><th>Clave</th><th>Descripción</th><th>Acciones</th>";
-		
-		echo "</tr></thead>\n";
+		echo "<thead><tr><th>Clave</th><th>Descripción</th><th>Acciones</th></tr></thead>\n<tbody>";
 		
 		/* Empezar la consulta mysql */
 		$query = sprintf ("SELECT * FROM Materias LIMIT %s, %s", $offset, $show);
 		
 		$result = mysql_query ($query, $mysql_con);
 		
-		echo "<tbody>";
 		while (($object = mysql_fetch_object ($result))) {
 			echo "<tr>";
 			/* El nrc */
-			printf ("<td><a href=\"ver_materia.php?clave=%s\">%s</a></td>", $object->Clave, $object->Clave);
-			echo "<td>".$object->Descripcion."</td>";
+			printf ("<td><a href=\"ver_materia.php?clave=%s\">%s</a></td><td>%s</td>", $object->Clave, $object->Clave, $object->Descripcion);
+			
 			echo "<td>";
 			
 			if (has_permiso ('crear_materias')) {

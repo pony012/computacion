@@ -13,20 +13,20 @@
 	}
 	
 	/* Verificar que haya datos POST */
-	if (!isset ($_POST['id']) || $_POST['id'] < 0 || !isset ($_POST['materia']) || $_POST['materia'] === "NULL") {
-		exit;
-	}
+	if (!isset ($_POST['id']) || $_POST['id'] < 0 || !isset ($_POST['materia']) || $_POST['materia'] === "NULL") exit;
 	
-	settype ($_POST['id'], 'integer');
+	$id_academia = strval (intval ($_POST['id']));
 	
 	if (!preg_match ("/^([A-Za-z])([A-Za-z0-9]){2}([0-9]){2}$/", $_POST['materia'])) {
 		agrega_mensaje (3, "Materia incorrecta");
 		exit;
 	}
+	$clave_materia = $_POST['materia'];
+	
 	database_connect ();
 	
 	/* Verificar que la academia exista */
-	$query = sprintf ("SELECT * FROM Academias WHERE Id = '%s'", $_POST['id']);
+	$query = sprintf ("SELECT * FROM Academias WHERE Id = '%s'", $id_academia);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -36,10 +36,10 @@
 	}
 	
 	mysql_free_result ($result);
-	header ("Location: ver_academia.php?id=" . $_POST['id']);
+	header ("Location: ver_academia.php?id=" . $id_academia);
 	
 	/* Verificar que la materia exista */
-	$query = sprintf ("SELECT Academia FROM Materias WHERE Clave = '%s'", $_POST['materia']);
+	$query = sprintf ("SELECT Academia FROM Materias WHERE Clave = '%s'", $clave_materia);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -58,7 +58,7 @@
 	mysql_free_result ($result);
 	
 	/* Ahora sí, agregar la materia a esta academia */
-	$query = sprintf ("UPDATE Materias SET Academia = '%s' WHERE Clave = '%s'", $_POST['id'], $_POST['materia']);
+	$query = sprintf ("UPDATE Materias SET Academia = '%s' WHERE Clave = '%s'", $id_academia, $clave_materia);
 	
 	$result = mysql_query ($query, $mysql_con);
 	

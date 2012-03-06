@@ -69,8 +69,7 @@
 			echo "</tr>\n";
 		}
 		
-		echo "</tbody>";
-		echo "</table>\n";
+		echo "</tbody></table>\n";
 		echo "<p>";
 		
 		$next = $offset + $show;

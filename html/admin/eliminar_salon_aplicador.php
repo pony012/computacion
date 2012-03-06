@@ -22,13 +22,13 @@
 		exit;
 	}
 	
-	settype ($_GET['id'], 'integer');
+	$id_salon = strval (intval ($_GET['id']));
 	
 	database_connect ();
 	
 	/* Verificar que el id del salon exista */
 	
-	$query = sprintf ("SELECT Id FROM Salones_Aplicadores WHERE Id = '%s'", $_GET['id']);
+	$query = sprintf ("SELECT Id FROM Salones_Aplicadores WHERE Id = '%s'", $id_salon);
 	
 	$result = mysql_query ($query, $mysql_con);
 	
@@ -40,10 +40,10 @@
 	
 	mysql_free_result ($result);
 	
-	$query = sprintf ("DELETE FROM Alumnos_Aplicadores WHERE Id = '%s'", $_GET['id']);
+	$query = sprintf ("DELETE FROM Alumnos_Aplicadores WHERE Id = '%s'", $id_salon);
 	mysql_query ($query);
 	
-	$query = sprintf ("DELETE FROM Salones_Aplicadores WHERE Id = '%s'", $_GET['id']);
+	$query = sprintf ("DELETE FROM Salones_Aplicadores WHERE Id = '%s'", $id_salon);
 	mysql_query ($query);
 	
 	/* TODO: argumento next para regresar a la página anterior */

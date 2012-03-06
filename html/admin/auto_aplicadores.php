@@ -189,22 +189,21 @@
 	<h1>Cálculo de salones automático</h1>
 	<p><b>Advertencia</b>: Si genera salones para una materia y evaluación existente, eliminará todos los salones y alumnos previamente asignados.</p>
 	<form action="post_auto_salones.php" method="post" onsubmit="return validar ()">
+	<p>Materia: <select name="materia" id="materia">
+		<option value="NULL" selected="selected">Seleccione una materia</option>
 	<?php
 		database_connect ();
 		
 		/* SELECT DISTINCT P.Clave, M.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave WHERE E.Exclusiva = 0 */
-		$query = "SELECT DISTINCT P.Clave, M.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave WHERE E.Exclusiva = 0";
+		$query = "SELECT DISTINCT P.Clave, M.Descripcion FROM Porcentajes AS P INNER JOIN Evaluaciones AS E ON P.Tipo = E.Id INNER JOIN Materias AS M ON P.Clave = M.Clave WHERE E.Exclusiva = 0 ORDER BY P.Clave";
 		
 		$result = mysql_query ($query, $mysql_con);
-		
-		echo "<p>Materia: <select name=\"materia\" id=\"materia\">\n";
-		echo "<option value=\"NULL\" selected=\"selected\">Seleccione una materia</option>\n";
 		while (($object = mysql_fetch_object ($result))) {
 			printf ("<option value=\"%s\">%s - %s</option>\n", $object->Clave, $object->Clave, $object->Descripcion);
 		}
-		echo "</select></p>";
 		mysql_free_result ($result);
 	?>
+	</select></p>
 	<p>Evaluación: <select name="evaluacion" id="evaluacion"><option value="NULL" selected="selected">Seleccione una materia primero</option></select></p>
 	<p>Fecha y hora de aplicación:<input type="text" id="SFecha" /><input type="hidden" id="fecha" name="fecha" /></p>
 	<p>Ordernar los alumnos:</p>
@@ -214,18 +213,19 @@
 	<p>Número de alumnos por salón: <input type="text" id="no_alumnos" name="no_alumnos" value="20" /></p>
 	<p>Cantidad de salones a utilizar: <input type="text" id="aprox" readonly="readonly" value="indefinido" /></p>
 	<p>Preasignar maestros:<br />
+	<select id="disponibles">
 	<?php
 		$query = "SELECT Codigo, Nombre, Apellido FROM Maestros ORDER BY Apellido, Nombre";
 		
 		$result = mysql_query ($query, $mysql_con);
 		
-		echo "<select id=\"disponibles\">\n";
 		while (($object = mysql_fetch_object ($result))) {
 			printf ("<option value=\"%s\">%s %s</option>\n", $object->Codigo, $object->Apellido, $object->Nombre);
 		}
-		echo "</select>";
 		mysql_free_result ($result);
-	?><img id="Agregar" src="../img/add2.png" alt="Agregar" onclick="return agregar ()" /></p>
+	?>
+	</select>
+	<img id="Agregar" src="../img/add2.png" alt="Agregar" onclick="return agregar ()" /></p>
 	<select id="maestros" size="20"><optgroup label="Maestros seleccionados" ></optgroup></select><img id="Eliminar" src="../img/remove2.png" alt="Eliminar" onclick="return eliminar ()" />
 	<span id="lista_m"></span>
 	<p><input type="submit" value="Generar salones" />

@@ -11,9 +11,11 @@
 		exit;
 	}
 	
+	$nrc = $_GET['nrc'];
+	
 	database_connect ();
 	/* SELECT * FROM Secciones AS Sec INNER JOIN Materias AS M ON Sec.Materia = M.Clave INNER JOIN Maestros AS Mas ON Sec.Maestro = Mas.Codigo WHERE Sec.Nrc='2006' */
-	$query = sprintf ("SELECT Sec.Nrc, Sec.Seccion, M.Clave, M.Descripcion, Mas.Codigo, Mas.Nombre, Mas.Apellido FROM Secciones AS Sec INNER JOIN Materias AS M ON Sec.Materia = M.Clave INNER JOIN Maestros AS Mas ON Sec.Maestro = Mas.Codigo WHERE Sec.Nrc='%s'", $_GET['nrc']);
+	$query = sprintf ("SELECT Sec.Nrc, Sec.Seccion, M.Clave, M.Descripcion, Mas.Codigo, Mas.Nombre, Mas.Apellido FROM Secciones AS Sec INNER JOIN Materias AS M ON Sec.Materia = M.Clave INNER JOIN Maestros AS Mas ON Sec.Maestro = Mas.Codigo WHERE Sec.Nrc='%s'", $nrc);
 	$result = mysql_query ($query, $mysql_con);
 	
 	if (mysql_num_rows ($result) == 0) {
@@ -74,7 +76,7 @@
 					if ($now < $object->Apertura || $now >= $object->Cierre) continue; /* Fuera de tiempo */
 				}
 				
-				$link = array ('nrc' => $_GET['nrc'], 'eval' => $object->Id);
+				$link = array ('nrc' => $nrc, 'eval' => $object->Id);
 				printf ("Para <a href=\"subida_calificaciones_maestro.php?%s\">%s</a><br />", htmlentities (http_build_query ($link)), $object->Descripcion);
 			}
 			echo "</p>";
@@ -112,7 +114,7 @@
 			echo "<th>Promedio</th></tr></thead>\n<tbody>\n";
 			
 			/* Primero recuperar los alumnos de este grupo */
-			$query = sprintf ("SELECT G.Alumno, A.Nombre, A.Apellido FROM Grupos AS G INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE Nrc='%s' ORDER BY A.Apellido, A.Nombre", $_GET['nrc']);
+			$query = sprintf ("SELECT G.Alumno, A.Nombre, A.Apellido FROM Grupos AS G INNER JOIN Alumnos AS A ON G.Alumno = A.Codigo WHERE Nrc='%s' ORDER BY A.Apellido, A.Nombre", $nrc);
 			
 			$result = mysql_query ($query, $mysql_con);
 			
@@ -122,7 +124,7 @@
 				printf ("<tr><td>%s</td><td>%s</td><td>%s %s</td>", $g, $alumno->Alumno, $alumno->Apellido, $alumno->Nombre);
 				
 				/* Ahora sí, recuperar las calificaciones de este, todas las formas de evaluacion de este grupo */
-				$query = sprintf ("SELECT C.Valor FROM Calificaciones AS C INNER JOIN Evaluaciones AS E ON C.Tipo = E.Id WHERE C.Alumno = '%s' AND C.Nrc = '%s' AND E.Grupo = '%s' ORDER BY C.Tipo", $alumno->Alumno, $_GET['nrc'], $object_ge->Grupo);
+				$query = sprintf ("SELECT C.Valor FROM Calificaciones AS C INNER JOIN Evaluaciones AS E ON C.Tipo = E.Id WHERE C.Alumno = '%s' AND C.Nrc = '%s' AND E.Grupo = '%s' ORDER BY C.Tipo", $alumno->Alumno, $nrc, $object_ge->Grupo);
 				
 				$cal_result = mysql_query ($query, $mysql_con);
 				$promedio = 0;
@@ -151,7 +153,7 @@
 			$result = mysql_query ($query, $mysql_con);
 			$total = 0;
 			while (($object = mysql_fetch_object ($result))) {
-				$query = sprintf ("SELECT Promedio FROM Promedios WHERE Nrc = '%s' AND Tipo = '%s'", $_GET['nrc'], $object->Tipo);
+				$query = sprintf ("SELECT Promedio FROM Promedios WHERE Nrc = '%s' AND Tipo = '%s'", $nrc, $object->Tipo);
 				
 				$result_promedio = mysql_query ($query, $mysql_con);
 				if (mysql_num_rows ($result_promedio) == 0) {
