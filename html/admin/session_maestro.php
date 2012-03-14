@@ -11,7 +11,8 @@
 	
 	$session_name = $cfg['clave_departamento'] . "_" . $cfg['calendario'];
 	session_name ($session_name);
-	session_set_cookie_params ($cfg['session_timeout']);
+	/* No funciona como un session timeout 
+	session_set_cookie_params ($cfg['session_timeout']); */
 	session_start ();
 	
 	function check_valid_session () {
@@ -26,6 +27,8 @@
 		
 		/* Crear una nueva session */
 		session_regenerate_id (true);
+		
+		$_SESSION = array ();
 		
 		$_SESSION['auth_m'] = true;
 		
