@@ -24,7 +24,7 @@
 			var clave = document.getElementById ("clave").value;
 			
 			/* Validaciones sobre la clave */
-			if (!/^([A-Za-z]){3}$/.test(clave)) {
+			if (!/^([A-Za-z]){5}$/.test(clave)) {
 				/* Clave incorrecta */
 				alert ("Clave incorrecta");
 				return false;
@@ -39,7 +39,7 @@
 	<h1>Nueva carrera</h1>
 	<form action="post_carrera.php" method="POST" onsubmit="return validar()">
 	<input type="hidden" name="modo" value="nuevo" />
-	<p>Clave de la carrera: <input type="text" name="clave" id="clave" maxlength="3" /></p>
+	<p>Clave de la carrera: <input type="text" name="clave" id="clave" maxlength="5" /></p>
 	<p>Descripción de la carrera: <input type="text" name="descripcion" id="descripcion" maxlength="99" /></p>
 	<input type="submit" value="Agregar carrera" />
 	</form>

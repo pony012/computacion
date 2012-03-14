@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `Academias` (
 
 CREATE TABLE IF NOT EXISTS `Alumnos` (
   `Codigo` char(9) NOT NULL,
-  `Carrera` char(3) NOT NULL,
+  `Carrera` char(5) NOT NULL,
   `Nombre` varchar(100) NOT NULL,
   `Apellido` varchar(100) NOT NULL,
   `Flag` tinyint(1) NOT NULL,
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS `Calificaciones` (
 --
 
 CREATE TABLE IF NOT EXISTS `Carreras` (
-  `Clave` char(3) NOT NULL,
+  `Clave` char(5) NOT NULL,
   `Descripcion` varchar(100) NOT NULL,
   PRIMARY KEY (`Clave`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

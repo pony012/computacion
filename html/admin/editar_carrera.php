@@ -11,7 +11,7 @@
 		exit;
 	}
 	
-	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){3}$/", $_GET['clave'])) {
+	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){5}$/", $_GET['clave'])) {
 		header ("Location: carreras.php");
 		exit;
 	}
@@ -61,7 +61,7 @@
 	<form action="post_carrera.php" method="post" onsubmit="return validar ()">
 	<input type="hidden" name="modo" value="editar" />
 	<?php
-		printf ("<p>Clave de la carrera: <input type=\"text\" name=\"clave\" id=\"clave\" maxlength=\"3\" readonly=\"readonly\" value=\"%s\" /></p>", $carrera->Clave);
+		printf ("<p>Clave de la carrera: <input type=\"text\" name=\"clave\" id=\"clave\" maxlength=\"5\" readonly=\"readonly\" value=\"%s\" /></p>", $carrera->Clave);
 		printf ("<p>Descripción de la carrera: <input type=\"text\" name=\"descripcion\" id=\"descripcion\" maxlength=\"99\" value=\"%s\" /></p>\n", $carrera->Descripcion);
 	?>
 	<input type="submit" value="Actualizar carrera" />

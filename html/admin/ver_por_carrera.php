@@ -11,7 +11,7 @@
 		exit;
 	}
 	
-	if (!isset ($_GET['carrera']) || !preg_match ("/^([A-Za-z]){3}$/", $_GET['carrera'])) {
+	if (!isset ($_GET['carrera']) || !preg_match ("/^([A-Za-z]){5}$/", $_GET['carrera'])) {
 		header ("Location: carreras.php");
 		agrega_mensaje (3, "Carrera inválida");
 		exit;

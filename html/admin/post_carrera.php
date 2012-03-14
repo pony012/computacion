@@ -19,7 +19,7 @@
 	}
 	
 	/* Validar la clave la carrera */
-	if (!preg_match ("/^([A-Za-z]){3}$/", $_POST['clave'])) {
+	if (!preg_match ("/^([A-Za-z]){5}$/", $_POST['clave'])) {
 		agrega_mensaje (3, "Clave de carrera incorrecta");
 		exit;
 	}

@@ -18,7 +18,7 @@
 		exit;
 	}
 	
-	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){3}$/", $_GET['clave'])) {
+	if (!isset ($_GET['clave']) || !preg_match ("/^([A-Za-z]){5}$/", $_GET['clave'])) {
 		agrega_mensaje (3, "Clave incorrecta");
 		exit;
 	}
