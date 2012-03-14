@@ -56,18 +56,7 @@
 	<meta name="author" content="Félix Arreola Rodríguez" />
 	<link rel="stylesheet" type="text/css" href="../css/theme.css" />
 	<link rel="stylesheet" media="all" type="text/css" href="../css/smoothness/jquery-ui-1.8.16.custom.css" />
-	<style type="text/css">
-	/* css for timepicker */
-	/* <![CDATA[ */
-		.ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
-		.ui-timepicker-div dl { text-align: left; }
-		.ui-timepicker-div dl dt { height: 25px; margin-bottom: -25px; }
-		.ui-timepicker-div dl dd { margin: 0 10px 10px 65px; }
-		.ui-timepicker-div td { font-size: 90%; }
-		.ui-tpicker-grid-label { background: none; border: none; margin: 0; padding: 0; }
-		ui-datepicker-div, .ui-datepicker{ font-size: 80%; }
-	/* ]]> */
-	</style>
+	<link rel="stylesheet" media="all" type="text/css" href="../css/timepicker.css" />
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="../scripts/jquery-ui-timepicker-addon.js"></script>
